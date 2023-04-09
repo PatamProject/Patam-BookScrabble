@@ -1,3 +1,3 @@
 # Patam-BookScrabble
 
-Please do not touch the main branch!
+Please do not touch the master branch!
