@@ -5,11 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import project.model.GameData.Game;
 
 public class MyServer {
     private final ClientHandler clientHandler;
-    Game game;
     private final int port;
     private volatile boolean stopServer = false;
 
@@ -18,7 +16,6 @@ public class MyServer {
         this.clientHandler = ch;
         this.port = port;
         stopServer = false;
-        game = new Game();
     }
 
     public void start()
