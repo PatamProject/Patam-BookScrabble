@@ -28,7 +28,7 @@ public class Board {
      {0,3,0,0,0,2,0,0,0,2,0,0,0,3,0},
      {4,0,0,1,0,0,0,4,0,0,0,1,0,0,4}}; 
 
-    static Board getBoard() //singleton design
+    public static Board getBoard() //singleton design
     {
         if(myBoard != null)
             return myBoard;
