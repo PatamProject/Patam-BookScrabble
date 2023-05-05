@@ -32,9 +32,6 @@ public class Rack {
         tiles.put(tile, tiles.getOrDefault(tile, 0) + 1);
         //update size
         size++;
-        //update num of tiles in bag after taking a tile
-        Bag.getBag().decTilesAmount();
-
     }
     // returns true if the tile was successfully removed
     public boolean removeTile(Tile tile)
@@ -84,5 +81,6 @@ public class Rack {
         }
         return score;
     }
+
+
     
-}

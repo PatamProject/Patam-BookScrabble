@@ -38,7 +38,7 @@ public class Tile {
         private Bag(){} //works only via getBag
 
         private void incTilesAmount(){num_Of_Tiles++;}
-        void decTilesAmount(){num_Of_Tiles--;}
+        private void decTilesAmount(){num_Of_Tiles--;}
 
         Tile getRand() //returns a random tile from the bag
         {
