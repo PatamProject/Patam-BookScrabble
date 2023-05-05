@@ -3,8 +3,6 @@ import project.assets.Tile.Bag;
 import java.util.HashMap;
 
 
-import project.assets.Tile.Bag;
-
 public class Rack {
     //fields
     HashMap<Tile,Integer> tiles;
@@ -83,3 +81,4 @@ public class Rack {
         }
         return score;
     }
+}
