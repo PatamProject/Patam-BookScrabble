@@ -30,7 +30,7 @@ public class GameHandler {
     public Boolean MessageToServer (String message) {
        String response;
         try {
-            socket = new Socket("LocalHost", port);
+            socket = new Socket("localhost", port);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
             out.println(message);
             out.flush();
