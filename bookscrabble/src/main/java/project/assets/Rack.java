@@ -9,7 +9,7 @@ public class Rack {
     //every player starts with 7 tiles
     public final int START_SIZE = 7;
     //num of tiles on the rack
-    int size = START_SIZE;
+    static int size = 7;
     //constructor
     public Rack()
     {
@@ -52,6 +52,7 @@ public class Rack {
         {
             //update size
             tiles.put(tile, tiles.get(tile) - 1);
+            size--;
             //update num of tiles in bag after taking a tile
             if(tiles.get(tile) == 0)
                 //remove the tile from the hash map
@@ -81,4 +82,6 @@ public class Rack {
         }
         return score;
     }
+
+    public static boolean isEmpty(){return Bag.getBag().isEmpty() && size==0;}
 }

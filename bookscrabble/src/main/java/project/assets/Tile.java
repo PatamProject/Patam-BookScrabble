@@ -103,7 +103,10 @@ public class Tile {
             int[] copy = new int[26];
             System.arraycopy(currentTilesAmount, 0, copy, 0, 26);
             return copy;
-        }      
+        }
+        
+        public static boolean isEmpty(){return num_Of_Tiles == 0;}
+
     } //end of class Bag
     
     @Override
