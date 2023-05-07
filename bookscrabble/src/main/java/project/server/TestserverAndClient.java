@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import project.cacheHandler.DictionaryManager;
+import project.model.GameHandler;
 
 public class TestserverAndClient {
 	
@@ -75,8 +76,28 @@ public class TestserverAndClient {
 		}
 		return ok;
 	}
-	
 
+	public static boolean GameHandlerTest() {
+		boolean Answer = false;
+		Random r=new Random();
+		int port=6000+r.nextInt(1000);
+		GameHandler gh = new GameHandler(port);
+		int c = Thread.activeCount();
+		gh.StartGame(); // runs in the background
+		try {
+			Answer = gh.MessageToServer("Q,avocado");
+		}catch(Exception e) {
+			System.out.println("some exception was thrown while testing your server, cannot continue the test (-100)");
+		}
+		gh.CloseGame();
+
+		try {Thread.sleep(2000);} catch (InterruptedException e) {}
+
+		if (Thread.activeCount()!=c) {
+			System.out.println("you have a thread open after calling close method (-100)");
+		}
+		return Answer;
+	}
 	public static String[] writeFile(String name) {
 		Random r=new Random();
 		String txt[]=new String[10];
@@ -154,12 +175,13 @@ public class TestserverAndClient {
 		runClient(port, "C,s1.txt,s2.txt,#"+s2[1], false);
 		s.close();
 	}
-	
+
 	public static void main(String[] args) {
 		if(testServer()) {
 			testDM();
-			testBSCH();			
+			testBSCH();
 		}
+		GameHandlerTest();
 		System.out.println("done");
 	}
 
