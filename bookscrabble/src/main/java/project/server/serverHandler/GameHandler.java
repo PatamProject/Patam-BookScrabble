@@ -5,8 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import project.model.Game;
-import project.assets.Board;
+import project.server.assets.Game;
 
 public class GameHandler implements ClientHandler {
     Scanner in;
@@ -26,7 +25,7 @@ public class GameHandler implements ClientHandler {
 
         if (args[0] == "1") { // Example for in: 1,word,row,col,T/F
             //...
-            out.println(Game.board.tryPlaceWord());
+            //out.println(game.getBoard().tryPlaceWord());
         }
         // List of classifications:
         // 1 = Check if a word is placeable on the board. The score is returned as string.

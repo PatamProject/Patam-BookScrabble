@@ -1,7 +1,6 @@
 package project.server.assets;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class Game {
@@ -21,26 +20,33 @@ public class Game {
         this.players = new ArrayList<>();
     }
 
+    public Board getBoard(){return board;}
+
     public void startGame(){
+        for (Player player : players) {
+            player.getRack();
+        }
 
         new Thread(()->{
             try {
                 while(!gameEnded)
                 {
-                    //player turns
-                    //player plays
-                    //turn ends
+                    for (int i = 0; i < players.size(); i++) {
+                        //player i turn
+                        //allow player i to placeWord
+                        //allow player i to takeTiles
+                        //turn ends
+                        //checkEndGameConditions
+                        //...
+                    }
+                    //checkEndGameConditions    
                     //...
-                    //game ends
-
-
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).start();
     }
-
 
     public void setRandomPlayOrder(){ //randomize the order of the players
         ArrayList<Integer> suffle = new ArrayList<>();
@@ -53,11 +59,6 @@ public class Game {
             newOrder.add(players.get(suffle.get(i)));
         }
         players = newOrder;
-    }
-
-    public void setPlayOrder(Integer... order)
-    {
-        //TODO: check if order is valid
     }
 
     public boolean addNewPlayer(String pName){
