@@ -1,7 +1,4 @@
-package project.model;
-
-import project.server.BookScrabbleHandler;
-import project.server.MyServer;
+package project.server.serverHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Objects;
+
+import project.server.assets.Game;
 
 public class GameHandler {
     MyServer server;
@@ -30,7 +29,7 @@ public class GameHandler {
     public Boolean MessageToServer (String message) {
        String response;
         try {
-            socket = new Socket("LocalHost", port);
+            socket = new Socket("localhost", port);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
             out.println(message);
             out.flush();

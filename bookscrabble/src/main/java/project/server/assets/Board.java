@@ -1,7 +1,7 @@
-package project.assets;
+package project.server.assets;
 import java.util.ArrayList;
 
-import project.cacheHandler.DictionaryManager;
+import project.server.cacheHandler.DictionaryManager;
 
 public class Board {
     private static Board myBoard = null; //singelton

@@ -1,13 +1,9 @@
-package project.model;
-
-import project.assets.Rack;
-import project.assets.Word;
+package project.server.assets;
 
 public abstract class Player{
     private String name;
     private Integer score = 0;
     private Rack rack = null; //A Rack is created when the game starts
-    public volatile boolean myTurn = false; //Used to determine if it's the player's turn
     
     public Player(String name){
        this.name = name; 
@@ -37,7 +33,6 @@ public abstract class Player{
 
     public void placeWord(Word w) //When a *valid* word is placed call this func to update the rack and score
     {
-        if(myTurn)
-            addScore(rack.placeWord(w));
+        addScore(rack.placeWord(w));
     }
 }

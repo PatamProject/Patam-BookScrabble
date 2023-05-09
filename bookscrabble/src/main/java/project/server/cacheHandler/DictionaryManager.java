@@ -1,4 +1,4 @@
-package project.cacheHandler;
+package project.server.cacheHandler;
 
 import java.util.HashMap;
 

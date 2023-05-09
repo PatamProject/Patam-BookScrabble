@@ -1,6 +1,7 @@
-package project.assets;
-import project.assets.Tile.Bag;
+package project.server.assets;
 import java.util.HashMap;
+
+import project.server.assets.Tile.Bag;
 
 
 public class Rack {
