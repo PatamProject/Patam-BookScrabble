@@ -1,4 +1,4 @@
-package project.assets;
+package project.server.assets;
 import java.util.Random;
 
 public class Tile {

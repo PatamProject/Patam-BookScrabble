@@ -1,4 +1,4 @@
-package project.server;
+package project.server.serverHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
 
-import project.cacheHandler.DictionaryManager;
+import project.server.cacheHandler.DictionaryManager;
 
 public class TestserverAndClient {
 	

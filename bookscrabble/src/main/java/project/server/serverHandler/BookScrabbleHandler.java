@@ -1,11 +1,11 @@
-package project.server;
+package project.server.serverHandler;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import project.cacheHandler.DictionaryManager;
+import project.server.cacheHandler.DictionaryManager;
 
 public class BookScrabbleHandler implements ClientHandler{
     PrintWriter out;

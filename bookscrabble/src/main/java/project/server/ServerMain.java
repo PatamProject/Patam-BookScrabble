@@ -1,4 +1,4 @@
-package project;
+package project.server;
 
 // import javafx.application.Application;
 // import javafx.fxml.FXMLLoader;
@@ -11,7 +11,7 @@ package project;
 /**
  * JavaFX App
  */
-public class Main{
+public class ServerMain{
 
     // private static Scene scene;
 
@@ -33,7 +33,7 @@ public class Main{
 
     public static void main(String[] args) {
         //launch();
-        System.out.println("Hello World!");
+        System.out.println("Hello from server!");
     }
 
 }

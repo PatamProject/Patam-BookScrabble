@@ -1,6 +1,6 @@
-package project.assets;
+package project.server.assets;
 
-import project.assets.Tile.Bag;
+import project.server.assets.Tile.Bag;
 
 public class TestAssets {
 	

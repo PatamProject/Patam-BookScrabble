@@ -1,9 +1,8 @@
-package project.model;
+package project.server.assets;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.ArrayList;
-import project.assets.Board;
 
 public class Game {
     Board board;

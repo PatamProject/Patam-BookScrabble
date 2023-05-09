@@ -1,4 +1,4 @@
-package project.assets;
+package project.server.assets;
 import java.util.Arrays;
 
 public class Word {

@@ -1,7 +1,4 @@
-package project.model;
-
-import project.assets.Rack;
-import project.assets.Word;
+package project.server.assets;
 
 public abstract class Player{
     private String name;
