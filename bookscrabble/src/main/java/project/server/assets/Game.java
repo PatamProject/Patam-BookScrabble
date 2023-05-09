@@ -8,6 +8,17 @@ public class Game {
     int size=0; 
     private volatile boolean gameEnded = false;
 
+    //NewPlayerJoined(String name) {players.add(new Player(name);}
+    //PlayerLeft
+    //NewGameStarted
+    //TileTaken
+    //TileGiven
+    //TilePlaced
+    //WordPlaced
+
+
+
+
     public Game(){
         this.board = Board.getBoard();
         this.players = new ArrayList<>();
