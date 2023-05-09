@@ -1,52 +1,85 @@
 package project.server.serverHandler;
 
-import java.io.BufferedReader;
+import project.server.serverHandler.BookScrabbleHandler;
+import project.server.serverHandler.GuiHandler;
+import project.server.serverHandler.MyServer;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Objects;
-
-import project.server.assets.Game;
+import java.util.Scanner;
 
 public class GameHandler {
-    MyServer server;
+    MyServer dbServer, guiServer; // Servers
+    String dbName, guiName; // IP
     Game game;
     Socket socket;
-    int port;
+    ArrayList<Player> turnOrder; // The order of the players turns
+    final int dbPort, guiPort; // Ports
+    boolean isHost; // A flag to see if the client is the host
 
-    public GameHandler(int port) {
-        this.port = port;
-        server = new MyServer(port , new BookScrabbleHandler());
+
+    public GameHandler(String dbName, String guiName, int dbPort, int guiPort, boolean isHost) { // Ctor
+        this.dbPort = dbPort;
+        this.guiPort = guiPort;
+        this.isHost = isHost;
+        this.dbName = dbName;
+        this.guiName = guiName;
+        this.turnOrder = new ArrayList<>();
+        this.dbServer = new MyServer(dbPort , new BookScrabbleHandler()); // This server is used by many hosts of unrelated games
+        dbServer.start(); // Always runs in the background
     }
 
     public void StartGame() {
-        server.start();
+        if (isHost) {
+            this.guiServer = new MyServer(guiPort, new GuiHandler()); // This server is used for a single game
+            guiServer.start(); // Always runs in the background of the game
+        }
+        game.startGame();
 
+        // methods:
+        // receive initial data
+        //
         // loop
     }
 
-    public Boolean MessageToServer (String message) {
-       String response;
+    public boolean messageToDBServer (String message) { // A boolean method to send a query/challenge to the DB server
+        String response = messageMethod(message, dbName, dbPort); // Answer from server
+        return Objects.equals(response, "true"); // Returns true according to the servers answer
+    }
+
+    public String messageToGuiServer (String message) { // A method to send a String to the Gui server
+        return messageMethod(message, guiName, guiPort); // Returns String according to the servers answer
+    }
+
+    private String messageMethod (String message, String serverName, int port) {
+        String response = null;
         try {
-            socket = new Socket("localhost", port);
-            PrintWriter out = new PrintWriter(socket.getOutputStream());
-            out.println(message);
-            out.flush();
+            socket = new Socket(serverName, port);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            response = in.readLine();
-
-            in.close();
-            out.close();
-            socket.close();
+            try (Scanner inFromServer = new Scanner(socket.getInputStream()); PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
+                outToServer.println(message);
+                outToServer.flush();
+                if (inFromServer.hasNext())
+                    response = inFromServer.next();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                socket.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return Objects.equals(response, "true");
+        return response;
     }
 
     public void CloseGame() {
-        server.close();
+        if (isHost)
+            guiServer.close();
+        //game.closeGame;
+        if (game.players.size() == 0)
+            dbServer.close();
     }
 }
