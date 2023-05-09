@@ -1,13 +1,11 @@
 package project.server.assets;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.ArrayList;
 
 public class Game {
     Board board;
     ArrayList<Player> players;
-    private Integer currentPlayerIndex = 0;
+    int size=0; 
     private volatile boolean gameEnded = false;
 
     public Game(){
@@ -19,6 +17,7 @@ public class Game {
         if(players.size() < 4)
         {
             players.add(p);
+            size++;
             return true;
         }    
 
@@ -26,64 +25,48 @@ public class Game {
     }
 
     public void startGame(){
-        
-        //setDefaultPlayerStats();
-        //setGamePlayOrder();
-        startGameLoop();
-        //startGameEndLoop();
-
-        
+        // for(Player p : players)
+        //     p.getRack();
     }
 
-    private void startGameLoop(){
-        Timer timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                //System.out.println("Your turn has ended");
-                //...
-                turnEnded();
-            }
-        };
-
-        while(!gameEnded)
+    //the game end when thier are no tiles left in the bag  
+    //of the players have no more tiles of the players dont have option to a word
+    public void endGame(){
+        //if the bag is empty return true
+        if(Tile.Bag.isEmpty())
+            gameEnded = true;
+        else
         {
-            while(!turnEnded())
-            {
-                timer.schedule(timerTask, 120 * 1000); //Each player has 120 seconds to play
+            //chack if thier is at less then 2 players
+            if(players.size() < 2)
+                gameEnded = true;
 
-            }
-
-            
         }
+        
     }
 
-    private void nextPlayerTurn(){
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    //player want to leave the game
+    public void leaveGame(Player p){
+        size--;
+        players.remove(p);
     }
 
-    private boolean turnEnded(){
-        nextPlayerTurn();
-        return true;
+    //the winner is the player with biggest score
+    public Player getWinner(){
+        Player winner = players.get(0);
+        for(Player p : players)
+        {
+            if(p.getScore() > winner.getScore())
+                winner = p;
+        }
+        return winner;
     }
 
-    public boolean playerPlacesWord(String word, int row, int col, boolean isVertical){
-        //...
-        return true;
+    //check if the word is correct by the dictionary
+    public void checkWord(Word w){
+        
+
     }
-    
+
 
 }
-
-// for (int i = 0; i < players.size(); i++) {
-//     //     try {
-//     //         timer.schedule(timerTask, 120 * 1000); //Each player has 120 seconds to play
-            
-
-//     //     } catch (Exception e) {
-//     //         //Player disconnected
-//     //         //System.out.println("Player " + "" + "disconnected");
-//     //         //gameEndLoop...unfreeeze thread
-//     //         //nextPlayerTurn();
-//     //     }
-//     // }
