@@ -1,83 +1,126 @@
 package project.server.assets;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Game {
     Board board;
     ArrayList<Player> players;
-    int size=0; 
-    private volatile boolean gameEnded = false;
+    boolean gameEnded = false;
+    public final int MAX_PLAYERS = 4;
 
-    //NewPlayerJoined(String name) {players.add(new Player(name);}
-    //PlayerLeft
     //NewGameStarted
     //TileTaken
     //TileGiven
     //TilePlaced
     //WordPlaced
 
-
-
-
     public Game(){
         this.board = Board.getBoard();
         this.players = new ArrayList<>();
     }
 
-    public boolean addNewPlayer(Player p){
-        if(players.size() < 4)
+    public void startGame(){
+
+        new Thread(()->{
+            try {
+                while(!gameEnded)
+                {
+                    //player turns
+                    //player plays
+                    //turn ends
+                    //...
+                    //game ends
+
+
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+
+    public void setRandomPlayOrder(){ //randomize the order of the players
+        ArrayList<Integer> suffle = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) {
+            suffle.add(i);
+        }
+        Collections.shuffle(suffle);
+        ArrayList<Player> newOrder = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) {
+            newOrder.add(players.get(suffle.get(i)));
+        }
+        players = newOrder;
+    }
+
+    public void setPlayOrder(Integer... order)
+    {
+        //TODO: check if order is valid
+    }
+
+    public boolean addNewPlayer(String pName){
+        if(players.size() < MAX_PLAYERS)
         {
-            players.add(p);
-            size++;
+            String suffix = "";
+            for (Player p : players) {
+                if(p.getName().equals(pName)) //name already exists
+                {
+                    suffix = "2";
+                    break;
+                }
+            }
+            players.add(new Player(pName + suffix));
             return true;
         }    
-
         return false;
     }
 
-    public void startGame(){
-        // for(Player p : players)
-        //     p.getRack();
-    }
-
-    //the game end when thier are no tiles left in the bag  
-    //of the players have no more tiles of the players dont have option to a word
-    public void endGame(){
-        //if the bag is empty return true
-        if(Tile.Bag.isEmpty())
-            gameEnded = true;
-        else
+    public boolean checkEndGameConditions(){ //Game ends when the bag is empty or there are less than 2 players
+        if(Tile.Bag.isEmpty() || players.size() < 2)
         {
-            //chack if thier is at less then 2 players
-            if(players.size() < 2)
-                gameEnded = true;
-
+            gameEnded = true;
+            return true;
         }
-        
+        return false;
     }
 
-    //player want to leave the game
-    public void leaveGame(Player p){
-        size--;
-        players.remove(p);
+    //player wants to leave the game
+    public void leaveGame(String pName){
+        players.removeIf(p -> p.getName().equals(pName));
+        if(players.size() <= 1)
+            gameEnded = true;
+    }
+
+    public int getPlayersAmount(){
+        return players.size();
     }
 
     //the winner is the player with biggest score
-    public Player getWinner(){
+    public String getWinner(){
         Player winner = players.get(0);
         for(Player p : players)
         {
             if(p.getScore() > winner.getScore())
                 winner = p;
+            else if(p.getScore() == winner.getScore())
+            {
+                if(p.getRack().size() < winner.getRack().size())
+                    winner = p;
+            }
         }
-        return winner;
+        gameEnded = true;
+        return winner.getName();
     }
 
-    //check if the word is correct by the dictionary
-    public void checkWord(Word w){
-        
-
+    public boolean placeWord(Player p, Word w){
+        int score = board.tryPlaceWord(w);
+        if(score != 0)
+        {
+            p.addScore(score);
+            return true;
+        }
+        return false;
     }
-
-
 }
