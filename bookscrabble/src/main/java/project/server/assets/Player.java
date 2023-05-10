@@ -27,8 +27,4 @@ public class Player{
     void addScore(int score){ //When a word is placed call this func to update the score
         this.score += score;
     }
-
-    public void changeName(String name){
-        this.name = name;
-    }
 }

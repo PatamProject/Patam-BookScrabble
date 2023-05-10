@@ -33,13 +33,13 @@ public class Rack {
     public int size(){return tiles.size();}
     
     //take tile from bag
-    public char takeTile() //returns the letter of the tile taken
+    public String takeTile() //returns the letter of the tile taken
     {
         Tile tile = Bag.getBag().getRand();
         if(tile == null)
-            return '0'; //bag is empty
+            return "0"; //bag is empty
         tiles.put(tile, tiles.getOrDefault(tile, 0) + 1);
-        return tile.letter;
+        return new StringBuilder().append(tile.letter).toString();
     }
 
     public void removeTiles(Tile... tilesToRemove)

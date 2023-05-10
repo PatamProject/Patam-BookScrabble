@@ -9,10 +9,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class ServerManager {
+    HashMap<ServerManager,Socket> games;
     MyServer BookScrabbleServer, GameServer; // Servers
     final int BookScrabblePort = 5001, GamePort = 5002; // Ports
     Socket socket; // Host's socket

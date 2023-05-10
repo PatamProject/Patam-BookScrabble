@@ -23,10 +23,49 @@ public class GameHandler implements ClientHandler {
 
         String[] args = line.split(",");
 
+        switch (args[0]) {
+            case "1":
+            //...
+                break;
+            case "2":
+                switch (args[1]) {
+                    case "G":
+                        switch (args[2]) {
+                            case "N":
+                                createGame();
+                                break;
+                            case "S":
+                                //startGame();
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case "P":
+
+                        break;
+                    case "T":
+                        
+                        break;
+                
+                    default:
+                        break;
+                }
+                break;
+            //...
+                
+            default:
+                break;
+        }
+
+
         if (args[0] == "1") { // Example for in: 1,word,row,col,T/F
             //...
             //out.println(game.getBoard().tryPlaceWord());
         }
+
+        
+
         // List of classifications:
         // 1 = Check if a word is placeable on the board. The score is returned as string.
         // 2 =
@@ -34,6 +73,12 @@ public class GameHandler implements ClientHandler {
 
         out.flush();
     }
+
+    private void createGame() {
+        game = new Game();
+    }
+
+
 
     @Override
     public void close() {

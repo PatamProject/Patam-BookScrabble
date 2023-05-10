@@ -2,10 +2,12 @@ package project.server.assets;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Game {
     Board board;
-    ArrayList<Player> players;
+    HashMap<String,Player> players; //Maps between player's name to player's object
+    ArrayList<String> playersOrder; //The order of the players in the game (0 goes first...)
     boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
@@ -17,62 +19,55 @@ public class Game {
 
     public Game(){
         this.board = Board.getBoard();
-        this.players = new ArrayList<>();
+        this.players = new HashMap<>();
     }
 
     public Board getBoard(){return board;}
 
     public void startGame(){
-        for (Player player : players) {
-            player.getRack();
-        }
+        // for (Player player : players.values()) {
+        //     player.getRack();
+        // }
 
-        new Thread(()->{
-            try {
-                while(!gameEnded)
-                {
-                    for (int i = 0; i < players.size(); i++) {
-                        //player i turn
-                        //allow player i to placeWord
-                        //allow player i to takeTiles
-                        //turn ends
-                        //checkEndGameConditions
-                        //...
-                    }
-                    //checkEndGameConditions    
-                    //...
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
+        // new Thread(()->{
+        //     try {
+        //         while(!gameEnded)
+        //         {
+        //             for (int i = 0; i < players.size(); i++) {
+        //                 //player i turn
+        //                 //allow player i to placeWord
+        //                 //allow player i to takeTiles
+        //                 //turn ends
+        //                 //checkEndGameConditions
+        //                 //...
+        //             }
+        //             //checkEndGameConditions    
+        //             //...
+        //         }
+        //     } catch (Exception e) {
+        //         throw new RuntimeException(e);
+        //     }
+        // }).start();
     }
 
     public void setRandomPlayOrder(){ //randomize the order of the players
-        ArrayList<Integer> suffle = new ArrayList<>();
-        for (int i = 0; i < players.size(); i++) {
-            suffle.add(i);
+        ArrayList<String> suffle = new ArrayList<>();
+        for (int i = 0; i < players.keySet().size(); i++) {
+            suffle.add(playersOrder.get(i));
         }
         Collections.shuffle(suffle);
-        ArrayList<Player> newOrder = new ArrayList<>();
-        for (int i = 0; i < players.size(); i++) {
-            newOrder.add(players.get(suffle.get(i)));
-        }
-        players = newOrder;
+        playersOrder = suffle;
     }
 
     public boolean addNewPlayer(String pName){
         if(players.size() < MAX_PLAYERS)
         {
             String suffix = "";
-            for (Player p : players) {
-                if(p.getName().equals(pName)) //name already exists
-                {
-                    suffix = "2";
-                    break;
-                }
-            }
-            players.add(new Player(pName + suffix));
+            if(players.containsKey(pName))
+                suffix = "2";
+
+            players.put(pName + suffix, new Player(pName + suffix));
+            playersOrder.add(pName + suffix);
             return true;
         }    
         return false;
@@ -87,9 +82,9 @@ public class Game {
         return false;
     }
 
-    //player wants to leave the game
-    public void leaveGame(String pName){
-        players.removeIf(p -> p.getName().equals(pName));
+    public void playerLeftGame(String pName){
+        if(players.containsKey(pName))
+            players.remove(pName);
         if(players.size() <= 1)
             gameEnded = true;
     }
@@ -98,10 +93,10 @@ public class Game {
         return players.size();
     }
 
-    //the winner is the player with biggest score
+    //the winner is the player with highest score
     public String getWinner(){
-        Player winner = players.get(0);
-        for(Player p : players)
+        Player winner = players.values().iterator().next();
+        for(Player p : players.values())
         {
             if(p.getScore() > winner.getScore())
                 winner = p;
@@ -115,13 +110,16 @@ public class Game {
         return winner.getName();
     }
 
-    public boolean placeWord(Player p, Word w){
+    public String placeWord(String pName, Word w){
+        if(!players.containsKey(pName))
+            return "0";
+
         int score = board.tryPlaceWord(w);
         if(score != 0)
         {
-            p.addScore(score);
-            return true;
+            players.get(pName).addScore(score);
+            return new StringBuilder().append(score).toString();
         }
-        return false;
+        return "0";
     }
 }
