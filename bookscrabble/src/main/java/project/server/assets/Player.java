@@ -1,6 +1,6 @@
 package project.server.assets;
 
-public abstract class Player{
+public class Player{
     private String name;
     private Integer score = 0;
     private Rack rack = null; //A Rack is created when the game starts
@@ -9,7 +9,8 @@ public abstract class Player{
        this.name = name; 
     }
 
-    public Rack getRack(){ //Works via GameHandler.startGame()...
+    public Rack getRack()
+    {
         if(rack == null) //Each Player has a one Rack per game
             return new Rack();
         return rack;    
@@ -23,16 +24,7 @@ public abstract class Player{
         return name;
     }
 
-    private void addScore(int score){ //When a word is placed call this func to update the score
+    void addScore(int score){ //When a word is placed call this func to update the score
         this.score += score;
-    }
-
-    public void changeName(String name){
-        this.name = name;
-    }
-
-    public void placeWord(Word w) //When a *valid* word is placed call this func to update the rack and score
-    {
-        addScore(rack.placeWord(w));
     }
 }

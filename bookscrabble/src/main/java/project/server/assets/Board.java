@@ -187,9 +187,16 @@ public class Board {
         return true;    
     }
 
-    boolean dictionaryLegal(Word w) // is the word dictionary-legal
+    boolean dictionaryLegal(Word... words) // is the word dictionary-legal
     {
-        return DictionaryManager.get().query(w.toString());
+        String[] strings = new String[words.length];
+        int i = 0;
+        for (Word w : words) {
+            strings[i] = w.toString();
+            i++;
+        }
+
+        return DictionaryManager.get().query(strings);
     }
 
     ArrayList<Word> getWords(Word w) // returns all the words created by placing 'w' on the board
