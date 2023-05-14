@@ -24,6 +24,8 @@ public class Game {
 
     public Board getBoard(){return board;}
 
+    public Player getPlayer(String pName) {return players.get(pName);}
+
     public void startGame(){
         // for (Player player : players.values()) {
         //     player.getRack();
@@ -82,16 +84,17 @@ public class Game {
         return false;
     }
 
-    public void playerLeftGame(String pName){
-        if(players.containsKey(pName))
+    public String playerLeftGame(String pName){
+        if(players.containsKey(pName)) {
             players.remove(pName);
+            return pName;
+        }
         if(players.size() <= 1)
             gameEnded = true;
+        return "0";
     }
 
-    public int getPlayersAmount(){
-        return players.size();
-    }
+    public int getPlayersAmount(){return players.size();}
 
     //the winner is the player with highest score
     public String getWinner(){
@@ -121,5 +124,26 @@ public class Game {
             return new StringBuilder().append(score).toString();
         }
         return "0";
+    }
+
+    public String tilesToString(String pName) {
+        Tile[] tiles = players.get(pName).getRack().getTiles();
+        char[] chars = new char[tiles.length];
+        for(int i=0 ; i < tiles.length ; i++)
+            chars[i] = tiles[i].letter;
+        return new String(chars);
+    }
+
+    public Word StringToWord(String wordData) {
+        String[] arrData = wordData.split("-");
+        int row = Integer.parseInt(arrData[1]);
+        int col = Integer.parseInt(arrData[2]);
+        boolean bool = Boolean.parseBoolean(arrData[3]);
+        char[] chars = arrData[0].toCharArray();
+        Tile[] tiles = new Tile[chars.length];
+
+        for(int i=0;i<chars.length;i++)
+            tiles[i] = Tile.Bag.getBag().getCopyTile(chars[i]);
+        return new Word(tiles,row,col,bool);
     }
 }

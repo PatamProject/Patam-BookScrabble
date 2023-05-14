@@ -14,9 +14,9 @@ public class BookScrabbleHandler implements ClientHandler{
     public BookScrabbleHandler(){}
 
     @Override
-    public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+    public void handleClient(InputStream inFromClient, OutputStream outToClient) {
         out=new PrintWriter(outToClient);
-        in=new Scanner(inFromclient);
+        in=new Scanner(inFromClient);
         String line = in.next();
         char c = line.charAt(0);
         line = line.substring(2);
