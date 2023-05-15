@@ -14,7 +14,6 @@ public class Tile {
 
     public static class Bag{ //nested class
         private static Bag myBag = null; //singelton
-        HashMap<Character,Tile> copyTileArr = new HashMap<>();
         private static int num_Of_Tiles = 98;
         final int finalTilesAmount[] = {9,2,2,4,12,2,3,2,9,1,1,4,2,6,8,2,1,6,4,6,4,2,2,1,2,1};
         int currentTilesAmount[] = {9,2,2,4,12,2,3,2,9,1,1,4,2,6,8,2,1,6,4,6,4,2,2,1,2,1};
@@ -37,10 +36,7 @@ public class Tile {
             return myBag;
         }
 
-        private Bag(){
-            for(int i=0;i< TilesArray.length;i++)
-                copyTileArr.put(TilesArray[i].letter,TilesArray[i]);
-        } //works only via getBag
+        private Bag(){} //works only via getBag
 
         private void incTilesAmount(){num_Of_Tiles++;}
         private void decTilesAmount(){num_Of_Tiles--;}
@@ -75,7 +71,6 @@ public class Tile {
                 }
             }
             return remainingTiles;
-
         }
 
         Tile getTile(char c) //returns a specific tile if left in bag
@@ -112,7 +107,7 @@ public class Tile {
 
         public static boolean isEmpty(){return num_Of_Tiles == 0;}
 
-        public Tile getCopyTile(char c) {return copyTileArr.get(c);}
+        //public Tile getCopyTile(char c) {return copyTileArr.get(c);}
 
     } //end of class Bag
     
