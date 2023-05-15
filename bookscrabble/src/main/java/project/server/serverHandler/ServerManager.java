@@ -1,59 +1,42 @@
 package project.server.serverHandler;
 
-import project.server.assets.Game;
-import project.server.serverHandler.BookScrabbleHandler;
-import project.server.serverHandler.GameHandler;
-import project.server.serverHandler.MyServer;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class ServerManager {
     HashMap<ServerManager,Socket> games;
     MyServer BookScrabbleServer, GameServer; // Servers
+    String bookScrabbleServerName, gameServerName; // IP
     final int BookScrabblePort = 5001, GamePort = 5002; // Ports
     Socket socket; // Host's socket
 
-    public ServerManager() { // Ctor
+    public ServerManager(Socket socket) { // Ctor
+        this.socket = socket;
         BookScrabbleServer = new MyServer(BookScrabblePort , new BookScrabbleHandler()); // This server is used by many hosts of unrelated games
         BookScrabbleServer.start(); // Always runs in the background
         GameServer = new MyServer(GamePort, new GameHandler());
         GameServer.start();
     }
 
-    // public void StartGame() {
-    //     if (isHost) {
-    //         this.GameServer = new MyServer(GamePort, new GameHandler()); // This server is used for a single game
-    //         GameServer.start(); // Always runs in the background of the game
-    //     }
-    //     game.startGame();
+     public String messageToBookScrabbleServer (String message) { // A method to send a query/challenge to the book scrabble server
+         return messageMethod(message, bookScrabbleServerName, BookScrabblePort); // Answer from server
+     }
 
-    //     // methods:
-    //     // receive initial data
-    //     //
-    //     // loop
-    // }
+     public String messageToGameServer (String message) { // A method to send a String to the game server
+         return messageMethod(message,  gameServerName, GamePort); // Returns String according to the servers answer
+     }
 
-    // public boolean messageToDBServer (String message) { // A boolean method to send a query/challenge to the DB server
-    //     String response = messageMethod(message, dbName, BookScrabblePort); // Answer from server
-    //     return Objects.equals(response, "true"); // Returns true according to the servers answer
-    // }
-
-    // public String messageToGuiServer (String message) { // A method to send a String to the Gui server
-    //     return messageMethod(message, guiName, GamePort); // Returns String according to the servers answer
-    // }
-
-    private String messageMethod (String message, String serverName, int port) {
+    private String messageMethod (String message, String serverName, int port) { // A method that communicates with the MyServer instances
         String response = null;
         try {
             socket = new Socket(serverName, port);
+            games.put(this, socket);
 
-            try (Scanner inFromServer = new Scanner(socket.getInputStream()); PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
+            try (Scanner inFromServer = new Scanner(socket.getInputStream());
+                 PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
                 outToServer.println(message);
                 outToServer.flush();
                 if (inFromServer.hasNext())
@@ -68,12 +51,4 @@ public class ServerManager {
         }
         return response;
     }
-
-    // public void CloseGame() {
-    //     if (isHost)
-    //         GameServer.close();
-    //     //game.closeGame;
-    //     if (game.players.size() == 0)
-    //         BookScrabbleServer.close();
-    // }
 }
