@@ -53,8 +53,9 @@ public class GameHandler implements ClientHandler {
                             case "T":
                                 out.println(game.tilesToString(args[3]));
                                 break;
-                            case "W": // Example: 2,P,W,pName,word-row-col-T/F
-                                out.println(game.placeWord(args[3], game.StringToWord(args[4])));
+                            case "W": // Example: 2,P,W,pName,word-row-col-true/false
+                                String[] wordArgs = args[4].split("-");
+                                out.println(game.placeWord(args[3], game.getWordFromString(args[3] ,wordArgs[0], Integer.parseInt(wordArgs[1]) , Integer.parseInt(wordArgs[2]), Boolean.parseBoolean(wordArgs[3]))));
                                 break;
                             case "L":
                                 out.println(game.playerLeftGame(args[3]));
@@ -64,11 +65,11 @@ public class GameHandler implements ClientHandler {
                         }
                         break;
                     case "T":
-                        String response = game.getPlayer(args[2]).getRack().takeTile();
+                        String response = game.getPlayer(args[2]).getRack().takeTileFromBag();
                         if (response.equals("0"))
                             out.println(game.getWinner());
                         else
-                            out.println(game.getPlayer(args[2]).getRack().takeTile());
+                            out.println(game.getPlayer(args[2]).getRack().takeTileFromBag());
                         break;
                     default:
                         break;

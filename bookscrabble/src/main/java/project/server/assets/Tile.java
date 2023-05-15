@@ -1,5 +1,4 @@
 package project.server.assets;
-import java.util.HashMap;
 import java.util.Random;
 
 public class Tile {
@@ -106,8 +105,6 @@ public class Tile {
         }      
 
         public static boolean isEmpty(){return num_Of_Tiles == 0;}
-
-        //public Tile getCopyTile(char c) {return copyTileArr.get(c);}
 
     } //end of class Bag
     
