@@ -1,11 +1,11 @@
 package project.server.serverHandler;
 
+import project.server.assets.Game;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
-
-import project.server.assets.Game;
 
 public class GameHandler implements ClientHandler {
     Scanner in;
@@ -19,8 +19,6 @@ public class GameHandler implements ClientHandler {
         in = new Scanner(inFromClient);
         out = new PrintWriter(outToClient);
         String line = in.next();
-        line = line.substring(2);
-
         String[] args = line.split(",");
 
         switch (args[0]) {
@@ -35,60 +33,59 @@ public class GameHandler implements ClientHandler {
                                 createGame();
                                 break;
                             case "S":
-                                //startGame();
+                                //out.println(game.startGame());
                                 break;
                             default:
                                 break;
                         }
                         break;
                     case "P":
-
+                        switch (args[2]) {
+                            case "N":
+                                if(game.addNewPlayer(args[3]))
+                                    out.println("True");
+                                else
+                                    out.println("False");
+                                break;
+                            case "S":
+                                out.println(game.getPlayer(args[3]).getScore());
+                                break;
+                            case "T":
+                                out.println(game.tilesToString(args[3]));
+                                break;
+                            case "W": // Example: 2,P,W,pName,word-row-col-true/false
+                                String[] wordArgs = args[4].split("-");
+                                out.println(game.placeWord(args[3], game.getWordFromString(args[3] ,wordArgs[0], Integer.parseInt(wordArgs[1]) , Integer.parseInt(wordArgs[2]), Boolean.parseBoolean(wordArgs[3]))));
+                                break;
+                            case "L":
+                                out.println(game.playerLeftGame(args[3]));
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     case "T":
-                        
+                        String response = game.getPlayer(args[2]).getRack().takeTileFromBag();
+                        if (response.equals("0"))
+                            out.println(game.getWinner());
+                        else
+                            out.println(game.getPlayer(args[2]).getRack().takeTileFromBag());
                         break;
-                
                     default:
                         break;
                 }
                 break;
-            //...
-                
             default:
                 break;
         }
-
-
-        if (args[0] == "1") { // Example for in: 1,word,row,col,T/F
-            //...
-            //out.println(game.getBoard().tryPlaceWord());
-        }
-
-        
-
-        // List of classifications:
-        // 1 = Check if a word is placeable on the board. The score is returned as string.
-        // 2 =
-        // 3 =
-
         out.flush();
     }
 
-    private void createGame() {
-        game = new Game();
-    }
-
-
+    private void createGame() {game = new Game();}
 
     @Override
     public void close() {
         in.close();
         out.close();
     }
-
-
-    //200->NewPlayerJoined
-    //void game.newPlayerJoined(String name);
-
-
 }

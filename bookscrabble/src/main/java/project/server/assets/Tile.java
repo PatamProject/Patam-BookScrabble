@@ -70,7 +70,6 @@ public class Tile {
                 }
             }
             return remainingTiles;
-
         }
 
         Tile getTile(char c) //returns a specific tile if left in bag
