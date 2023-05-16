@@ -18,6 +18,7 @@ What kind of traffic types exist:
         - "P,S,'name'" : Returns the score player 'name'. (String)
         - "P,T,'name'" : Returns the tiles of the player 'name' (String)
         - "P,W,'name','string'" : Player 'name' tries to play the word 'string' on board (String)
+        - "P,L,'name'" : Player 'name' has left the game/disconnected. (void)
     Related to Tile objects:
         - "T,'name'" : Player 'name' takes a tile from bag (String)    
 
@@ -35,8 +36,9 @@ Host()----------------------------------------Server()
 "2,G,S"--->Start Game--->GameHandler.createGame()--->Return String--->"'p1Name,TWLRPTS,'p2Name,DFKJIIR,..."
 "2,P,N,'name'"--->New Player--->GameHandler.game.addNewPlayer('name')--->Returns T/F
 "2,P,S,'name'"--->Get Player score--->GameHandler.game.players.getScore()--->Returns String--->"54"
-"2,P,T,'name'"--->Get Player tiles--->GameHandler.game.players.rack.getTiles()--->Returns String--->"'pName',ACDDWPZ"
+"2,P,T,'name'"--->Get Player tiles--->GameHandler.game.players.rack.getTiles()--->Returns String--->"ACDDWPZ"
 "2,P,W,'name','string'"--->Player places word--->GameHandler.game.tryPlaceWord('string')--->Returns String of score--->"14" ('0' for invalid)
+"2,P,L,'name'"--->Player Left--->GameHandler.game.playerLeftGame('name')--->Returns string of who left
 "2,T,'name'"--->Player takes tile--->GameHandler.game.players.rack.takeTile()--->Returns String of tile--->"B" ('0' for empty bag (end of game))
 "3,Q,'string'"--->BookScrabbleHandler.quary('string')--->Returns T/F
 "3,C,'string'"--->BookScrabbleHandler.challenge('string')--->Returns T/F
