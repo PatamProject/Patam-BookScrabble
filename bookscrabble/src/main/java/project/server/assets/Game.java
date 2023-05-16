@@ -126,24 +126,24 @@ public class Game {
         return "0";
     }
 
-    public String tilesToString(String pName) {
-        Tile[] tiles = players.get(pName).getRack().getTiles();
-        char[] chars = new char[tiles.length];
-        for(int i=0 ; i < tiles.length ; i++)
-            chars[i] = tiles[i].letter;
-        return new String(chars);
-    }
+//     public String tilesToString(String pName) {
+//         Tile[] tiles = players.get(pName).getRack().getTiles();
+//         char[] chars = new char[tiles.length];
+//         for(int i=0 ; i < tiles.length ; i++)
+//             chars[i] = tiles[i].letter;
+//         return new String(chars);
+//     }
 
-    public Word StringToWord(String wordData) {
-        String[] arrData = wordData.split("-");
-        int row = Integer.parseInt(arrData[1]);
-        int col = Integer.parseInt(arrData[2]);
-        boolean bool = Boolean.parseBoolean(arrData[3]);
-        char[] chars = arrData[0].toCharArray();
-        Tile[] tiles = new Tile[chars.length];
+//     public Word StringToWord(String wordData) {
+//         String[] arrData = wordData.split("-");
+//         int row = Integer.parseInt(arrData[1]);
+//         int col = Integer.parseInt(arrData[2]);
+//         boolean bool = Boolean.parseBoolean(arrData[3]);
+//         char[] chars = arrData[0].toCharArray();
+//         Tile[] tiles = new Tile[chars.length];
 
-        for(int i=0;i<chars.length;i++)
-            tiles[i] = Tile.Bag.getBag().getCopyTile(chars[i]);
-        return new Word(tiles,row,col,bool);
-    }
+//         for(int i=0;i<chars.length;i++)
+//             tiles[i] = Tile.Bag.getBag().getCopyTile(chars[i]);
+//         return new Word(tiles,row,col,bool);
+//     }
 }
