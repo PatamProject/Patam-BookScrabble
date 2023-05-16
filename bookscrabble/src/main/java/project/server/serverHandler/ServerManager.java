@@ -126,8 +126,9 @@ public class ServerManager {
             } finally {
                 socket.close();
             }
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return response; // The response from the server
     }
@@ -137,4 +138,4 @@ public class ServerManager {
         gameServers.values().forEach(MyServer::close);
         BookScrabbleServer.close();
     }
-}
+  }

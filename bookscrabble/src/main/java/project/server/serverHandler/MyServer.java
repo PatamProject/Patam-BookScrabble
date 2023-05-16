@@ -50,7 +50,7 @@ public class MyServer {
         server.close();
     }
 
-    public int getPort() {return port;}
+    public int getPort(){return port;}
 
     public void close()
     {
