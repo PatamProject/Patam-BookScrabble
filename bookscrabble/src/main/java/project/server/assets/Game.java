@@ -71,7 +71,7 @@ public class Game {
     }
 
 
-    //the winner is the player with highest score
+    //the winner is the player with the highest score
     public String getWinner(){
         Player winner = players.values().iterator().next();
         for(Player p : players.values())
@@ -85,7 +85,8 @@ public class Game {
             }
         }
         gameEnded = true;
-        return winner.getName();
+        String value = "600,".concat(winner.getName());
+        return value;
     }
 
     public String placeWord(String pName, Word w){

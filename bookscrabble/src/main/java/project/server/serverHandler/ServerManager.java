@@ -1,5 +1,7 @@
 package project.server.serverHandler;
 
+import project.server.assets.Game;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -41,6 +43,13 @@ public class ServerManager {
                 outToServer.flush();
                 if (inFromServer.hasNext())
                     response = inFromServer.next();
+                String[] arrResponse = response.split(",");
+                if(arrResponse[0].equals("600"))
+                {
+                    GameServer.close();
+                    BookScrabbleServer.close();
+                    response = arrResponse[1];
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {

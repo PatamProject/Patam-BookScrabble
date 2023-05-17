@@ -58,7 +58,11 @@ public class GameHandler implements ClientHandler {
                                 out.println(game.placeWord(args[3], game.getWordFromString(args[3] ,wordArgs[0], Integer.parseInt(wordArgs[1]) , Integer.parseInt(wordArgs[2]), Boolean.parseBoolean(wordArgs[3]))));
                                 break;
                             case "L":
-                                out.println(game.playerLeftGame(args[3]));
+                                String response = game.playerLeftGame(args[3]);
+                                if (response.equals("0"))
+                                    out.println(game.getWinner());
+                                else
+                                    out.println(response);
                                 break;
                             default:
                                 break;

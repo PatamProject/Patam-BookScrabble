@@ -22,7 +22,7 @@ What kind of traffic types exist:
     Related to Tile objects:
         - "T,'name'" : Player 'name' takes a tile from bag (String)    
 
-"3" - Traffic related to BookScrabbleHandler for quary and challenge
+"3" - Traffic related to BookScrabbleHandler for query and challenge
 
 for example:
 "3,Q,banana" ---> "3" means BookScrabbleHandler, "Q" means quary() function to check the word
@@ -38,7 +38,7 @@ Host()----------------------------------------Server()
 "2,P,S,'name'"--->Get Player score--->GameHandler.game.players.getScore()--->Returns String--->"54"
 "2,P,T,'name'"--->Get Player tiles--->GameHandler.game.players.rack.getTiles()--->Returns String--->"ACDDWPZ"
 "2,P,W,'name','string'"--->Player places word--->GameHandler.game.tryPlaceWord('string')--->Returns String of score--->"14" ('0' for invalid)
-"2,P,L,'name'"--->Player Left--->GameHandler.game.playerLeftGame('name')--->Returns string of who left
+"2,P,L,'name'"--->Player Left--->GameHandler.game.playerLeftGame('name')--->Returns string of who left ('0' for everyone left game ( end of game ) )
 "2,T,'name'"--->Player takes tile--->GameHandler.game.players.rack.takeTile()--->Returns String of tile--->"B" ('0' for empty bag (end of game))
 "3,Q,'string'"--->BookScrabbleHandler.quary('string')--->Returns T/F
 "3,C,'string'"--->BookScrabbleHandler.challenge('string')--->Returns T/F
