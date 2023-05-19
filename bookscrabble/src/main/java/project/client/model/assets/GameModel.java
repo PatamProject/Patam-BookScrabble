@@ -109,7 +109,8 @@ public class GameModel{
             }
         }
         gameEnded = true;
-        return winner.getName();
+        String value = "600,".concat(winner.getName());
+        return value;
     }
 
     public Integer placeWord(String pName, Word w){
