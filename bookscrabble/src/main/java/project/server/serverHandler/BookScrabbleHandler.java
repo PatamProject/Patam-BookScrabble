@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import project.server.Constants;
+import project.server.Error_Codes;
 import project.server.cacheHandler.DictionaryManager;
 
 public class BookScrabbleHandler implements ClientHandler{
@@ -38,7 +38,7 @@ public class BookScrabbleHandler implements ClientHandler{
                 out.println("false");
         }
         else
-            out.println(Constants.UNKNOWN_CMD);
+            out.println(Error_Codes.UNKNOWN_CMD);
 
         out.flush();
     }
