@@ -1,7 +1,5 @@
 package project.client.model;
 
-import project.server.serverHandler.ServerManager;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -49,11 +47,11 @@ public class ConnectionModel extends Observable {
                 String clientMessage = inFromClient.next();
 
                 Socket hostOutputSocket = new Socket();
-                ServerManager manager = new ServerManager(hostOutputSocket);
+                //ServerManager manager = new ServerManager(hostOutputSocket);
                 if (clientMessage.startsWith("1") || clientMessage.startsWith("2"))
-                    serverResponse = manager.messageToGameServer(clientMessage);
-                else
-                    serverResponse = manager.messageToBookScrabbleServer(clientMessage);
+                    //serverResponse = manager.messageToGameServer(clientMessage);
+                //else
+                    //serverResponse = manager.messageToBookScrabbleServer(clientMessage);
 
                 outToClient.println(serverResponse);
                 outToClient.flush();
