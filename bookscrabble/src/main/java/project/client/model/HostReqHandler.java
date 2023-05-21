@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import project.BookScrabbleServer.Error_Codes;
+import project.server.Error_Codes;
 import project.client.model.assets.GameModel;
 import project.client.model.assets.PlayerModel;
 
