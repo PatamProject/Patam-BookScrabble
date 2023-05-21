@@ -21,7 +21,7 @@ public class ClientModel {
     public static class HostModel{
         
         private CommunicationModel myConnection;
-        HashMap<String, Socket> clients;
+        static HashMap<String, Socket> clients;
 
         public HostModel() //Basic constructor
         {
@@ -30,6 +30,26 @@ public class ClientModel {
             //clients.put("host", new Socket("localhost", 5002));
         }
 
+        public static void updateAllPlayers(String msg)
+        {
+            for (String key : clients.keySet()) {
+                Socket client = clients.get(key);
+                try {
+                    client.getOutputStream().write(msg.getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public static void updateFromPlayer(String msg, Socket player)
+        {
+            try {
+                player.getInputStream().read(msg.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
