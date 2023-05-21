@@ -10,13 +10,13 @@ public class Rack {
     //constructor
     public Rack()
     {
-        tiles = new HashMap<>(){{
-            for (int i = 0; i < START_SIZE; i++)
-            {
-                Tile tile = Bag.getBag().getRand();
-                put(tile, getOrDefault(tile, 0) + 1);
-            }
-        }};
+        tiles = new HashMap<>();
+    }
+
+    public Rack(String tilesToTake)
+    {
+        tiles = new HashMap<>();
+        takeTiles(tilesToTake);
     }
 
     //getters
@@ -26,7 +26,7 @@ public class Rack {
 
     public int size(){return tiles.size();}
     
-    //take tile from bag
+    //take tile from bag at random
     public String takeTilesFromBag(int num) throws Exception 
     { //returns the letter of the tile taken
         StringBuilder sb = new StringBuilder();
@@ -40,6 +40,14 @@ public class Rack {
             sb.append(tile.letter);
         }
         return new StringBuilder().toString();
+    }
+
+    public void takeTiles(String tiles) //Take tiles from bag specified by 'tiles' string
+    {
+        for (int i = 0; i < tiles.length(); i++) {
+            Tile tile = Bag.getBag().getTile(tiles.charAt(i));
+            this.tiles.put(tile, this.tiles.getOrDefault(tile, 0) + 1);
+        }
     }
 
     public Tile takeTileFromRack(char letter) //returns the tile taken

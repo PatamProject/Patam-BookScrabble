@@ -3,16 +3,15 @@ package project.client.model.assets;
 public class PlayerModel{
     private String name;
     private Integer score = 0;
-    private Rack rack = null; //A Rack is created when the game starts
+    private Rack rack;
     
     public PlayerModel(String name){
        this.name = name; 
+       rack = new Rack();
     }
 
     public Rack getRack()
     {
-        if(rack == null) //Each Player has a one Rack per game
-            return new Rack();
         return rack;    
     }
     
@@ -24,7 +23,7 @@ public class PlayerModel{
         return name;
     }
 
-    void addScore(int score){ //When a word is placed call this func to update the score
+    public void addScore(int score){ //When a word is placed call this func to update the score
         this.score += score;
     }
 }

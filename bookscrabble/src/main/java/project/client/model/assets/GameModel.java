@@ -10,7 +10,7 @@ public class GameModel{
     Board board;
     HashMap<String,PlayerModel> players; //Maps between player's name to player's object
     Queue<String> playersOrder; //The order of the players in the game (0 goes first...)
-    boolean gameEnded = false;
+    public boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
     public GameModel(){
@@ -20,10 +20,8 @@ public class GameModel{
     }
 
     public void startGame(){
+        //Make sure to let players take tiles before!
         setRandomPlayOrder();
-        for (PlayerModel p : players.values()) {
-            p.getRack();
-        }
 
         while(!playersOrder.isEmpty() && !gameEnded)
         {
@@ -43,6 +41,7 @@ public class GameModel{
         else 
             return null;    
     }
+
     public ArrayList<String> getPlayersOrder()
     {
         ArrayList<String> playOrder = new ArrayList<>();
@@ -109,19 +108,12 @@ public class GameModel{
             }
         }
         gameEnded = true;
-        String value = "600,".concat(winner.getName());
+        String value = "E,".concat(winner.getName());
         return value;
     }
 
-    public Integer placeWord(String pName, Word w){
-        if(!players.containsKey(pName) || w == null)
-            return 0;
-
-        return (board.tryPlaceWord(w));
-    }
-
-    public Word getWordFromString(String pName, final String tiles, final int row,final int col,final boolean vertical)
-    {
+    public Integer[] placeWord(String pName, final String tiles, final int row,final int col,final boolean vertical)
+    { //Returns the score([0]) and the number of tiles taken from the rack([1])
         PlayerModel p = players.get(pName);
         if(p == null)
             return null;
@@ -129,11 +121,13 @@ public class GameModel{
         int tmpRow = row, tmpCol = col;
         ArrayList<Tile> tilesArr = new ArrayList<>();
         Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
+        int tilesTakenCount = 0;
         for (int i = 0; i < tiles.length(); i++)
         {
             if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
             {
                 tilesArr.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
+                tilesTakenCount++;
             }
             else if(tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
             {
@@ -147,13 +141,35 @@ public class GameModel{
             else
                 tmpRow++;    
         }
+        Integer[] result = new Integer[2];
         Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
-        return new Word(wordTiles, row, col, vertical);
+        Word w = new Word(wordTiles, row, col, vertical);
+        if(!players.containsKey(pName) || w == null)
+        {
+            result[0] = 0;
+            result[1] = 0;
+        }
+        else
+        {
+            int score = board.tryPlaceWord(w);
+            if(score == 0)
+            {
+                result[0] = 0;
+                result[1] = 0;
+            }
+            else
+            {
+                p.addScore(score);
+                result[0] = score;
+                result[1] = tilesTakenCount;
+            }
+        }
+        return result;
     }
-    public String tilesToString(String pName) {
+    public String tilesToString(String pName) { //returns the tiles of player 'pName' as a string
         PlayerModel p = players.get(pName);
         if(p == null)
-            return "0";
+            return null;
 
         Tile[] tiles = players.get(pName).getRack().getTiles();
         StringBuilder sb = new StringBuilder();

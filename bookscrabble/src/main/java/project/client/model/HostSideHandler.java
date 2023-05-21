@@ -10,12 +10,12 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 //This class is used to handle the guest's requests
-public class GuestReqHandler implements ClientHandler{
+public class HostSideHandler implements RequestHandler{
     GameModel game;
     Scanner in;
     PrintWriter out;
 
-    public GuestReqHandler(){}
+    public HostSideHandler(){game = new GameModel();}
 
     @Override
     public void handleClient(InputStream inFromClient, OutputStream outToClient) {
@@ -56,7 +56,7 @@ public class GuestReqHandler implements ClientHandler{
                 switch (args[0]) {
                     case "0":
                         game.removePlayer(playerName);
-                        //Update all players
+                        MyHostServer.updateAll("G,P,L,"+playerName,outToClient);
                         break;
                     case "1":
                         out.println(Error_Codes.ACCESS_DENIED); //Can't join twice
@@ -73,28 +73,37 @@ public class GuestReqHandler implements ClientHandler{
                             out.println(Error_Codes.MISSING_ARGS); //Missing arguments
                             break;
                         }
-                        int score = game.placeWord(playerName, game.getWordFromString(playerName ,wordArgs[0], Integer.parseInt(wordArgs[1]) , Integer.parseInt(wordArgs[2]), Boolean.parseBoolean(wordArgs[3])));
-                        if(score == 0)
-                            out.println("2,0"); //Invalid word / No score given
+                        Integer[] score_tiles = game.placeWord(playerName, wordArgs[0], Integer.parseInt(wordArgs[1]) , Integer.parseInt(wordArgs[2]), Boolean.parseBoolean(wordArgs[3]));
+                        if(score_tiles[0] == 0)
+                            out.println("2,0"); //Invalid word / No score given / Try again
                         else
                         {
-                            out.println("2,"+score);
-                            //take tiles
-                            //Update all players
-                            //Next turn
+                            try {
+                                String tilesTaken = player.getRack().takeTilesFromBag(score_tiles[1]);
+                                out.println("2,"+score_tiles[0]+","+tilesTaken);
+                                String msg = "G,P,W,"+playerName+","+score_tiles[0]+","+tilesTaken+","+wordArgs[0]+","+wordArgs[1]+","+wordArgs[2]+","+wordArgs[3];
+                                MyHostServer.updateAll(msg,outToClient);
+                            } catch (Exception e) {
+                                stopGame(outToClient);
+                            }
                         }
                         break;
                     case "3":
                         try {
+                            String t = player.getRack().takeTilesFromBag(1);
                             out.println("3,"+player.getRack().takeTilesFromBag(1));
-                            //Update all players
+                            MyHostServer.updateAll("G,N,"+playerName+","+t,outToClient);
                         } catch (Exception e) {
-                            out.println("E,"+game.getWinner());
-                            //Update all players
-                            //Stop game
-                        }          
+                            stopGame(outToClient);
+                        }  
+                    case "S": //Start game
+                        //if Host
+                        startGame(true,outToClient);
+                        //else
+                        //out.println(Error_Codes.ACCESS_DENIED); //Only host can start game
                         break;         
                     default:
+                        out.println(Error_Codes.MISSING_ARGS); //Unknown command
                         break;
                 }
             }
@@ -102,8 +111,28 @@ public class GuestReqHandler implements ClientHandler{
         out.flush();
     }
     
-    private void createGame() {game = new GameModel();}
-    
+    private void startGame(boolean isHost, OutputStream outToClient)
+    {
+        if(isHost)
+        {
+            game.startGame();
+        }
+        else
+        {
+            //Give players their tiles from ---
+        }
+
+
+        MyHostServer.updateAll("S.........",outToClient);
+    }
+
+    private void stopGame(OutputStream outToClient)
+    {
+        out.println("E,"+game.getWinner());
+        MyHostServer.updateAll("E,"+game.getWinner(),outToClient);
+        game.gameEnded = true;
+    }
+
     @Override
     public void close() {
         in.close();
