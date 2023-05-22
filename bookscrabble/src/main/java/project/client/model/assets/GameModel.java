@@ -120,13 +120,14 @@ public class GameModel{
 
         int tmpRow = row, tmpCol = col;
         ArrayList<Tile> tilesArr = new ArrayList<>();
+        ArrayList<Tile> tilesFromRack = new ArrayList<>();
         Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
         int tilesTakenCount = 0;
         for (int i = 0; i < tiles.length(); i++)
         {
             if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
             {
-                tilesArr.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
+                tilesFromRack.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
                 tilesTakenCount++;
             }
             else if(tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
@@ -141,6 +142,7 @@ public class GameModel{
             else
                 tmpRow++;    
         }
+        tilesArr.addAll(tilesFromRack);
         Integer[] result = new Integer[2];
         Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
         Word w = new Word(wordTiles, row, col, vertical);
@@ -153,7 +155,8 @@ public class GameModel{
         {
             int score = board.tryPlaceWord(w);
             if(score == 0)
-            {
+            { //Return tiles back to rack
+                p.getRack().addTiles(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
                 result[0] = 0;
                 result[1] = 0;
             }

@@ -14,6 +14,7 @@ public class MyHostServer extends Communications{
     private final String BookScrabbleServerIP; // IP
     private static ArrayList<Socket> clients; // Array to keep track of connected clients
     private volatile boolean stopServer = false;
+    public final int MAX_CLIENTS = 4;
 
     public MyHostServer(int port, int bsPort, String bs_IP) { // Ctor
         super(new HostSideHandler());
@@ -32,7 +33,7 @@ public class MyHostServer extends Communications{
         {
             try {
                 Socket aClient = hostSocket.accept();
-                if (!clients.contains(aClient))
+                if (!clients.contains(aClient) && clients.size() < MAX_CLIENTS)
                     clients.add(aClient); // All clients are stored here
 
                 try {

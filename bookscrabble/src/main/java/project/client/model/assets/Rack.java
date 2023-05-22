@@ -78,5 +78,12 @@ public class Rack {
         }
     }
 
+    public void addTiles(Tile... tilesToAdd) //Used to pass tiles back to rack after a failed work placement
+    {
+        for (int i = 0; i < tilesToAdd.length; i++) {
+            tiles.put(tilesToAdd[i], tiles.getOrDefault(tilesToAdd[i], 0) + 1);
+        }
+    }
+
     public boolean isEmpty(){return size() == 0;}
 }

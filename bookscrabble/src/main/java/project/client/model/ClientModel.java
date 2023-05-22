@@ -1,104 +1,31 @@
 package project.client.model;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.util.HashMap;
-
 public class ClientModel {
-    private Communications myConnectionHost;
-    private HostModel myHost = null;
+    private Communications myConnectionToHost;
+    private HostModel myHost;
     static String myName;
-    public String hostIP;
-    int port;
+    public final int myPort = 5005;
 
-    public ClientModel(boolean isHost, String hostIP, int port , String namePlayer) //Basic constructor
+    public ClientModel(boolean isHost, String hostIP, int hostPort , String namePlayer) //Basic constructor
     {
         myName = namePlayer;
-        this.hostIP = hostIP;
-        this.port = port;
+        myConnectionToHost = new ClientCommunications(hostIP, hostPort);
         if(!isHost)
-        {
-            this.hostIP = hostIP;
-            //myConnection = new CommunicationModel(hostIP, port);
-
-        }
-        else {
-            myHost = new HostModel(port);
-        }
-
+            myHost = null;
+        else 
+            myHost = new HostModel(myPort + 1);
     }
 
-    private void msgToHost(String msg)
-    {
-//        try {
-//            Socket server=new Socket(hostIP, port);
-//            PrintWriter outToServer=new PrintWriter(server.getOutputStream());
-//            outToServer.println(msg);
-//            outToServer.close();
-//            server.close();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-    }
     public static class HostModel{
         
         private Communications myConnectionServer;
-
-        static HashMap<String, Socket> clients;
         int port;
 
         public HostModel(int port) //Basic constructor
         {
-            //myConnectionServer = new CommunicationModel(port , (ClientHandler) new BookScrabbleHandler());
-
-            clients = new HashMap<String, Socket>();
+            myConnectionServer = new MyHostServer(port, port, myName); //TODO: Get BS IP and port
             this.port=port;
-            //clients.put("host", new Socket("localhost", 5002));
+            myConnectionServer.start(); //NOT FINISHED
         }
-
-        public static void updateAllPlayers(String msg)
-        {
-            for (String key : clients.keySet()) {
-                Socket client = clients.get(key);
-                try {
-                    client.getOutputStream().write(msg.getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public static void updateFromPlayer(String pName,String msg, Socket player)
-        {
-            if(!clients.containsKey(pName))
-                clients.put(pName,player);
-            try {
-                player.getInputStream().read(msg.getBytes());
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-//        public boolean msgToBSH(String msg)
-//        {
-//            String response;
-//            try {
-//                Socket server=new Socket("localhost", port);
-//                PrintWriter outToServer=new PrintWriter(server.getOutputStream());
-//                Scanner in=new Scanner(server.getInputStream());
-//                outToServer.println(msg);
-//                response = in.next();
-//                in.close();
-//                outToServer.close();
-//                server.close();
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//            return Boolean.parseBoolean(response);
-//        }
-
     }
-
-  
 }
