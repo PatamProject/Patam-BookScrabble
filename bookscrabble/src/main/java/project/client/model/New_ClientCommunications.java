@@ -22,12 +22,15 @@ public class New_ClientCommunications extends New_Communications{
             if(response.equals(Error_Codes.SERVER_FULL))
             {
                 System.out.println("Server is full, try again later");
-                close();
+                close();    
             } else if(response.equals(Error_Codes.SERVER_ERR) || response.equals(Error_Codes.ACCESS_DENIED))
             {
                 System.out.println("Server error!");
                 close();
-            } //else join was successful
+            } else if(response.equals(Error_Codes.GAME_STARTED)) {
+                System.out.println("Game has already started!");
+                close();
+            }  //else join was successful
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,14 +41,17 @@ public class New_ClientCommunications extends New_Communications{
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
                 if(inFromHost.hasNextLine()) {
-                    String response = inFromHost.nextLine();
+                    String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
+                    String[] tmp = request.split(":");
+                    String commandName = tmp[0].substring(1);
+                    String[] args = tmp[1].split(",");
+                    String sender;
+                    if(request.charAt(0) == '!') //Game update!
+                        sender = "!"+New_ClientModel.myName; //To allow the handler to know that this is a game update from the host
+                    else //A reply from the host
+                        sender = New_ClientModel.myName;
                     
-
-
-
-
-                    super.getRequestHandler().handleClient(toHostSocket.getInputStream(), toHostSocket.getOutputStream());
-                    inFromHost.next();
+                    super.getRequestHandler().handleClient(sender, commandName, args, toHostSocket.getOutputStream());
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

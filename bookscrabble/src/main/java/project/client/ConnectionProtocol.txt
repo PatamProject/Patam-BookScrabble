@@ -1,29 +1,72 @@
 *This file is used to track the connection protocol with the server and which methods
 are used for each call*
 
-How is the protocol built:
+How is the protocol built: 'sender'&'commandName':'arg1','arg2','arg3'... (args1 = sender)
 We send a string between the host and the server, the string is seperated by '&' 
 The first part is the name of the sender and the second part is called the 'body'.
 The Host will receive the message, split the message by '&', add the name of the sender to the list of players 
-and pass the rest of the message to the GameHandler class.
+and pass the rest of the message to the ------- class.
+
+Client to host Protocol:
+If the message contains "&" it is a game update message, else it is a response to a request.
+The message itself. The body is split by ':' to two parts, the command and the arguments for the command.
+Arguments are read in the ----- ........ //example : "'senderName'&'takeTile':'Y'"
+Types of commands and their arguments if exist: 
+"'name'&join'" - Player wants to join the game - connectedClients.add(name,socket) + game.addNewPlayer(name)
+"'name'&leave'" - Player wants to leave the game - connectedClients.remove(name) + game.removePlayer(name)
+"'name'&'skipTurn'" - Player wants to skip his turn - 
+"'name'&'Q':'word,row,col,isVertical'" - Player wants to place a word, uses query  -
+"'name'&'C':'word,row,col,isVertical'" - Player wants to place a word, uses challenge  
+
+Types of responses and their arguments:
+"join:true" - Seccessfully joined a game
+
+
+Host to client protocol:
+The body is split by ':' to two parts, the commandName and return value of the command to the client.
+Arguments are read in the ----- ........ //example : "'senderName'&'commandName':'Y'"
+The original sender of the message is will receive the message below, the rest will split the message by '&' to get to name of the sender that will be added as the first argument.
+Types of commands and their return values: (Errors are handled by the client)
+
+Sent to the original client:
+"join:true" / Error - Joined a game
+"Q:'score'" - Tried to place a word, if score is positive the word is valid and score is added, if 0/-1 the word is invalid due to boardLegal or dictionaryLegal
+"C:'score'" - Tried to challenge a failed word placement, if score is positive the word is valid and score is added, if 0/-1 the word is invalid due to boardLegal or dictionaryLegal
+
+Sent to eveyone else as a game update: (Using updateAll and will have "!" to indicate a game update)
+"!join:'name'" - A player joined the game
+"!leave:'name'" - A player left the game
+"!Q:'name','score'" - Player placed a word seccessfully and got 'score' points (Player will add up back to 7 tiles)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Client to host protocol:
 Body:
-The message itself. The body is split by ':' to two parts, the command and the arguments for the command.
-Arguments are read in the ----- ........ //example : "'senderName'&'takeTile':'Y'"
-Types of commands and their arguments: 
-"join:'name'" - Join a game - game.addNewPlayer(name)
-"leave:'name'" - Leave a game - game.removePlayer(name)
-
-
-
-"0" - Tell host you are disconnecting from the host. 
+The message itself. The body is split by ',' and each part is called an argument.
+Arguments are read in the ----- ........
+Types of arguments: (Return values are in brackets)
+"0" - Tell host you are disconnecting from the host. (void)
 "1" - Ask host to join a game. If accepted host will return info about the game (Under Host to client protocol)
-"2,word,row,col,isVertical" - Client wants to play a word on the board. (String) (Returns the score of the word and the tiles to take)
+"2,word-row-col-isVertical" - Client wants to play a word on the board. (String) (Returns the score of the word and the tiles to take)
 "3" - Skip turn. Returns a random tile from the bag. (String)
-"S" - Start the game. (void) (Only Host can start the game)
 "Q,'word'" - Quary 'word' in the dictionary. (True/False)
 "C,'word'" - Challenge 'word' in the dictionary. (True/False)
+
 
 How each request is handled:
 Client()--->--->--->--->--->--->--->--->--->--->--->--->--->Host()
@@ -31,24 +74,23 @@ Client()--->--->--->--->--->--->--->--->--->--->--->--->--->Host()
 "1"--->Join Game--->
 "2"--->Play Word--->
 "3"--->Skip Turn--->
-"S"--->Start Game--->
 "Q"--->Quary--->
 "C"--->Challenge--->
 
 Host to client protocol:
 "0" - Host rejected the connection.
 "1,'name1','name2',name3'" - Host accepted the connection. All players in the game are listed.
-"2,score,tiles" - Host accepted the word and returns the score of the word and tiles to take. (If the score is 0 the word was not accpeted)
+"2,score" - Host accepted the word and returns the score of the word. (If the score is 0 the word was not accpeted)
 "3,'tile'" - Host returns the tile to the player. (If the tile is 0 the bag is empty)
-"G" - Updates from the host regarding game state to ALL players:
+"G" - Updates from the host regarding game state:
     - "S,'name1-tiles','name2-tiles','name3-tiles'" - Game started. Handed tiles to each player by play order.
     - "P,N,'name'" : New player joined the game.
     - "P,L,'name'" : Player left the game.
-    - "P,W,'name','score','tilesTaken','word-row-col-isVertical'" : Player 'name' score was updated to 'score' and took 'tilesTaken' from bag. Word info is sent to place on board. Next turn by play order.
-    - "N,'name','tile'" - Player didn't place a word and took 'tile' from bag. Next turn by play order. 
+    - "P,S,'score','tiles'" : Player score was updated to 'score' and took 'tiles' from bag. Next turn by play order.
+    - "N,'tile'" - Player didn't place a word and took 'tile' from bag. Next turn by play order. 
+    - "E,'name'" - Game ended. 'name' won the game.
 "C,True/False,'score','tiles'" - Host returns the result of the challenge. (True/False) Score and tiles are sent if true.
 "Q,True/False,'score','tiles'" - Host returns the result of the quary. (True/False) Score and tiles are sent if true.
-"E,'name'" - Game Ended! Returns the winner of the game. (String)
 
 How each request is handled:
 Host()--->--->--->--->--->--->--->--->--->--->--->--->--->Client()

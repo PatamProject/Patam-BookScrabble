@@ -2,26 +2,29 @@ package project.client.model;
 
 import project.client.Error_Codes;
 import project.client.model.assets.GameModel;
+import project.client.model.assets.Word;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Consumer;
 
 // This class is used to handle the guest's requests
 public class New_HostSideHandler implements New_RequestHandler{
     private GameModel game;
     private PrintWriter out;
-    private Map<String, Consumer<String[]>> commandHandlers;
+    private Map<String, Consumer<String[]>> commandHandler;
 
     public New_HostSideHandler() {
         game = new GameModel();
-        commandHandlers = new HashMap<>();
-
+        commandHandler = new HashMap<>();
         //List of commands and their handlers: (First agrument is always the name of the player, please refer to the ConnectionProtocol for more information)
         //Add a new player to the game
-        commandHandlers.put("join", (String[] args) -> 
+        commandHandler.put("join", (String[] args) -> 
         { 
             //Added to connectedClients in MyHostServer
             game.addNewPlayer(args[0]); //Add to gameModel
@@ -30,56 +33,53 @@ public class New_HostSideHandler implements New_RequestHandler{
             
         });
         //Remove a player from the game
-        commandHandlers.put("leave", (String[] args) -> 
+        commandHandler.put("leave", (String[] args) -> 
         {
             //Return tiles to back? Delete playerModel completely from view?
             game.removePlayer(args[0]); //Remove from gameModel
+            try { //Close the socket
+                New_MyHostServer.connectedClients.get(args[0]).close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
             New_MyHostServer.connectedClients.remove(args[0]); //Remove from connectedClients
-            New_MyHostServer.updateAll("leave:" + args[0], args[0]);
-            
-        });
-        //Place a word on the board (args[0] = name, args[1] = word, args[2] = row, args[3] = col, args[4] = isVertical, args[5] = Q/C return value (T = 1/F = 0))
-        commandHandlers.put("placeWord", (String[] args) -> //NOT FINISHED
-        {
-            Integer[] score_tiles = game.placeWord(args[0], args[1] ,Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
-            if(score_tiles[0] == 0) //Score of 0 means that the word was not placed (Not boardLegal)
-            {
-                out.println("placeWord:0");
-            }
-            else if(Integer.parseInt(args[5]) == 0)//Word was not placed due to dictornaryLegal
-            {
-                out.println("placeWord:-1");
-            }
-            else //Word was placed successfully
-            {
-                try {
-                    String tilesTaken = game.getPlayer(args[0]).getRack().takeTilesFromBag(score_tiles[1]); //Num of tiles to take from the bag at random
-                    out.println("placeWord:" + score_tiles[0] + "," + tilesTaken); //Send score to client and tiles taken from bag
-                    String msg = "placeWord:"+args[0]+","+score_tiles[0]+","+score_tiles[1]+","+args[1]+","+args[2]+","+args[3]+","+args[4];
-                    //Msg format: placeWord:playerName,score,numOfTilesTaken,word,row,col,isVertical
-                    New_MyHostServer.updateAll(msg,args[0]);
-                } catch (Exception e) {
-                    stopGame();
-                }
-            }
-        });
-       //Take a tile from the bag (Skip turn/No words were placed) (args[0] = name)
-        commandHandlers.put("takeTile", (String[] args) ->
-        {
-            try {
-                String tile = game.getPlayer(args[0]).getRack().takeTilesFromBag(1);
-                out.println("takeTile:" + tile);
-            } catch (Exception e) {
-                stopGame();
-            }    
+            New_MyHostServer.updateAll("leave:" + args[0], args[0]);            
         });
 
-        
+        commandHandler.put("skipTurn", (String[] args) -> 
+        {
+            game.nextPlayer();       
+        });
+
+        //Place a word on the board and query the words created (args[0] = name, args[1] = word, args[2] = row, args[3] = col, args[4] = isVertical) 
+        commandHandler.put("Q", (String[] args) -> handlerBSrequests("Q", args));
+        commandHandler.put("C", (String[] args) -> handlerBSrequests("C",args));    
     }
-
-    public void stopGame() //Stops the game, finds and sends a winner to all players, closes game for everyone
+    
+    private void handlerBSrequests(String commandName ,String[] args)
     {
-        //TODO
+        Word w = game.createWordFromClientInput(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
+        String[] words = game.getWordsFromClientInput(w); //Get all words created from the client input
+        if(words == null || words.length == 0) //No words were created from the client input (Not boardLegal)
+        {
+            out.println(commandName+":0"); //Score = 0, word not placed due to boardLegal
+            return;
+        }
+        //Check if all words are dictornaryLegal
+        Boolean areWordsLegal = true; 
+        for (int i = 0; i < words.length; i++)
+            areWordsLegal |= New_ClientModel.getHostServer().msgToBSServer(words[i]);
+        
+        if(!areWordsLegal) //Not all words are dictornaryLegal
+        {
+            out.println(commandName+":-1"); //Score = -1
+        }
+        else
+        {
+            Integer score = game.placeWord(args[0], w);
+            out.println(commandName+":"+score); //Send score to client
+            New_MyHostServer.updateAll(args[0]+"&"+commandName+":"+score, args[0]); //Send score to all players
+        }
     }
 
     @Override
@@ -87,11 +87,40 @@ public class New_HostSideHandler implements New_RequestHandler{
         if(game.getPlayer(args[0]) == null && commandName != "join") //If the player is not in the game and the command is not join
             out.println(Error_Codes.ACCESS_DENIED);
         else
-            commandHandlers.get(commandName).accept(args);
+        {
+            out = new PrintWriter(outToClient, true);
+            commandHandler.get(commandName).accept(args);
+        }
     }
+
+    public void stopGame() //Stops the game, finds and sends a winner to all players, closes game for everyone
+    {
+        //TODO
+    }
+
 
     @Override
     public void close() {
         out.close();
     }
 }
+/*String msgToBS = commandName + "," + commandArgs[0];
+                            Boolean result = msgToBSServer(msgToBS, aClient.getOutputStream());
+                            if(result == null) //If the BookScrabbleServer is not available
+                            {
+                                throwError(Error_Codes.SERVER_ERR, out);
+                                continue;
+                            }
+                            else //If the BookScrabbleServer returned a result
+                            {
+                                String[] newCommandArgs = new String[commandArgs.length + 1];
+                                for(int i = 0; i < commandArgs.length; i++)
+                                    newCommandArgs[i] = commandArgs[i];
+                                if(result) //If the word is valid
+                                    newCommandArgs[newCommandArgs.length - 1] = "1";
+                                else //If the word is not valid
+                                    newCommandArgs[newCommandArgs.length - 1] = "0";  
+                                    
+                                super.getRequestHandler().handleClient(sender, "placeWord", newCommandArgs, connectedClients.get(sender).getOutputStream());    
+                            }
+                            break; */

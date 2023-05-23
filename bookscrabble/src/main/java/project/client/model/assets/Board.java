@@ -1,8 +1,6 @@
 package project.client.model.assets;
 import java.util.ArrayList;
 
-import project.client.model.New_ClientModel;
-
 public class Board {
     private static Board myBoard = null; //singelton
     Tile[][] tiles = new Tile[SIZE][SIZE];
@@ -187,16 +185,9 @@ public class Board {
         return true;    
     }
 
-    boolean dictionaryLegal(Word... words) // is the word dictionary-legal
+    boolean dictionaryLegal(Word... words) //Not used due to sever-client seperation
     {
-        String[] strings = new String[words.length];
-        int i = 0;
-        for (Word w : words) {
-            strings[i] = w.toString();
-            i++;
-        }
-
-        return New_ClientModel.New_HostModel.dictionaryLegal(strings);
+        return true;
     }
 
     ArrayList<Word> getWords(Word w) // returns all the words created by placing 'w' on the board
@@ -239,7 +230,7 @@ public class Board {
                     newWords.add(getWord(tmpBoard, startIndex,w.getCol()+count, endIndex - startIndex + 1, !w.isVertical()));  
             }
         }
-        return newWords;
+        return newWords; //All words are now boardLegal
     }
 
     private int searchWordIndex(Tile[][] boardTiles, int row, int col, int diraction) //returns the starting index of the word on 'boardTiles'

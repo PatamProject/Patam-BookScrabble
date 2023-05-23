@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -14,6 +15,7 @@ public class New_MyHostServer extends New_Communications{
     private final String BookScrabbleServerIP; // IP
     static HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
     private volatile boolean stopServer = false;
+    private boolean gameStarted = false;
     public final int MAX_CLIENTS = 4;
     private int prevent_duplicate_names = 0;
     String HostName;
@@ -26,6 +28,7 @@ public class New_MyHostServer extends New_Communications{
         BookScrabbleServerIP = bs_IP;
         connectedClients = new HashMap<>();
         stopServer = false;
+        gameStarted = false;
         try { // Add the host to the HashMap
             //connectedClients.put(HostName, new Socket("localhost",New_ClientModel.myPort)); // ?
         } catch (IOException e) {} 
@@ -46,7 +49,7 @@ public class New_MyHostServer extends New_Communications{
                         throwError(Error_Codes.MISSING_ARGS, out);
                         continue; 
                     }
-                    String request = in.nextLine(); // "'sender'&'takeTile':'Y'"
+                    String request = in.nextLine(); // "'sender'&'commandName':'args1,args2,...'"
                     String[] user_body_split = request.split("&");
                     String sender = user_body_split[0]; //Name of the sender
     
@@ -55,16 +58,18 @@ public class New_MyHostServer extends New_Communications{
                         continue;  
                     }
     
-                    if(connectedClients.get(sender) == null && connectedClients.size() < MAX_CLIENTS){ 
+                    if(connectedClients.get(sender) == null && connectedClients.size() < MAX_CLIENTS && !gameStarted){ 
                         //Add new client to the HashMap and to the game
                         connectedClients.put(sender, aClient);
                         String[] tmpArgs = {sender}; 
                         super.getRequestHandler().handleClient(sender, "join", tmpArgs, aClient.getOutputStream());
-                    } else if(connectedClients.get(sender) == null && connectedClients.size() >= MAX_CLIENTS) { //Server is full
-                        throwError(Error_Codes.SERVER_FULL, out);
+                    } else if(connectedClients.get(sender) == null && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
+                        if(gameStarted)
+                            throwError(Error_Codes.GAME_STARTED, out);
+                        else
+                            throwError(Error_Codes.SERVER_FULL, out);
                         continue; 
                     }
-    
                     //Now we have a known client and will process his request
                     String[] body = user_body_split[1].split(":");
                     String commandName = body[0]; //Split the body to command and arguments
@@ -74,38 +79,24 @@ public class New_MyHostServer extends New_Communications{
                     for(int i = 0; i < tmp.length; i++)
                         commandArgs[i+1] = tmp[i];
                     //Check request
-                    switch (commandName) { //NOT FINISHED
-                        case "C": //challange
-                        case "Q": //query
-                            String msgToBS = commandName + "," + commandArgs[0];
-                            Boolean result = msgToBSServer(msgToBS, aClient.getOutputStream());
-                            if(result == null) //If the BookScrabbleServer is not available
-                            {
-                                throwError(Error_Codes.SERVER_ERR, out);
-                                continue;
-                            }
-                            else //If the BookScrabbleServer returned a result
-                            {
-                                String[] newCommandArgs = new String[commandArgs.length + 1];
-                                for(int i = 0; i < commandArgs.length; i++)
-                                    newCommandArgs[i] = commandArgs[i];
-                                if(result) //If the word is valid
-                                    newCommandArgs[newCommandArgs.length - 1] = "1";
-                                else //If the word is not valid
-                                    newCommandArgs[newCommandArgs.length - 1] = "0";  
-                                    
-                                super.getRequestHandler().handleClient(sender, "placeWord", newCommandArgs, connectedClients.get(sender).getOutputStream());    
-                            }
-                            break;
-                        default: //All other commands are handled by the handler
-                            super.getRequestHandler().handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
-                            break;
-                    }   
+                    ArrayList<String> acceptableCommands = new ArrayList<>(){{
+                        add("startGame");
+                        add("join");
+                        add("leave");
+                        add("skipTurn");
+                        add("C"); //challange
+                        add("Q"); //query
+                    }};
+
+                    if(acceptableCommands.contains(commandName))
+                        super.getRequestHandler().handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
+                    else
+                        throwError(Error_Codes.UNKNOWN_CMD, out);
+        
                 } catch (Exception e) {
                 } finally {
                     super.getRequestHandler().close();
                 }
-
             } catch (SocketTimeoutException e){} 
         }
         //Runs only when close() is called
@@ -120,16 +111,34 @@ public class New_MyHostServer extends New_Communications{
         hostSocket.close();
     }
 
-    Boolean msgToBSServer(String message, OutputStream outToClient) { // A method that communicates with the BookScrabbleServer
+    Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
         try {
+            PrintWriter outToHost = new PrintWriter(connectedClients.get(HostName).getOutputStream());
             Socket socket = new Socket(BookScrabbleServerIP, BOOK_SCRABBLE_PORT); // A socket for a single use
             try (Scanner inFromServer = new Scanner(socket.getInputStream());
-                 PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
+                PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
                 outToServer.println(message); // Sends the message
                 outToServer.flush();
-                if (inFromServer.hasNext())
+                if(inFromServer.hasNext())
+                {
                     response = inFromServer.next(); // The response from the BookScrabbleServer
+                    //Add a loop? Wait?
+                }
+
+                if(response == null) //Invalid response
+                {
+                    throwError(Error_Codes.SERVER_ERR, new PrintWriter(outToHost));
+                    return false;
+                    //Failed to communicate with the BookScrabbleServer
+                } 
+                else //The BookScrabbleServer responded with true/false
+                {
+                    if(response == "true") //Word accepted
+                        return true;
+                    else //Word rejected
+                        return false;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -138,28 +147,8 @@ public class New_MyHostServer extends New_Communications{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(response == null)
-        {
-            throwError(Error_Codes.SERVER_ERR, new PrintWriter(outToClient));
-            return false;
-            //Failed to communicate with the BookScrabbleServer
-        } 
-        else //The BookScrabbleServer responded with true/false
-        {
-            if(response == "true") //Word accepted
-                return true;
-            else //Word rejected
-                return false;
-        }
-    }
-
-    private void addClientToMap(String name, Socket client) { // A method to add a client to the HashMap safely
-        connectedClients.put(name+"_"+prevent_duplicate_names, client);
-        prevent_duplicate_names++;
-    }
-
-    private boolean isClientInMap(String name) { // A method to check if a client is in the HashMap safely
-        return connectedClients.containsKey(name);
+        //Failed to communicate with the BookScrabbleServer
+        return false;
     }
 
     public static void updateAll(String message, String doNotSendToPlayer) { // A method to update all relevant clients with new information

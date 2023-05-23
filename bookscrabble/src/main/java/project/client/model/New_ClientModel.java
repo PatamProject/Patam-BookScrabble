@@ -30,11 +30,6 @@ public class New_ClientModel {
             this.port=port;
             myConnectionServer.start(); //NOT FINISHED
         }
-
-        public static boolean dictionaryLegal(String... words)
-        {
-            New_MyHostServer myConnectionServer = New_ClientModel.getHostServer();
-        }
     }
 
     public static New_MyHostServer getHostServer() {

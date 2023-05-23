@@ -33,6 +33,11 @@ public class GameModel{
         }
     }
 
+    public void nextPlayer()
+    {
+        //TODO
+    }
+
     public Board getBoard(){return board;}
     public PlayerModel getPlayer(String pName)
     {
@@ -112,57 +117,76 @@ public class GameModel{
         return value;
     }
 
-    public Integer[] placeWord(String pName, final String tiles, final int row,final int col,final boolean vertical)
-    { //Returns the score([0]) and the number of tiles taken from the rack([1])
+    public Integer placeWord(String pName, Word w)
+    { //Returns the score of the word. Must check boardLegal and dictornaryLegal before using!!!
+        PlayerModel p = players.get(pName);
+        ArrayList<Tile> tilesFromRack = new ArrayList<>();
+        for (int i = 0; i < w.length; i++) //Now we know what tiles are taken from the player
+            if(w.tiles[i] != null)
+                tilesFromRack.add(w.tiles[i]);
+        
+        Integer score = board.tryPlaceWord(w);
+        if(score == 0) //Return tiles back to player.rack
+            p.getRack().addTiles(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
+        
+        return score;
+    }
+
+    public Word createWordFromClientInput(String pName, final String tiles, final int row,final int col,final boolean vertical)
+    { //A word is created from the tiles taken from the player and from the board respectively 
         PlayerModel p = players.get(pName);
         if(p == null)
-            return new Integer[]{0,0};
+            return null;
 
         int tmpRow = row, tmpCol = col;
         ArrayList<Tile> tilesArr = new ArrayList<>();
         ArrayList<Tile> tilesFromRack = new ArrayList<>();
         Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
-        int tilesTakenCount = 0;
         for (int i = 0; i < tiles.length(); i++)
         {
             if(tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
             {
-                tilesArr.add(tilesOnBoard[tmpRow][tmpCol]);
+                tilesArr.add(null); //Word on board, do not take
+                //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
             }
             else if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
             {
                 tilesFromRack.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
-                tilesTakenCount++;
             }
-            else
-                return null; //Can't find tile!
-
+            else{ return null; } //Can't find tile!
+            
+            //Adjust tmpRow and tmpCol according to vertical
             if(vertical)
                 tmpRow++;    
             else
                 tmpCol++;
         }
         tilesArr.addAll(tilesFromRack);
-        Integer[] result = new Integer[2];
         Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
-        Word w = new Word(wordTiles, row, col, vertical); 
-        //A word is created from the tiles
-        int score = board.tryPlaceWord(w);
-        if(score == 0)
-        { //Return tiles back to rack
-            p.getRack().addTiles(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
-            result[0] = 0; //Score = 0
-            result[1] = 0; //Tiles taken = 0
-        }
-        else //Word is placed legally and is dictornary legal
-        {
-            p.addScore(score);
-            result[0] = score;
-            result[1] = tilesTakenCount;
-        }
-        return result;
+        return new Word(wordTiles, row, col, vertical);
     }
     
+    public String[] getWordsFromClientInput(Word w) //Uses getWords() to fetch all the words created from the word w
+    {
+        //We check if w is boardLegal (inside getWords())
+        //We get all the words created from the word w
+        //We query all the words
+        //We use tryPlaceWord() to check boardLegal for all words
+
+        ArrayList<Word> words = new ArrayList<>();
+        words = board.getWords(w); //checks boardLegal
+        if(words == null)
+            return null; //Word is not board legal
+        words.add(w);
+
+        String[] queryWords = new String[words.size()]; //We change all the words to strings for query
+        for (int i = 0; i < words.size(); i++) {
+            queryWords[i] = words.get(i).toString();
+        }
+        return queryWords;
+    }
+
+
     public String tilesToString(String pName) { //returns the tiles of player 'pName' as a string
         PlayerModel p = players.get(pName);
         if(p == null)

@@ -14,12 +14,14 @@ public class New_GuestSideHandler implements New_RequestHandler{
     private GameModel game;
     private PrintWriter out;
     private Map<String, Consumer<String[]>> commandHandlers;
+    private Map<String, Consumer<String[]>> responseHandler;
 
     public New_GuestSideHandler() {
         game = new GameModel();
         commandHandlers = new HashMap<>();
+        responseHandler = new HashMap<>();
 
-        //List of commands and their handlers: (First agrument is always the name of the player, please refer to the ConnectionProtocol for more information)
+        //List of command names and their methods: (First agrument is always the name of the player, please refer to the ConnectionProtocol for more information)
         //Add a new player to the game
         commandHandlers.put("join", (String[] args) -> 
         { 
@@ -73,6 +75,10 @@ public class New_GuestSideHandler implements New_RequestHandler{
                 stopGame();
             }    
         });
+
+        //List of responses and their methods:
+        
+
     }
 
     public void stopGame() //Stops the game, finds and sends a winner to all players, closes game for everyone
@@ -82,9 +88,9 @@ public class New_GuestSideHandler implements New_RequestHandler{
 
     @Override
     public void handleClient(String sender, String commandName, String[] args, OutputStream outToClient) {
-        if(game.getPlayer(args[0]) == null && commandName != "join") //If the player is not in the game and the command is not join
-            out.println(Error_Codes.ACCESS_DENIED);
-        else
+        if(sender.equals(New_ClientModel.myName)) //A response to a command sent by this client
+            responseHandler.get(commandName).accept(args);
+        else //Game update from host
             commandHandlers.get(commandName).accept(args);
     }
 
