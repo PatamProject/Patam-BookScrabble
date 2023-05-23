@@ -1,7 +1,7 @@
 package project.client.model.assets;
 import java.util.ArrayList;
 
-import project.server.cacheHandler.DictionaryManager;
+import project.client.model.New_ClientModel;
 
 public class Board {
     private static Board myBoard = null; //singelton
@@ -196,7 +196,7 @@ public class Board {
             i++;
         }
 
-        return DictionaryManager.get().query(strings);
+        return New_ClientModel.New_HostModel.dictionaryLegal(strings);
     }
 
     ArrayList<Word> getWords(Word w) // returns all the words created by placing 'w' on the board

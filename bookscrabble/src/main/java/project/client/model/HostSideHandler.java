@@ -55,6 +55,7 @@ public class HostSideHandler implements RequestHandler{
                 PlayerModel player = game.getPlayer(playerName);
                 switch (args[0]) {
                     case "0":
+                        //MyHostServer.clients.remove(playerName);
                         game.removePlayer(playerName);
                         MyHostServer.updateAll("G,P,L,"+playerName,outToClient);
                         break;

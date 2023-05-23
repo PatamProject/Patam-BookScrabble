@@ -9,12 +9,17 @@ and pass the rest of the message to the GameHandler class.
 
 Client to host protocol:
 Body:
-The message itself. The body is split by ',' and each part is called an argument.
-Arguments are read in the ----- ........
-Types of arguments: (Return values are in brackets)
-"0" - Tell host you are disconnecting from the host. (void)
+The message itself. The body is split by ':' to two parts, the command and the arguments for the command.
+Arguments are read in the ----- ........ //example : "'senderName'&'takeTile':'Y'"
+Types of commands and their arguments: 
+"join:'name'" - Join a game - game.addNewPlayer(name)
+"leave:'name'" - Leave a game - game.removePlayer(name)
+
+
+
+"0" - Tell host you are disconnecting from the host. 
 "1" - Ask host to join a game. If accepted host will return info about the game (Under Host to client protocol)
-"2,word-row-col-isVertical" - Client wants to play a word on the board. (String) (Returns the score of the word and the tiles to take)
+"2,word,row,col,isVertical" - Client wants to play a word on the board. (String) (Returns the score of the word and the tiles to take)
 "3" - Skip turn. Returns a random tile from the bag. (String)
 "S" - Start the game. (void) (Only Host can start the game)
 "Q,'word'" - Quary 'word' in the dictionary. (True/False)

@@ -13,13 +13,13 @@ public class GameModel{
     public boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
-    public GameModel(){
+    public GameModel(){ //Ctor
         this.board = Board.getBoard();
         this.players = new HashMap<>();
         Queue<String> playersOrder = new LinkedList<>();
     }
 
-    public void startGame(){
+    public void startGame(){ //TODO
         //Make sure to let players take tiles before!
         setRandomPlayOrder();
 
@@ -116,7 +116,7 @@ public class GameModel{
     { //Returns the score([0]) and the number of tiles taken from the rack([1])
         PlayerModel p = players.get(pName);
         if(p == null)
-            return null;
+            return new Integer[]{0,0};
 
         int tmpRow = row, tmpCol = col;
         ArrayList<Tile> tilesArr = new ArrayList<>();
@@ -125,50 +125,44 @@ public class GameModel{
         int tilesTakenCount = 0;
         for (int i = 0; i < tiles.length(); i++)
         {
-            if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
+            if(tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
+            {
+                tilesArr.add(tilesOnBoard[tmpRow][tmpCol]);
+            }
+            else if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
             {
                 tilesFromRack.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
                 tilesTakenCount++;
-            }
-            else if(tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
-            {
-                tilesArr.add(tilesOnBoard[tmpRow][tmpCol]);
             }
             else
                 return null; //Can't find tile!
 
             if(vertical)
-                tmpCol++;
-            else
                 tmpRow++;    
+            else
+                tmpCol++;
         }
         tilesArr.addAll(tilesFromRack);
         Integer[] result = new Integer[2];
         Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
-        Word w = new Word(wordTiles, row, col, vertical);
-        if(!players.containsKey(pName) || w == null)
-        {
-            result[0] = 0;
-            result[1] = 0;
+        Word w = new Word(wordTiles, row, col, vertical); 
+        //A word is created from the tiles
+        int score = board.tryPlaceWord(w);
+        if(score == 0)
+        { //Return tiles back to rack
+            p.getRack().addTiles(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
+            result[0] = 0; //Score = 0
+            result[1] = 0; //Tiles taken = 0
         }
-        else
+        else //Word is placed legally and is dictornary legal
         {
-            int score = board.tryPlaceWord(w);
-            if(score == 0)
-            { //Return tiles back to rack
-                p.getRack().addTiles(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
-                result[0] = 0;
-                result[1] = 0;
-            }
-            else
-            {
-                p.addScore(score);
-                result[0] = score;
-                result[1] = tilesTakenCount;
-            }
+            p.addScore(score);
+            result[0] = score;
+            result[1] = tilesTakenCount;
         }
         return result;
     }
+    
     public String tilesToString(String pName) { //returns the tiles of player 'pName' as a string
         PlayerModel p = players.get(pName);
         if(p == null)

@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class MyHostServer extends Communications{
     private final int HOST_PORT, BOOK_SCRABBLE_PORT; // Ports
     private final String BookScrabbleServerIP; // IP
-    private static ArrayList<Socket> clients; // Array to keep track of connected clients
+    static ArrayList<Socket> clients; // Array to keep track of connected clients
     private volatile boolean stopServer = false;
     public final int MAX_CLIENTS = 4;
 

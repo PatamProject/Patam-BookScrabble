@@ -19,7 +19,7 @@ public class ClientModel {
     public static class HostModel{
         
         private Communications myConnectionServer;
-        int port;
+        final int port;
 
         public HostModel(int port) //Basic constructor
         {
