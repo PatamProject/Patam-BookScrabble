@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 // This class is used to handle the host's responses
-public class GuestSideHandler implements RequestHandler{
+public class ClientSideHandler implements RequestHandler{
     private lightweightGameModel game;
     private PrintWriter out;
     private Map<String, Consumer<String[]>> commandHandler;
@@ -18,7 +18,7 @@ public class GuestSideHandler implements RequestHandler{
     private int id = 0;
     private int numOfChallenges = 0;
 
-    public GuestSideHandler() {
+    public ClientSideHandler() {
         game = new lightweightGameModel();
         
         //ResponseHandler

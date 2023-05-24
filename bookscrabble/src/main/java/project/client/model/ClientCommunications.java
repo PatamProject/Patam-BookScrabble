@@ -12,7 +12,7 @@ public class ClientCommunications extends Communications{
     private Scanner inFromHost;
 
     public ClientCommunications(String hostIP, int hostPort) { // Ctor
-        super(new GuestSideHandler());
+        super(new ClientSideHandler());
         try {
             toHostSocket = new Socket(hostIP, hostPort);
             inFromHost = new Scanner(toHostSocket.getInputStream());
