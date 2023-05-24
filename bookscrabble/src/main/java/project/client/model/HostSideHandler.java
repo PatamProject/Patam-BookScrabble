@@ -13,12 +13,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 // This class is used to handle the guest's requests
-public class New_HostSideHandler implements RequestHandler{
+public class HostSideHandler implements RequestHandler{
     private GameModel game;
     private PrintWriter out;
     private Map<String, Consumer<String[]>> commandHandler;
 
-    public New_HostSideHandler() {
+    public HostSideHandler() {
         game = new GameModel();
         commandHandler = new HashMap<>();
         //List of commands and their handlers: (First agrument is always the name of the player, please refer to the ConnectionProtocol for more information)
@@ -31,7 +31,7 @@ public class New_HostSideHandler implements RequestHandler{
             
             game.addNewPlayer(args[0]); //Add to gameModel
             out.println("join:"+args[1] + "," + players); //Send ID and players to the client
-            New_MyHostServer.updateAll("!join:" + args[0], args[0]);
+            MyHostServer.updateAll("!join:" + args[0], args[0]);
         });
         //Remove a player from the game
         commandHandler.put("leave", (String[] args) -> 
@@ -39,18 +39,18 @@ public class New_HostSideHandler implements RequestHandler{
             //Return tiles to back? Delete playerModel completely from view?
             game.removePlayer(args[0]); //Remove from gameModel
             try { //Close the socket
-                New_MyHostServer.connectedClients.get(args[0]).close();
+                MyHostServer.connectedClients.get(args[0]).close();
             } catch (IOException e) {
                 e.printStackTrace();
             } 
-            New_MyHostServer.connectedClients.remove(args[0]); //Remove from connectedClients
-            New_MyHostServer.updateAll("!leave:" + args[0], args[0]);            
+            MyHostServer.connectedClients.remove(args[0]); //Remove from connectedClients
+            MyHostServer.updateAll("!leave:" + args[0], args[0]);            
         });
 
         commandHandler.put("skipTurn", (String[] args) -> 
         {
             String nextPlayer = game.nextPlayer(); //get next player and update ALL players
-            New_MyHostServer.updateAll("!skipTurn:" + nextPlayer, null); 
+            MyHostServer.updateAll("!skipTurn:" + nextPlayer, null); 
         });
 
         commandHandler.put("startGame", (String[] args) -> 
@@ -58,7 +58,21 @@ public class New_HostSideHandler implements RequestHandler{
             if(args[0].equals(ClientModel.myName)) //is the host
             {
                 game.startGame();
-                New_MyHostServer.updateAll("!startGame:", args[0]); //TODO
+                MyHostServer.updateAll("!startGame:", args[0]); //TODO
+            }
+            else //Not the host
+            {
+                out.println(Error_Codes.ACCESS_DENIED); //unauthorized
+            }
+        });
+
+        commandHandler.put("endGame", (String[] args) -> 
+        {
+            if(args[0].equals(ClientModel.myName)) //is the host
+            {
+                String winner = game.getWinner();
+                stopGame();
+                MyHostServer.updateAll("!endGame:" + winner + ",Host ended game.", null);
             }
             else //Not the host
             {
@@ -104,14 +118,14 @@ public class New_HostSideHandler implements RequestHandler{
                     tiles = game.getPlayer(args[0]).getRack().takeTilesFromBag();
                 } catch (Exception e) {
                     String winner = game.getWinner(); //Game ended, bag is empty
-                    New_MyHostServer.updateAll("!endGame:" + winner, null);
+                    MyHostServer.updateAll("!endGame:" + winner, null);
                     stopGame(); //Send winner and stop game
                 } 
             }
             else
             {
                 out.println(commandName+":"+score + "," + tiles); //Send score to client
-                New_MyHostServer.updateAll(args[0]+"&"+commandName+":"+score, args[0]); //Send score to all players
+                MyHostServer.updateAll(args[0]+"&"+commandName+":"+score, args[0]); //Send score to all players
             }
         }
     }

@@ -22,19 +22,19 @@ public class ClientModel {
 
     public static class New_HostModel{
         
-        static New_MyHostServer myConnectionServer;
+        static MyHostServer myConnectionServer;
         BlockingQueue<String> myTasks;
         int port;
 
         public New_HostModel(int port) //Basic constructor
         {
-            myConnectionServer = new New_MyHostServer(ClientModel.myName, port, port, myName); //TODO: Get BS IP and port
+            myConnectionServer = new MyHostServer(ClientModel.myName, port, port, myName); //TODO: Get BS IP and port
             this.port=port;
             myConnectionServer.start(); //NOT FINISHED
         }
     }
 
-    public static New_MyHostServer getHostServer() {
+    public static MyHostServer getHostServer() {
         return ClientModel.New_HostModel.myConnectionServer;
     }
 }

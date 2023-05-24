@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 import project.client.Error_Codes;
 
-public class New_MyHostServer extends Communications{
+public class MyHostServer extends Communications{
     private final int HOST_PORT, BOOK_SCRABBLE_PORT; // Ports
     private final String BookScrabbleServerIP; // IP
     static HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
@@ -20,8 +20,8 @@ public class New_MyHostServer extends Communications{
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     String HostName;
 
-    public New_MyHostServer(String hostName, int port, int bsPort, String bs_IP) { // Ctor
-        super(new New_HostSideHandler());
+    public MyHostServer(String hostName, int port, int bsPort, String bs_IP) { // Ctor
+        super(new HostSideHandler());
         this.HostName = hostName;
         HOST_PORT = port;
         BOOK_SCRABBLE_PORT = bsPort;
