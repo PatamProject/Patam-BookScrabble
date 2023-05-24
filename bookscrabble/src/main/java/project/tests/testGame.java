@@ -5,12 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import project.client.model.assets.Board;
-import project.client.model.assets.GameModel;
+import project.client.model.assets.GameManager;
 import project.client.model.assets.Word;
 
 public class testGame {
     public static void main(String[] args) throws IllegalAccessException, InvocationTargetException {
-        GameModel game = new GameModel();
+        GameManager game = new GameManager();
         Board b = game.getBoard();
         Word w  = null;
 

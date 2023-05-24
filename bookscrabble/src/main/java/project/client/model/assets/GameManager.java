@@ -6,17 +6,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class GameModel{
+public class GameManager{
     Board board;
     HashMap<String,PlayerModel> players; //Maps between player's name to player's object
     Queue<String> playersOrder; //The order of the players in the game (0 goes first...)
     public boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
-    public GameModel(){ //Ctor
+    public GameManager(){ //Ctor
         this.board = Board.getBoard();
         this.players = new HashMap<>();
-        Queue<String> playersOrder = new LinkedList<>();
+        playersOrder = new LinkedList<>();
     }
 
     public void startGame(){ //TODO

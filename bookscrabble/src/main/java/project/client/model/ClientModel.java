@@ -37,4 +37,6 @@ public class ClientModel {
     public static MyHostServer getHostServer() {
         return ClientModel.New_HostModel.myConnectionServer;
     }
+
+    public static String getName(){return myName;}
 }

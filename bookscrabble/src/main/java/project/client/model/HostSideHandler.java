@@ -1,7 +1,7 @@
 package project.client.model;
 
 import project.client.Error_Codes;
-import project.client.model.assets.GameModel;
+import project.client.model.assets.GameManager;
 import project.client.model.assets.Word;
 
 import java.io.IOException;
@@ -14,12 +14,12 @@ import java.util.function.Consumer;
 
 // This class is used to handle the guest's requests
 public class HostSideHandler implements RequestHandler{
-    private GameModel game;
+    private GameManager game;
     private PrintWriter out;
     private Map<String, Consumer<String[]>> commandHandler;
 
     public HostSideHandler() {
-        game = new GameModel();
+        game = new GameManager();
         commandHandler = new HashMap<>();
         //List of commands and their handlers: (First agrument is always the name of the player, please refer to the ConnectionProtocol for more information)
         //Add a new player to the game
@@ -110,10 +110,11 @@ public class HostSideHandler implements RequestHandler{
         }
         else
         {
-            Integer score = game.getScoreFromWord(args[0], w);
+            Integer score = game.getScoreFromWord(args[0], w); //Uses board.tryPlaceWord()
             String tiles = "";
-            if(score != 0)
+            if(score != 0) //A word was placed on the board
             {
+                //TODO - send board to clients with "!board" (String[])
                 try { //Take tiles from bag
                     tiles = game.getPlayer(args[0]).getRack().takeTilesFromBag();
                 } catch (Exception e) {

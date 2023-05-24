@@ -194,7 +194,7 @@ public class MyHostServer extends Communications{
 
     void throwError(String error, PrintWriter out) { // A method to send an error message to a client
         try{
-            out.println(error);
+            out.println("#"+error);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

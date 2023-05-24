@@ -28,16 +28,17 @@ Arguments are read in the ----- ........ //example : "'senderName'&'commandName'
 The original sender of the message is will receive the message below, the rest will split the message by '&' to get to name of the sender that will be added as the first argument.
 Types of commands and their return values: (Errors are handled by the client)
 
-Sent to the original client:
+Sent to the original client: (responseHandler)
 "join:true" / Error - Joined a game
 "Q:'score'" - Tried to place a word, if score is positive the word is valid and score is added, if 0/-1 the word is invalid due to boardLegal or dictionaryLegal
 "C:'score'" - Tried to challenge a failed word placement, if score is positive the word is valid and score is added, if 0/-1 the word is invalid due to boardLegal or dictionaryLegal
 
-Sent to eveyone else as a game update: (Using updateAll and will have "!" to indicate a game update)
+Sent to eveyone else as a game update: (commandHandler)
+(Using updateAll and will have "!" to indicate a game update)
 "!join:'name'" - A player joined the game
 "!leave:'name'" - A player left the game
 "!Q:'name','score'" - Player placed a word seccessfully and got 'score' points (Player will add up back to 7 tiles)
-
+"!board:'board'" - The board was updated (board = String[])
 
 
 
