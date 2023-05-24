@@ -27,10 +27,11 @@ public class Rack {
     public int size(){return tiles.size();}
     
     //take tile from bag at random
-    public String takeTilesFromBag(int num) throws Exception 
+    public String takeTilesFromBag() throws Exception 
     { //returns the letter of the tile taken
+        int tilesToTake = START_SIZE - size();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < tilesToTake; i++) {
             Tile tile = Bag.getBag().getRand();
             if(tile == null)
             {

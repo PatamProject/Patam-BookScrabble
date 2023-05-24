@@ -4,7 +4,7 @@ package project.client.model;
 public abstract class Communications {
     private RequestHandler requestHandler;
 
-    public Communications(RequestHandler rh) {this.requestHandler = rh;} // Ctor
+    public Communications(RequestHandler hostSideHandler) {this.requestHandler = hostSideHandler;} // Ctor
 
     public void start() { // Starts run method by executing it in a separate thread
         new Thread(()-> {

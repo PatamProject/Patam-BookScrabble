@@ -12,15 +12,15 @@ If the message contains "&" it is a game update message, else it is a response t
 The message itself. The body is split by ':' to two parts, the command and the arguments for the command.
 Arguments are read in the ----- ........ //example : "'senderName'&'takeTile':'Y'"
 Types of commands and their arguments if exist: 
-"'name'&join'" - Player wants to join the game - connectedClients.add(name,socket) + game.addNewPlayer(name)
-"'name'&leave'" - Player wants to leave the game - connectedClients.remove(name) + game.removePlayer(name)
-"'name'&'skipTurn'" - Player wants to skip his turn - 
-"'name'&'Q':'word,row,col,isVertical'" - Player wants to place a word, uses query  -
-"'name'&'C':'word,row,col,isVertical'" - Player wants to place a word, uses challenge  
+"'id'$'name'&join'" - Player wants to join the game - connectedClients.add(name,socket) + game.addNewPlayer(name)
+"'id'$'name'&leave'" - Player wants to leave the game - connectedClients.remove(name) + game.removePlayer(name)
+"'id'$'name'&'skipTurn'" - Player wants to skip his turn - 
+"'id'$'name'&'Q':'word,row,col,isVertical'" - Player wants to place a word, uses query  -
+"'id'$'name'&'C':'word,row,col,isVertical'" - Player wants to place a word, uses challenge  
 
 Types of responses and their arguments:
-"join:true" - Seccessfully joined a game
-
+"join:'id',pName1, pName2 ...." - Seccessfully joined a game - ID given for future identification and a list of players in the game
+"Q:'score','tiles'" - Query was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles are sent
 
 Host to client protocol:
 The body is split by ':' to two parts, the commandName and return value of the command to the client.

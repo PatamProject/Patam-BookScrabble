@@ -33,9 +33,10 @@ public class GameModel{
         }
     }
 
-    public void nextPlayer()
+    public String nextPlayer()
     {
         //TODO
+        return null;
     }
 
     public Board getBoard(){return board;}
@@ -117,7 +118,7 @@ public class GameModel{
         return value;
     }
 
-    public Integer placeWord(String pName, Word w)
+    public Integer getScoreFromWord(String pName, Word w)
     { //Returns the score of the word. Must check boardLegal and dictornaryLegal before using!!!
         PlayerModel p = players.get(pName);
         ArrayList<Tile> tilesFromRack = new ArrayList<>();
@@ -140,18 +141,17 @@ public class GameModel{
 
         int tmpRow = row, tmpCol = col;
         ArrayList<Tile> tilesArr = new ArrayList<>();
-        ArrayList<Tile> tilesFromRack = new ArrayList<>();
         Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
         for (int i = 0; i < tiles.length(); i++)
         {
-            if(tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
+            if(tilesOnBoard[tmpRow][tmpCol] != null && tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
             {
                 tilesArr.add(null); //Word on board, do not take
                 //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
             }
             else if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
             {
-                tilesFromRack.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
+                tilesArr.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
             }
             else{ return null; } //Can't find tile!
             
@@ -161,7 +161,6 @@ public class GameModel{
             else
                 tmpCol++;
         }
-        tilesArr.addAll(tilesFromRack);
         Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
         return new Word(wordTiles, row, col, vertical);
     }
@@ -177,7 +176,6 @@ public class GameModel{
         words = board.getWords(w); //checks boardLegal
         if(words == null)
             return null; //Word is not board legal
-        words.add(w);
 
         String[] queryWords = new String[words.size()]; //We change all the words to strings for query
         for (int i = 0; i < words.size(); i++) {

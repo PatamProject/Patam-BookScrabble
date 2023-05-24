@@ -33,6 +33,8 @@ public class RunClient extends Application {
 
     public static void main(String[] args) {
         System.out.println("Hello from client!");
+        
+
     }
 
 }

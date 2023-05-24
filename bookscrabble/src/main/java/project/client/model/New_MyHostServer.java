@@ -10,14 +10,14 @@ import java.util.Scanner;
 
 import project.client.Error_Codes;
 
-public class New_MyHostServer extends New_Communications{
+public class New_MyHostServer extends Communications{
     private final int HOST_PORT, BOOK_SCRABBLE_PORT; // Ports
     private final String BookScrabbleServerIP; // IP
     static HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
     private volatile boolean stopServer = false;
     private boolean gameStarted = false;
     public final int MAX_CLIENTS = 4;
-    private int prevent_duplicate_names = 0;
+    private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     String HostName;
 
     public New_MyHostServer(String hostName, int port, int bsPort, String bs_IP) { // Ctor
@@ -29,9 +29,6 @@ public class New_MyHostServer extends New_Communications{
         connectedClients = new HashMap<>();
         stopServer = false;
         gameStarted = false;
-        try { // Add the host to the HashMap
-            //connectedClients.put(HostName, new Socket("localhost",New_ClientModel.myPort)); // ?
-        } catch (IOException e) {} 
     }
 
     @Override
@@ -51,25 +48,35 @@ public class New_MyHostServer extends New_Communications{
                     }
                     String request = in.nextLine(); // "'sender'&'commandName':'args1,args2,...'"
                     String[] user_body_split = request.split("&");
-                    String sender = user_body_split[0]; //Name of the sender
+                    String id_sender = user_body_split[0];
+                    String id = id_sender.split("$")[0]; //Sender's ID
+                    String sender = id_sender.split("$")[1]; //Sender's name
     
                     if(user_body_split.length != 2){ //Must contain a sender name and a body
                         throwError(Error_Codes.MISSING_ARGS, out);
                         continue;  
                     }
     
-                    if(connectedClients.get(sender) == null && connectedClients.size() < MAX_CLIENTS && !gameStarted){ 
+                    if(connectedClients.get(sender) == null && id == "0" && connectedClients.size() < MAX_CLIENTS && !gameStarted){ 
                         //Add new client to the HashMap and to the game
                         connectedClients.put(sender, aClient);
-                        String[] tmpArgs = {sender}; 
-                        super.getRequestHandler().handleClient(sender, "join", tmpArgs, aClient.getOutputStream());
-                    } else if(connectedClients.get(sender) == null && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
+                        playerCount++; //Increment player count
+                        ArrayList<String> args = new ArrayList<>(){{add(sender); add(playerCount.toString());}}; //Add sender and ID
+                        args.addAll(connectedClients.keySet()); //Add all players in game to the arguments
+                        super.getRequestHandler().handleClient(sender, "join", args.toArray(new String[args.size()]), aClient.getOutputStream());
+                        continue; //Add new player and continue
+                    } else if(connectedClients.get(sender) == null && id == "0" && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
                         if(gameStarted)
                             throwError(Error_Codes.GAME_STARTED, out);
                         else
                             throwError(Error_Codes.SERVER_FULL, out);
                         continue; 
+                    } else if(connectedClients.get(sender) != null && id == "0"){ //Name taken
+                        throwError(Error_Codes.NAME_TAKEN, out);
+                        continue;
                     }
+
+
                     //Now we have a known client and will process his request
                     String[] body = user_body_split[1].split(":");
                     String commandName = body[0]; //Split the body to command and arguments
@@ -110,6 +117,8 @@ public class New_MyHostServer extends New_Communications{
         connectedClients.clear();
         hostSocket.close();
     }
+
+
 
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
@@ -152,7 +161,13 @@ public class New_MyHostServer extends New_Communications{
     }
 
     public static void updateAll(String message, String doNotSendToPlayer) { // A method to update all relevant clients with new information
-        try (OutputStream originClient = connectedClients.get(doNotSendToPlayer).getOutputStream()) {
+        try{
+            OutputStream originClient;
+            if(doNotSendToPlayer == null) //If the message is for everyone doNotSendToPlayer is null
+                originClient = null;
+            else
+                originClient = connectedClients.get(doNotSendToPlayer).getOutputStream();
+
             connectedClients.values().forEach(c-> {
                 try {
                     if (c.getOutputStream() != originClient) { // Preventing from the message to be sent twice
@@ -166,8 +181,13 @@ public class New_MyHostServer extends New_Communications{
                     throw new RuntimeException(e);
                 }
             });
+
+            if(doNotSendToPlayer != null)
+            {
+                originClient.flush();
+                originClient.close();
+            }           
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -183,5 +203,9 @@ public class New_MyHostServer extends New_Communications{
     }
 
     @Override
-    public void close() {stopServer = true;} // A method to close the hostServer
+    public void close()
+    {
+        stopServer = true;
+        playerCount = 0;
+    } // A method to close the hostServer
 }
