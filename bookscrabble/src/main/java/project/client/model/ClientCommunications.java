@@ -5,18 +5,16 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-import project.client.Error_Codes;
-
 public class ClientCommunications extends Communications{
-    private Socket toHostSocket; // A socket to the host
+    private static Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
 
-    public ClientCommunications(String hostIP, int hostPort) { // Ctor
-        super(new ClientSideHandler());
+    public ClientCommunications(String hostIP, int hostPort) throws IOException { // Ctor
+        super(new ClientSideHandler(toHostSocket.getOutputStream()));
         try {
             toHostSocket = new Socket(hostIP, hostPort);
             inFromHost = new Scanner(toHostSocket.getInputStream());
-            PrintWriter out = new PrintWriter(toHostSocket.getOutputStream());  
+            PrintWriter out = new PrintWriter(toHostSocket.getOutputStream()); 
             out.println("0$"+ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0 (marked after "$")
             out.flush();
             out.close();
@@ -53,11 +51,11 @@ public class ClientCommunications extends Communications{
         }
     }
 
-    public void sendAMessage(int id, String message) { // A method that sends a message to the host
+    public static void sendAMessage(int id, String message) { // A method that sends a message to the host
         try (PrintWriter outToHost = new PrintWriter(toHostSocket.getOutputStream())) {
-            outToHost.println(id + "$" + message); //Adds the ID to the beginning of the message
+            outToHost.println(id + ":" + message); //Adds the ID to the beginning of the message
             outToHost.flush();
-        } catch (IOException e) {
+        } catch (IOException e) { 
             throw new RuntimeException(e);
         }
     }

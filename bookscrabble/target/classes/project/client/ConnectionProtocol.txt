@@ -12,15 +12,15 @@ If the message contains "&" it is a game update message, else it is a response t
 The message itself. The body is split by ':' to two parts, the command and the arguments for the command.
 Arguments are read in the ----- ........ //example : "'senderName'&'takeTile':'Y'"
 Types of commands and their arguments if exist: 
-"'id'$'name'&join'" - Player wants to join the game - connectedClients.add(name,socket) + game.addNewPlayer(name)
-"'id'$'name'&leave'" - Player wants to leave the game - connectedClients.remove(name) + game.removePlayer(name)
-"'id'$'name'&'skipTurn'" - Player wants to skip his turn - 
-"'id'$'name'&'Q':'word,row,col,isVertical'" - Player wants to place a word, uses query  -
-"'id'$'name'&'C':'word,row,col,isVertical'" - Player wants to place a word, uses challenge  
+"'id':'name'&join'" - Player wants to join the game - connectedClients.add(name,socket) + game.addNewPlayer(name)
+"'id':'name'&leave'" - Player wants to leave the game - connectedClients.remove(name) + game.removePlayer(name)
+"'id':'name'&'skipTurn'" - Player wants to skip his turn - 
+"'id':'name'&'Q':'word,row,col,isVertical'" - Player wants to place a word, uses query  -
+"'id':'name'&'C':'word,row,col,isVertical'" - Player wants to place a word, uses challenge  
 
 Types of responses and their arguments:
 "join:'id',pName1, pName2 ...." - Seccessfully joined a game - ID given for future identification and a list of players in the game
-"Q:'score','tiles'" - Query was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles are sent
+"Q:'score','tiles','nextPlayer'" - Query was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles are sent
 
 Host to client protocol:
 The body is split by ':' to two parts, the commandName and return value of the command to the client.
@@ -29,7 +29,7 @@ The original sender of the message is will receive the message below, the rest w
 Types of commands and their return values: (Errors are handled by the client)
 
 Sent to the original client: (responseHandler)
-"join:true" / Error - Joined a game
+"join:id,players" / Error - Joined a game
 "Q:'score'" - Tried to place a word, if score is positive the word is valid and score is added, if 0/-1 the word is invalid due to boardLegal or dictionaryLegal
 "C:'score'" - Tried to challenge a failed word placement, if score is positive the word is valid and score is added, if 0/-1 the word is invalid due to boardLegal or dictionaryLegal
 
@@ -37,9 +37,11 @@ Sent to eveyone else as a game update: (commandHandler)
 (Using updateAll and will have "!" to indicate a game update)
 "!join:'name'" - A player joined the game
 "!leave:'name'" - A player left the game
-"!Q:'name','score'" - Player placed a word seccessfully and got 'score' points (Player will add up back to 7 tiles)
+"!Q:'name','score','nextPlayer'" - Player placed a word seccessfully and got 'score' points (Player will add up back to 7 tiles)
+"!C:'name','score','nextPlayer'" - Player challenged a failed word placement and got 'score' points (Player will add up back to 7 tiles)
+"!skipTurn:'nextPlayer'" - Player skipped his turn
 "!board:'board'" - The board was updated (board = String[])
-
+"!startGame:'tiles'" - The game started and each player got 'tiles' tiles (This is sent to each player individually)
 
 
 

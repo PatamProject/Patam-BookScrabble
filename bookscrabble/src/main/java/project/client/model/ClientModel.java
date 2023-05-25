@@ -1,18 +1,23 @@
 package project.client.model;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 public class ClientModel {
-    private ClientCommunications myConnectionToHost;
+    static ClientCommunications myConnectionToHost;
     private New_HostModel myHost;
     static String myName;
-    static String myID;
     public static final int myPort = 5005;
 
     public ClientModel(boolean isHost, String hostIP, int hostPort , String namePlayer) //Basic constructor
     {
         myName = namePlayer;
-        myConnectionToHost = new ClientCommunications(hostIP, hostPort);
+        try {
+            myConnectionToHost = new ClientCommunications(hostIP, hostPort);
+        } catch (IOException e) {
+            System.out.println("Unable to connect to host!");
+            e.printStackTrace();
+        }
         myConnectionToHost.start();
         if(!isHost)
             myHost = null;
@@ -26,11 +31,11 @@ public class ClientModel {
         BlockingQueue<String> myTasks;
         int port;
 
-        public New_HostModel(int port) //Basic constructor
+        public New_HostModel(int port) //constructor
         {
             myConnectionServer = new MyHostServer(ClientModel.myName, port, port, myName); //TODO: Get BS IP and port
             this.port=port;
-            myConnectionServer.start(); //NOT FINISHED
+            myConnectionServer.start();
         }
     }
 

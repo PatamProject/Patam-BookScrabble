@@ -13,84 +13,77 @@ public class GameManager{
     public boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
-    public GameManager(){ //Ctor
+    public GameManager() { //Ctor
         this.board = Board.getBoard();
         this.players = new HashMap<>();
-        playersOrder = new LinkedList<>();
+        this.playersOrder = new LinkedList<>();
     }
 
-    public void startGame(){ //TODO
-        //Make sure to let players take tiles before!
+    public String[] startGame() throws Exception { // Starts the game and returns a string that contains all names and racks by the random order of play
+        //The format returned from this method is an array of strings each built: "p1%tiles"
+        initialRacks(); // Initial racks (7 tiles for each player)
         setRandomPlayOrder();
-
-        while(!playersOrder.isEmpty() && !gameEnded)
-        {
-            String playingPlayer = playersOrder.poll();
-            //String input = getPlayerInput();
-            //TODO
-
-            checkEndGameConditions();
-        }
+        ArrayList<String> dupPlayersOrder = getPlayersOrder(); // Random order of play as an ArrayList
+        String[] output = new String[dupPlayersOrder.size()];
+        for (String player : dupPlayersOrder) // Creating a string that contains all names and racks by the random order of play
+        for (int i = 0; i < output.length; i++)
+            output[i] = player + "%" + players.get(player).getRack().toString(); 
+        
+        return output;
+    }
+    
+    private void initialRacks() throws Exception{ // Each player receives his initial rack
+        for (String player : playersOrder)
+            for (int i = 0; i < players.get(player).getRack().START_SIZE; i++)
+                players.get(player).getRack().takeTilesFromBag();  
     }
 
-    public String nextPlayer()
-    {
-        //TODO
-        return null;
+    public void nextPlayer() { // Switching turns and checks for conclusion of the game
+        String currentPlayer = playersOrder.poll();
+        playersOrder.add(currentPlayer);
+        checkEndGameConditions();
     }
 
-    public Board getBoard(){return board;}
-    public PlayerModel getPlayer(String pName)
-    {
-        if(players.get(pName) != null)
-            return players.get(pName);
-        else 
-            return null;    
-    }
+    // Getters
+    public Board getBoard() {return board;}
+    public String getCurrentPlayersName() {return playersOrder.peek();}
+    public PlayerModel getPlayer(String pName) {return players.get(pName) != null ? players.get(pName) : null;}
+    public ArrayList<String> getPlayersOrder() {return new ArrayList<>(playersOrder);}
+    public int getPlayersAmount() {return players.size();}
 
-    public ArrayList<String> getPlayersOrder()
-    {
-        ArrayList<String> playOrder = new ArrayList<>();
-        for (String p : playersOrder) {
-            playOrder.add(p);
-        }
-        return playOrder;
-    }
-    public int getPlayersAmount(){return players.size();}
-    public boolean isGameEnded(){return gameEnded;}
-
-    public void setRandomPlayOrder(){ //randomize the order of the players
-        ArrayList<String> suffle = new ArrayList<>();
+    private void setRandomPlayOrder() { //Randomize the order of the players
+        ArrayList<String> shuffle = new ArrayList<>();
         Queue<String> order = new LinkedList<>(playersOrder);
         while(!order.isEmpty())
-            suffle.add(order.poll());
-        
-        Collections.shuffle(suffle);
-        while(!suffle.isEmpty())
-            order.add(suffle.remove(0));
+            shuffle.add(order.poll());
+
+        Collections.shuffle(shuffle);
+        while(!shuffle.isEmpty())
+            order.add(shuffle.remove(0));
         playersOrder = order;
     }
 
-    public boolean addNewPlayer(String pName){
+    public boolean addNewPlayer(String pName) { // Adds a new player to the game if possible
         if(players.size() < MAX_PLAYERS || players.containsKey(pName))
         {
             players.put(pName, new PlayerModel(pName));
             playersOrder.add(pName);
             return true;
-        }    
+        }
         return false;
     }
 
-    public boolean checkEndGameConditions(){ //Game ends when the bag is empty or there are less than 2 players
-        if(Tile.Bag.isEmpty() || players.size() < 2)
-        {
+    public boolean isGameEnded() {return gameEnded;}
+    private boolean checkEndGameConditions() { //Game ends when the bag is empty or there are less than 2 players
+        if(Tile.Bag.isEmpty() || players.size() < 2) {
             gameEnded = true;
             return true;
         }
         return false;
     }
 
-    public boolean removePlayer(String pName){
+    public boolean removePlayer(String pName)
+    { // Removes a player from the game and checks if there's enough players to continue the game
         if(players.containsKey(pName)) {
             players.remove(pName);
             return true;
@@ -100,26 +93,21 @@ public class GameManager{
         return false;
     }
 
-    //the winner is the player with highest score
-    public String getWinner(){
+    public String getWinner() { //The winner is the player with the highest score
         PlayerModel winner = players.values().iterator().next();
-        for(PlayerModel p : players.values())
-        {
+        for(PlayerModel p : players.values()) {
             if(p.getScore() > winner.getScore())
                 winner = p;
-            else if(p.getScore() == winner.getScore())
-            {
+            else if(p.getScore().equals(winner.getScore()))
                 if(p.getRack().size() < winner.getRack().size())
                     winner = p;
-            }
         }
         gameEnded = true;
-        String value = "E,".concat(winner.getName());
-        return value;
+        return "E,".concat(winner.getName());
     }
 
     public Integer getScoreFromWord(String pName, Word w)
-    { //Returns the score of the word. Must check boardLegal and dictornaryLegal before using!!!
+    { //Returns the score of the word. Must check boardLegal and dictionaryLegal before using!!!
         PlayerModel p = players.get(pName);
         ArrayList<Tile> tilesFromRack = new ArrayList<>();
         for (int i = 0; i < w.length; i++) //Now we know what tiles are taken from the player
@@ -128,7 +116,7 @@ public class GameManager{
         
         Integer score = board.tryPlaceWord(w);
         if(score == 0) //Return tiles back to player.rack
-            p.getRack().addTiles(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
+            p.getRack().returnTilesToRack(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
         
         return score;
     }
@@ -150,9 +138,7 @@ public class GameManager{
                 //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
             }
             else if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
-            {
                 tilesArr.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
-            }
             else{ return null; } //Can't find tile!
             
             //Adjust tmpRow and tmpCol according to vertical
@@ -178,23 +164,8 @@ public class GameManager{
             return null; //Word is not board legal
 
         String[] queryWords = new String[words.size()]; //We change all the words to strings for query
-        for (int i = 0; i < words.size(); i++) {
+        for (int i = 0; i < words.size(); i++)
             queryWords[i] = words.get(i).toString();
-        }
         return queryWords;
-    }
-
-
-    public String tilesToString(String pName) { //returns the tiles of player 'pName' as a string
-        PlayerModel p = players.get(pName);
-        if(p == null)
-            return null;
-
-        Tile[] tiles = players.get(pName).getRack().getTiles();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tiles.length; i++) {
-            sb.append(tiles[i].letter);
-        }
-        return sb.toString();
     }
 }

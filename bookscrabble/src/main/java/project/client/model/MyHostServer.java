@@ -46,17 +46,18 @@ public class MyHostServer extends Communications{
                         throwError(Error_Codes.MISSING_ARGS, out);
                         continue; 
                     }
-                    String request = in.nextLine(); // "'sender'&'commandName':'args1,args2,...'"
+                    String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
                     String[] user_body_split = request.split("&");
                     String id_sender = user_body_split[0];
-                    String id = id_sender.split("$")[0]; //Sender's ID
-                    String sender = id_sender.split("$")[1]; //Sender's name
+                    String id = id_sender.split(":")[0]; //Sender's ID
+                    String sender = id_sender.split(":")[1]; //Sender's name
     
                     if(user_body_split.length != 2){ //Must contain a sender name and a body
                         throwError(Error_Codes.MISSING_ARGS, out);
                         continue;  
                     }
-    
+
+                    //Now we check the client to see if he's new or not and if allowed to join
                     if(connectedClients.get(sender) == null && id == "0" && connectedClients.size() < MAX_CLIENTS && !gameStarted){ 
                         //Add new client to the HashMap and to the game
                         connectedClients.put(sender, aClient);
@@ -76,7 +77,6 @@ public class MyHostServer extends Communications{
                         continue;
                     }
 
-
                     //Now we have a known client and will process his request
                     String[] body = user_body_split[1].split(":");
                     String commandName = body[0]; //Split the body to command and arguments
@@ -88,6 +88,7 @@ public class MyHostServer extends Communications{
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
                         add("startGame");
+                        add("endGame");
                         add("join");
                         add("leave");
                         add("skipTurn");
@@ -95,9 +96,13 @@ public class MyHostServer extends Communications{
                         add("Q"); //query
                     }};
 
-                    if(acceptableCommands.contains(commandName))
+                    if(!sender.equals(HostName) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
+                    { //Host only commands
+                        throwError(Error_Codes.ACCESS_DENIED, out);
+                        continue;  
+                    } else if(acceptableCommands.contains(commandName)) //Known command
                         super.getRequestHandler().handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
-                    else
+                    else //Unknown command
                         throwError(Error_Codes.UNKNOWN_CMD, out);
         
                 } catch (Exception e) {
@@ -117,8 +122,6 @@ public class MyHostServer extends Communications{
         connectedClients.clear();
         hostSocket.close();
     }
-
-
 
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
@@ -162,15 +165,15 @@ public class MyHostServer extends Communications{
 
     public static void updateAll(String message, String doNotSendToPlayer) { // A method to update all relevant clients with new information
         try{
-            OutputStream originClient;
+            OutputStream doNotSendStream;
             if(doNotSendToPlayer == null) //If the message is for everyone doNotSendToPlayer is null
-                originClient = null;
+                doNotSendStream = null;
             else
-                originClient = connectedClients.get(doNotSendToPlayer).getOutputStream();
-
+                doNotSendStream = connectedClients.get(doNotSendToPlayer).getOutputStream();    
+            
             connectedClients.values().forEach(c-> {
                 try {
-                    if (c.getOutputStream() != originClient) { // Preventing from the message to be sent twice
+                    if (c.getOutputStream() != doNotSendStream) { // Preventing from the message to be sent twice
                         try (PrintWriter out = new PrintWriter(c.getOutputStream())){
                             out.println(message);
                         } catch (Exception e) {
@@ -184,11 +187,22 @@ public class MyHostServer extends Communications{
 
             if(doNotSendToPlayer != null)
             {
-                originClient.flush();
-                originClient.close();
+                doNotSendStream.flush();
+                doNotSendStream.close();
             }           
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void sendUpdate(String msg, String player) { // A method to send a message to a specific client
+        try{
+            PrintWriter out = new PrintWriter(connectedClients.get(player).getOutputStream());
+            out.println(msg);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

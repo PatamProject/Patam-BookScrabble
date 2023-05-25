@@ -17,5 +17,6 @@ public abstract class Communications {
     }
     protected void run() throws Exception {}
     protected RequestHandler getRequestHandler() {return requestHandler;} // Getter
+    protected Communications getCommunications() {return this;} // Getter
     public void close() {}
 }

@@ -1,5 +1,7 @@
 package project.client.model.assets;
 import project.client.model.assets.Tile.Bag;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -79,11 +81,23 @@ public class Rack {
         }
     }
 
-    public void addTiles(Tile... tilesToAdd) //Used to pass tiles back to rack after a failed work placement
+    public void returnTilesToRack(Tile... tilesToAdd) //Used to pass tiles back to rack after a failed work placement
     {
         for (int i = 0; i < tilesToAdd.length; i++) {
             tiles.put(tilesToAdd[i], tiles.getOrDefault(tilesToAdd[i], 0) + 1);
         }
+    }
+
+    @Override
+    public String toString() //returns a string of all the tiles in the rack (including duplicates)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Tile tile : tiles.keySet()) {
+            for (int i = 0; i < tiles.get(tile); i++) {
+                sb.append(tile.letter);
+            }
+        }
+        return sb.toString();
     }
 
     public boolean isEmpty(){return size() == 0;}
