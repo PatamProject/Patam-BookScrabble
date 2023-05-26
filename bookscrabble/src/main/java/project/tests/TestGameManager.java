@@ -61,6 +61,7 @@ public class TestGameManager {
     public void testSetRandomPlayOrder()
     {
        GameManager gameManager = new GameManager();
+
        boolean flag = true;
        flag = gameManager.addNewPlayer("player1");
        flag = gameManager.addNewPlayer("player2");
@@ -78,6 +79,7 @@ public class TestGameManager {
     public void testTilesToString()
     {
         GameManager gameManager = new GameManager();
+
         boolean flag = true;
         flag = gameManager.addNewPlayer("player1");
         // if(gameManager.tilesToString("player1") != null)
@@ -120,6 +122,7 @@ public class TestGameManager {
     public void testGetWinner()
     {
         GameManager gameManager = new GameManager();
+
         String pName = gameManager.getWinner();
         if(!pName.equals("E,player2"))
             System.out.println("testGetWinner Failed");

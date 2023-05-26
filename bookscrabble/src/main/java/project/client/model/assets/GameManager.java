@@ -85,11 +85,11 @@ public class GameManager{
 
     public boolean removePlayer(String pName)
     { // Removes a player from the game and checks if there's enough players to continue the game
-        if(players.containsKey(pName)) {
+        if(players.containsKey(pName))
             players.remove(pName);
-            playersOrder.remove(pName);
-        }
-        if(players.size() <= 1) {
+
+        if(players.size() <= 1)
+        {
             gameEnded = true;
             return false;
         }

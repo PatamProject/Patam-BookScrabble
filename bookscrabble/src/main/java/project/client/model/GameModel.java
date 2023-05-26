@@ -10,17 +10,15 @@ public class GameModel {
     PlayerModel myPlayer;
     HashMap<String,Integer> players; //Name of player and their score
     PriorityQueue<String> playersOrder; //The order of the players in the game (0 goes first...)
-    String[] board;
-    public final int BOARD_SIZE = 15;
+    String board;
 
     public GameModel() {
         myPlayer = new PlayerModel(ClientModel.getName());
         playersOrder = new PriorityQueue<>(); //Will be updated by startGame
         this.players = new HashMap<>();
-        this.board = new String[BOARD_SIZE];
     }
 
-    public void setBoard(String[] board) {
+    public void setBoard(String board) {
         this.board = board;
     }
 
@@ -66,5 +64,9 @@ public class GameModel {
         return isItMyTurn();
     }
 
-    public boolean isItMyTurn(){return Objects.equals(playersOrder.peek(), ClientModel.myName);}
+    public String getBoard() {
+        return board;
+    }
+
+    public boolean isItMyTurn(){return playersOrder.peek().equals(ClientModel.myName);}
 }

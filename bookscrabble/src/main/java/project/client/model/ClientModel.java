@@ -9,9 +9,9 @@ public class ClientModel {
     static String myName;
     public static final int myPort = 5005;
 
-    public ClientModel(boolean isHost, String hostIP, int hostPort , String namePlayer) //Basic constructor
+    public ClientModel(boolean isHost, String hostIP, int hostPort , String playerName) //Basic constructor
     {
-        myName = namePlayer;
+        myName = playerName;
         try {
             myConnectionToHost = new ClientCommunications(hostIP, hostPort);
         } catch (IOException e) {
@@ -25,6 +25,7 @@ public class ClientModel {
         {
             String bs_IP;
             int bs_port;
+            System.out.println("Please connect to a BookScrabble server: ");
             System.out.println("Enter BookScrabble Server IP: ");
             System.out.println("Enter Port: ");
             Scanner sc = new Scanner(System.in);

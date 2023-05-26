@@ -35,15 +35,17 @@ public class MyHostServer implements Communications{
     public void run() throws Exception { // A method that operates as the central junction between all users and the BookScrabbleServer
         ServerSocket hostSocket = new ServerSocket(HOST_PORT);
         hostSocket.setSoTimeout(2000);
+        PrintWriter out = null;
+        Scanner in = null;
         while(!stopServer) // Loop's until the end of the game
         {
             try{ // Accepts a client
                 Socket aClient = hostSocket.accept();
-                try (Scanner in = new Scanner(aClient.getInputStream());
-                PrintWriter out = new PrintWriter(aClient.getOutputStream()))
-                {
+                try {
+                    out = new PrintWriter(aClient.getOutputStream());
+                    in = new Scanner(aClient.getInputStream());
                     if (!in.hasNextLine()) { // If the client didn't send a message
-                        throwError(Error_Codes.MISSING_ARGS, out);
+                        throwError(Error_Codes.MISSING_ARGS, aClient.getOutputStream());
                         continue; 
                     }
                     String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
@@ -53,12 +55,12 @@ public class MyHostServer implements Communications{
                     String sender = id_sender.split(":")[1]; //Sender's name
     
                     if(user_body_split.length != 2){ //Must contain a sender name and a body
-                        throwError(Error_Codes.MISSING_ARGS, out);
+                        throwError(Error_Codes.MISSING_ARGS, aClient.getOutputStream());
                         continue;  
                     }
 
                     //Now we check the client to see if he's new or not and if allowed to join
-                    if(connectedClients.get(sender) == null && id.equals("0") && connectedClients.size() < MAX_CLIENTS && !gameStarted){
+                    if(connectedClients.get(sender) == null && id.equals("0") && connectedClients.size() < MAX_CLIENTS && !gameStarted){ 
                         //Add new client to the HashMap and to the game
                         connectedClients.put(sender, aClient);
                         playerCount++; //Increment player count
@@ -68,12 +70,12 @@ public class MyHostServer implements Communications{
                         continue; //Add new player and continue
                     } else if(connectedClients.get(sender) == null && id.equals("0") && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
                         if(gameStarted)
-                            throwError(Error_Codes.GAME_STARTED, out);
+                            throwError(Error_Codes.GAME_STARTED, aClient.getOutputStream());
                         else
-                            throwError(Error_Codes.SERVER_FULL, out);
+                            throwError(Error_Codes.SERVER_FULL, aClient.getOutputStream());
                         continue; 
                     } else if(connectedClients.get(sender) != null && id.equals("0")){ //Name taken
-                        throwError(Error_Codes.NAME_TAKEN, out);
+                        throwError(Error_Codes.NAME_TAKEN, aClient.getOutputStream());
                         continue;
                     }
 
@@ -97,13 +99,13 @@ public class MyHostServer implements Communications{
 
                     if(!sender.equals(ClientModel.myName) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
                     { //Host only commands
-                        throwError(Error_Codes.ACCESS_DENIED, out);
+                        throwError(Error_Codes.ACCESS_DENIED, aClient.getOutputStream());
                         continue;  
                     } else if(acceptableCommands.contains(commandName)) //Known command
                         requestHandler.handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
                     else //Unknown command
-                        throwError(Error_Codes.UNKNOWN_CMD, out);
-        
+                        throwError(Error_Codes.UNKNOWN_CMD, aClient.getOutputStream());
+                        
                 } catch (Exception e) {
                 } finally {
                     requestHandler.close();
@@ -111,6 +113,8 @@ public class MyHostServer implements Communications{
             } catch (SocketTimeoutException e){} 
         }
         //Runs only when close() is called
+        if (out != null) out.close();
+        if(in != null) in.close(); 
         connectedClients.values().forEach(c-> { // All sockets will be closed after the game has ended (reusing them for all messages)
             try {
                 c.close();
@@ -139,7 +143,7 @@ public class MyHostServer implements Communications{
 
                 if(response == null) //Invalid response
                 {
-                    throwError(Error_Codes.SERVER_ERR, new PrintWriter(outToHost));
+                    throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.myName).getOutputStream());
                     return false;
                     //Failed to communicate with the BookScrabbleServer
                 } 
@@ -148,6 +152,7 @@ public class MyHostServer implements Communications{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
+                outToHost.close();
                 socket.close();
             }
         } catch (IOException e) {
@@ -181,6 +186,7 @@ public class MyHostServer implements Communications{
 
             if(doNotSendToPlayer != null)
                 doNotSendStream.flush();
+            }           
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -197,14 +203,15 @@ public class MyHostServer implements Communications{
         }
     }
 
-    void throwError(String error, PrintWriter out) { // A method to send an error message to a client
+    void throwError(String error, OutputStream out) { // A method to send an error message to a client
+        PrintWriter pw = new PrintWriter(out);
         try{
-            out.println("#"+error);
+            pw.println("#"+error);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        out.flush();
-        out.close();
+        pw.flush();
+        pw.close();
     }
 
     @Override

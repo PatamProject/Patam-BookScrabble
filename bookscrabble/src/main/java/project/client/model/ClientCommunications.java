@@ -11,9 +11,9 @@ public class ClientCommunications implements Communications{
     private Scanner inFromHost;
 
     public ClientCommunications(String hostIP, int hostPort) throws IOException { // Ctor
-        requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
         try {
             toHostSocket = new Socket(hostIP, hostPort);
+            requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
             inFromHost = new Scanner(toHostSocket.getInputStream());
             PrintWriter out = new PrintWriter(toHostSocket.getOutputStream()); 
             out.println("0$"+ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0 (marked after "$")
@@ -88,6 +88,7 @@ public class ClientCommunications implements Communications{
 
     public void gameStarted()
     {
+        int BOARD_SIZE = 15;
         requestHandler.isGameStarted = true;
         new Thread(()-> {        
             try {
@@ -124,7 +125,7 @@ public class ClientCommunications implements Communications{
                                 System.out.println("Enter row and col of starting character:");
                                 row = scanner.nextInt();
                                 col = scanner.nextInt();
-                                if(row < 0 || row >= requestHandler.game.BOARD_SIZE || col < 0 || col >= requestHandler.game.BOARD_SIZE)
+                                if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                                 {
                                     System.out.println("Illegal row or col!");
                                     allowedInput = false;

@@ -24,7 +24,7 @@ public class HostSideHandler implements RequestHandler{
         commandHandler = new HashMap<>(){{
             //List of commands and their handlers: (First argument is always the name of the player, please refer to the ConnectionProtocol for more information)
             //Add a new player to the game
-            commandHandler.put("join", (String[] args) -> 
+            put("join", (String[] args) -> 
             { //Added to connectedClients in MyHostServer
                 ArrayList<String> players = new ArrayList<>(Arrays.asList(args).subList(2, args.length));
                 StringBuilder sendPlayers = new StringBuilder();
@@ -37,7 +37,7 @@ public class HostSideHandler implements RequestHandler{
                 MyHostServer.updateAll("!join:" + args[0], args[0]);
             });
             //Remove a player from the game
-            commandHandler.put("leave", (String[] args) -> 
+            put("leave", (String[] args) -> 
             {
                 //Return tiles to back? Delete playerModel completely from view?
                 game.removePlayer(args[0]); //Remove from gameModel
@@ -49,10 +49,10 @@ public class HostSideHandler implements RequestHandler{
                 MyHostServer.connectedClients.remove(args[0]); //Remove from connectedClients
                 MyHostServer.updateAll("!leave:" + args[0], args[0]);
                 if (game.getPlayersAmount() < 2)
-                    commandHandler.get("endGame");
+                    get("endGame");
             });
     
-            commandHandler.put("skipTurn", (String[] args) -> 
+            put("skipTurn", (String[] args) -> 
             {
                 game.nextTurn(); // Switch to next player and update ALL players if game continues
                 if (!game.isGameEnded())
@@ -64,7 +64,7 @@ public class HostSideHandler implements RequestHandler{
             });
     
             //Start the game (Host only)
-            commandHandler.put("startGame", (String[] args) ->
+            put("startGame", (String[] args) ->
             {
                 if (args[0].equals(ClientModel.myName) && game.getPlayersAmount() >= 2) //Enough players and is the host
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
@@ -91,7 +91,7 @@ public class HostSideHandler implements RequestHandler{
             });
     
             //End the game and declare a winner (Host only)
-            commandHandler.put("endGame", (String[] args) -> 
+            put("endGame", (String[] args) -> 
             {
                 if(args[0].equals(ClientModel.myName) || game.getPlayersAmount() < 2) //Is the host
                 {
@@ -103,8 +103,8 @@ public class HostSideHandler implements RequestHandler{
             });
     
             //Place a word on the board and query the words created (args[0] = name, args[1] = word, args[2] = row, args[3] = col, args[4] = isVertical) 
-            commandHandler.put("Q", (String[] args) -> handlerBSRequests("Q", args));
-            commandHandler.put("C", (String[] args) -> handlerBSRequests("C",args));
+            put("Q", (String[] args) -> handlerBSRequests("Q", args));
+            put("C", (String[] args) -> handlerBSRequests("C",args));
         }};
     }
     
