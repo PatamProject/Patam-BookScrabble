@@ -2,6 +2,8 @@ package project.client;
 
 import java.util.Scanner;
 
+import project.client.model.ClientModel;
+
 public class MyLogger {
     Scanner scanner = new Scanner(System.in);
 
@@ -42,12 +44,12 @@ public class MyLogger {
         }
     }
 
-    public static void clientJoined(String name)
+    public static void playerJoined(String name)
     {
         log("Player " + name + " has joined the game!");
     }
 
-    public static void clientLeft(String name)
+    public static void playertLeft(String name)
     {
         log("Player " + name + " has left the game!");
     }
@@ -66,10 +68,25 @@ public class MyLogger {
 
     public static void playerPlacedWord(String player, int score, String commandName)
     {
+        if(ClientModel.getName().equals(player))
+        {
+            log("You got " + score + " points!");
+            return;
+        }
+
         if(commandName.equals("C"))
             log("Player " + player + " challenged a word placement and got " + score + " points!");
         else
             log("Player " + player + " placed a word and got " + score + " points!");
+    }
+
+    public static void failedWordPlacement(int score)
+    {
+
+        if(score == 0)
+            log("Invalid word placement! Try again.");
+        else // score == -1
+            log("Invalid word! Try again.");
     }
 
     public static void gameEnded(String player)
@@ -78,16 +95,6 @@ public class MyLogger {
     }
 
     public void useless() {
-        // Game initialization code
-
-        // Client logging game progress
-        log("Welcome to the game!");
-        log("Choose your role. Are you a guest or the host?");
-        log("Connected to host.");
-        log("You have joined the game!");
-        log("Player dickFace has joined the game."); // change
-        log("Loading game assets...");
-        log("Game started!");
 
         // Host logging game progress
         log("Waiting for other players to join...");
