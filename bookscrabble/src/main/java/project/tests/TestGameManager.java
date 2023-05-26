@@ -1,66 +1,67 @@
 package project.tests;
 import project.client.model.assets.*;
-import project.client.model.assets.Board;
 import project.client.model.assets.GameManager;
-import project.client.model.assets.PlayerModel;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TestGameManager
-{
-    GameManager gameManager;
+public class TestGameManager {
+    final int MAX_PLAYERS = 4;
+    //startGame
+    //initial rack
+    //next turn
+    //
 
-    public TestGameManager()
+    public void testMethod1()
     {
-        gameManager = new GameManager();
+        //Tests the following methods:
+        // addNewPlayer
+        // getPlayersOrder
+        // getPlayersAmount
+        // removePlayer
+        // isGameEnded
+        // getPlayer
+
+        String[] names1 = {"Assaf Lots", "Braha", "Zvolon", "Arnold"};
+        String[] names2 = {"Assaf Lots", "Assaf Lots", "Zvolon", "Arnold"};
+        testMethod1Helper(names1);
+        testMethod1Helper(names2);
     }
 
-    public void testGetPlayer()
-    {
-        if(gameManager.getPlayer("Yaakov")!=null)
-            System.out.println("testGetPlayer Failed");
-    }
-
-    public void testAddNewPlayer()
-    {
+    private void testMethod1Helper(String[] names) {
+        GameManager gameManager = new GameManager();
         boolean flag = true;
-        flag = gameManager.addNewPlayer("Yaakov");
-        if(gameManager.getPlayer("Yaakov")==null)
-            System.out.println("testAddNewPlayer Failed");
-        flag = gameManager.addNewPlayer("Braha");
-        flag = gameManager.addNewPlayer("Yaakov");
-        if(!flag)
-            System.out.println("testAddNewPlayer Failed");
-        flag = gameManager.addNewPlayer("Zvolon");
-        flag = gameManager.addNewPlayer("Arnold");
-        flag = gameManager.addNewPlayer("Yafit");
-        if(flag)
-            System.out.println("testAddNewPlayer Failed");
-    }
+        for (String name : names)
+            flag &= gameManager.addNewPlayer(name);
 
-    public void testRemovePlayer()
-    {
-        boolean flag = true;
-        flag = gameManager.removePlayer("Yaakov");
-        if(!flag)
-            System.out.println("testRemovePlayer Failed");
-        flag = gameManager.removePlayer("Shalom");
-        if(flag)
-            System.out.println("testRemovePlayer Failed");
-        if(gameManager.getPlayer("Yaakov") != null)
-            System.out.println("testRemovePlayer Failed");
-        flag = gameManager.removePlayer("Braha");
-        flag = gameManager.removePlayer("Zvolon");
-        flag = gameManager.removePlayer("Arnold");
-        if(!gameManager.gameEnded)
-            System.out.println("testRemovePlayer Failed");
-        gameManager.gameEnded = false;
+        ArrayList<String> playersOrder = gameManager.getPlayersOrder();
+        if (!flag || gameManager.getPlayersAmount() != MAX_PLAYERS || playersOrder.size() != MAX_PLAYERS)
+            System.out.println("Problem with addNewPlayer method");
+
+        if (gameManager.getPlayer("Bob") != null || gameManager.getPlayer("Zvolon") == null)
+            System.out.println("Problem with getPlayer Method");
+
+        if(gameManager.addNewPlayer("Yafit"))
+            System.out.println("Problem with addNewPlayer method");
+        if(gameManager.addNewPlayer("Assaf Lots"))
+            System.out.println("Problem with addNewPlayer method");
+
+        gameManager.removePlayer("Yafit");
+        if (gameManager.getPlayersAmount() != MAX_PLAYERS || playersOrder.size() != MAX_PLAYERS)
+            System.out.println("Problem with removePlayer method");
+
+        flag = true;
+        for (String player : playersOrder)
+            flag &= gameManager.removePlayer(player);
+
+        if (flag || !gameManager.isGameEnded() || gameManager.getPlayersAmount() != 0 || gameManager.getPlayersOrder().size() != 0)
+            System.out.println("Problem with removePlayer method");
     }
 
     public void testSetRandomPlayOrder()
     {
+       GameManager gameManager = new GameManager();
+
        boolean flag = true;
        flag = gameManager.addNewPlayer("player1");
        flag = gameManager.addNewPlayer("player2");
@@ -77,6 +78,8 @@ public class TestGameManager
 
     public void testTilesToString()
     {
+        GameManager gameManager = new GameManager();
+
         boolean flag = true;
         flag = gameManager.addNewPlayer("player1");
         // if(gameManager.tilesToString("player1") != null)
@@ -99,6 +102,7 @@ public class TestGameManager
 
     public void testPlaceWord()
     {
+        GameManager gameManager = new GameManager();
         boolean flag = true;
         flag = gameManager.addNewPlayer("player1");
         flag = gameManager.addNewPlayer("player2");
@@ -117,20 +121,20 @@ public class TestGameManager
 
     public void testGetWinner()
     {
+        GameManager gameManager = new GameManager();
+
         String pName = gameManager.getWinner();
         if(!pName.equals("E,player2"))
             System.out.println("testGetWinner Failed");
     }
     public static void main(String[] args)
     {
-        TestGameManager testGameModel = new TestGameManager();
-        testGameModel.testGetPlayer();
-        testGameModel.testAddNewPlayer();
-        testGameModel.testRemovePlayer();
-        testGameModel.testSetRandomPlayOrder();
-        testGameModel.testTilesToString();
-        testGameModel.testPlaceWord();
-        testGameModel.testGetWinner();
-        System.out.println("done");
+        TestGameManager testGameManager = new TestGameManager();
+        testGameManager.testMethod1();
+        testGameManager.testSetRandomPlayOrder();
+        testGameManager.testTilesToString();
+        testGameManager.testPlaceWord();
+        testGameManager.testGetWinner();
+        System.out.println("Done!");
     }
 }

@@ -25,8 +25,8 @@ public class GameManager{
         ArrayList<String> dupPlayersOrder = getPlayersOrder(); // Random order of play as an ArrayList
         String[] output = new String[dupPlayersOrder.size()];
         for (String player : dupPlayersOrder) // Creating a string that contains all names and racks by the random order of play
-        for (int i = 0; i < output.length; i++)
-            output[i] = player + "%" + players.get(player).getRack().toString(); 
+            for (int i = 0; i < output.length; i++)
+                output[i] = player + "%" + players.get(player).getRack().toString();
         
         return output;
     }
@@ -65,7 +65,7 @@ public class GameManager{
     }
 
     public boolean addNewPlayer(String pName) { // Adds a new player to the game if possible
-        if(players.size() < MAX_PLAYERS || players.containsKey(pName))
+        if(players.size() < MAX_PLAYERS)
         {
             players.put(pName, new PlayerModel(pName));
             playersOrder.add(pName);
@@ -109,7 +109,7 @@ public class GameManager{
         return "E,".concat(winner.getName());
     }
 
-    public Integer getScoreFromWord(String pName, Word w)
+    public int getScoreFromWord(String pName, Word w)
     { //Returns the score of the word. Must check boardLegal and dictionaryLegal before using!!!
         PlayerModel p = players.get(pName);
         ArrayList<Tile> tilesFromRack = new ArrayList<>();
@@ -117,7 +117,7 @@ public class GameManager{
             if(w.tiles[i] != null)
                 tilesFromRack.add(w.tiles[i]);
         
-        Integer score = board.tryPlaceWord(w);
+        int score = board.tryPlaceWord(w);
         if(score == 0) //Return tiles back to player.rack
             p.getRack().returnTilesToRack(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
         
@@ -161,7 +161,7 @@ public class GameManager{
         //We query all the words
         //We use tryPlaceWord() to check boardLegal for all words
 
-        ArrayList<Word> words = new ArrayList<>();
+        ArrayList<Word> words;
         words = board.getWords(w); //checks boardLegal
         if(words == null)
             return null; //Word is not board legal
