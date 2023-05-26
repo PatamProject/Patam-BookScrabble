@@ -27,10 +27,10 @@ public class HostSideHandler implements RequestHandler{
             commandHandler.put("join", (String[] args) -> 
             { //Added to connectedClients in MyHostServer
                 ArrayList<String> players = new ArrayList<>(Arrays.asList(args).subList(2, args.length));
-                String sendPlayers = "";
+                StringBuilder sendPlayers = new StringBuilder();
                 for (String p : players) //Create a string of players to send to the client with commas between them
-                    sendPlayers += p + ",";
-                sendPlayers = sendPlayers.substring(0, sendPlayers.length() - 1); //Trim last comma
+                    sendPlayers.append(p).append(",");
+                sendPlayers = new StringBuilder(sendPlayers.substring(0, sendPlayers.length() - 1)); //Trim last comma
 
                 game.addNewPlayer(args[0]); //Add to gameModel
                 out.println("join:"+args[1] + "," + sendPlayers); //Send ID and players to the client
@@ -70,15 +70,15 @@ public class HostSideHandler implements RequestHandler{
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
                     try {
                         String[] tilesAndPlayers = game.startGame(); //Start the game
-                        String playersOrder = "";
-                        for (int i = 0; i < tilesAndPlayers.length; i++) 
-                            playersOrder += tilesAndPlayers[i].split("%")[0] + ",";       
-                        playersOrder = playersOrder.substring(0, playersOrder.length() - 1); //Trim last comma
+                        StringBuilder playersOrder = new StringBuilder();
+                        for (String tilesAndPlayer : tilesAndPlayers)
+                            playersOrder.append(tilesAndPlayer.split("%")[0]).append(",");
+                        playersOrder = new StringBuilder(playersOrder.substring(0, playersOrder.length() - 1)); //Trim last comma
 
-                        for (int i = 0; i < tilesAndPlayers.length; i++) {
-                            String playerName = tilesAndPlayers[i].split("%")[0];
-                            String tiles = tilesAndPlayers[i].split("%")[1];
-                            MyHostServer.sendUpdate("!startGame:"+tiles + "," + playersOrder, playerName);
+                        for (String tilesAndPlayer : tilesAndPlayers) {
+                            String playerName = tilesAndPlayer.split("%")[0];
+                            String tiles = tilesAndPlayer.split("%")[1];
+                            MyHostServer.sendUpdate("!startGame:" + tiles + "," + playersOrder, playerName);
                         }
                     } catch (Exception e) {
                         out.println(Error_Codes.SERVER_ERR);
@@ -125,14 +125,14 @@ public class HostSideHandler implements RequestHandler{
         //Check if all words are dictionaryLegal
         Boolean areWordsLegal = true;
         for (String word : words)
-            areWordsLegal |= ClientModel.myHostServer.msgToBSServer(word);
+            areWordsLegal &= ClientModel.myHostServer.msgToBSServer(word);
         
         if(!areWordsLegal) //Not all words are dictionaryLegal
             out.println(commandName+":-1"); //Score = -1
         else
         {
             Integer score = game.getScoreFromWord(args[0], w);
-            String tiles = "";
+            String tiles;
             if(score != 0)
             {
                 try { //Take tiles from bag

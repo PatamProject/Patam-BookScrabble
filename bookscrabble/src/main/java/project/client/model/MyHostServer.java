@@ -40,7 +40,7 @@ public class MyHostServer implements Communications{
             try{ // Accepts a client
                 Socket aClient = hostSocket.accept();
                 try (Scanner in = new Scanner(aClient.getInputStream());
-                PrintWriter out = new PrintWriter(aClient.getOutputStream());)
+                PrintWriter out = new PrintWriter(aClient.getOutputStream()))
                 {
                     if (!in.hasNextLine()) { // If the client didn't send a message
                         throwError(Error_Codes.MISSING_ARGS, out);
@@ -58,7 +58,7 @@ public class MyHostServer implements Communications{
                     }
 
                     //Now we check the client to see if he's new or not and if allowed to join
-                    if(connectedClients.get(sender) == null && id == "0" && connectedClients.size() < MAX_CLIENTS && !gameStarted){ 
+                    if(connectedClients.get(sender) == null && id.equals("0") && connectedClients.size() < MAX_CLIENTS && !gameStarted){
                         //Add new client to the HashMap and to the game
                         connectedClients.put(sender, aClient);
                         playerCount++; //Increment player count
@@ -66,13 +66,13 @@ public class MyHostServer implements Communications{
                         args.addAll(connectedClients.keySet()); //Add all players in game to the arguments
                         requestHandler.handleClient(sender, "join", args.toArray(new String[args.size()]), aClient.getOutputStream());
                         continue; //Add new player and continue
-                    } else if(connectedClients.get(sender) == null && id == "0" && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
+                    } else if(connectedClients.get(sender) == null && id.equals("0") && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
                         if(gameStarted)
                             throwError(Error_Codes.GAME_STARTED, out);
                         else
                             throwError(Error_Codes.SERVER_FULL, out);
                         continue; 
-                    } else if(connectedClients.get(sender) != null && id == "0"){ //Name taken
+                    } else if(connectedClients.get(sender) != null && id.equals("0")){ //Name taken
                         throwError(Error_Codes.NAME_TAKEN, out);
                         continue;
                     }
@@ -80,11 +80,10 @@ public class MyHostServer implements Communications{
                     //Now we have a known client and will process his request
                     String[] body = user_body_split[1].split(":");
                     String commandName = body[0]; //Split the body to command and arguments
-                    String tmp[] = body[1].split(","); //Split the arguments
-                    String commandArgs[] = new String[tmp.length + 1]; //Add the sender name to the arguments
+                    String[] tmp = body[1].split(","); //Split the arguments
+                    String[] commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
                     commandArgs[0] = sender;
-                    for(int i = 0; i < tmp.length; i++)
-                        commandArgs[i+1] = tmp[i];
+                    System.arraycopy(tmp, 0, commandArgs, 1, tmp.length);
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
                         add("startGame");
@@ -92,7 +91,7 @@ public class MyHostServer implements Communications{
                         add("join");
                         add("leave");
                         add("skipTurn");
-                        add("C"); //challange
+                        add("C"); //challenge
                         add("Q"); //query
                     }};
 
@@ -145,12 +144,7 @@ public class MyHostServer implements Communications{
                     //Failed to communicate with the BookScrabbleServer
                 } 
                 else //The BookScrabbleServer responded with true/false
-                {
-                    if(response == "true") //Word accepted
-                        return true;
-                    else //Word rejected
-                        return false;
-                }
+                    return response.equals("true");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -186,10 +180,7 @@ public class MyHostServer implements Communications{
             });
 
             if(doNotSendToPlayer != null)
-            {
                 doNotSendStream.flush();
-                doNotSendStream.close();
-            }           
         } catch (IOException e) {
             e.printStackTrace();
         }

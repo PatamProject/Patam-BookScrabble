@@ -1,6 +1,7 @@
 package project.client.model;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 import project.client.model.assets.PlayerModel;
@@ -28,8 +29,8 @@ public class GameModel {
     }
 
     public void addPlayers(String... players) {
-        for (int i = 0; i < players.length; i++)
-            this.players.put(players[i], 0); //Each player starts with score 0 
+        for (String player : players)
+            this.players.put(player, 0); //Each player starts with score 0
     }
 
     public void removePlayer(String player)
@@ -50,8 +51,8 @@ public class GameModel {
 
     public boolean isStringLegal(char[] word) //We check for allowed chars only
     {
-        for (int i = 0; i < word.length; i++)
-            if(word[i] < 'A' || word[i] > 'Z')
+        for (char c : word)
+            if (c < 'A' || c > 'Z')
                 return false;
         return true;    
     }
@@ -65,5 +66,5 @@ public class GameModel {
         return isItMyTurn();
     }
 
-    public boolean isItMyTurn(){return playersOrder.peek().equals(ClientModel.myName);}
+    public boolean isItMyTurn(){return Objects.equals(playersOrder.peek(), ClientModel.myName);}
 }
