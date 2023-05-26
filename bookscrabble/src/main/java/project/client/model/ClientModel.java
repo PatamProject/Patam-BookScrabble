@@ -1,11 +1,11 @@
 package project.client.model;
 
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
+import java.util.Scanner;
 
 public class ClientModel {
     static ClientCommunications myConnectionToHost;
-    private New_HostModel myHost;
+    static MyHostServer myHostServer;
     static String myName;
     public static final int myPort = 5005;
 
@@ -20,27 +20,20 @@ public class ClientModel {
         }
         myConnectionToHost.start();
         if(!isHost)
-            myHost = null;
-        else 
-            myHost = new New_HostModel(myPort + 1);
-    }
-
-    public static class New_HostModel{
-        
-        static MyHostServer myConnectionServer;
-        BlockingQueue<String> myTasks;
-        int port;
-
-        public New_HostModel(int port) //constructor
+            myHostServer = null;
+        else
         {
-            myConnectionServer = new MyHostServer(ClientModel.myName, port, port, myName); //TODO: Get BS IP and port
-            this.port=port;
-            myConnectionServer.start();
-        }
-    }
-
-    public static MyHostServer getHostServer() {
-        return ClientModel.New_HostModel.myConnectionServer;
+            String bs_IP;
+            int bs_port;
+            System.out.println("Enter BookScrabble Server IP: ");
+            System.out.println("Enter Port: ");
+            Scanner sc = new Scanner(System.in);
+            bs_IP = sc.nextLine();
+            bs_port = sc.nextInt();
+            sc.close();
+            myHostServer = new MyHostServer(myPort, bs_port, bs_IP);
+            myHostServer.start();
+        } 
     }
 
     public static String getName(){return myName;}

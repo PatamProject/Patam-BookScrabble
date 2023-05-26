@@ -1,7 +1,6 @@
 package project.client.model.assets;
 import project.client.model.assets.Tile.Bag;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 

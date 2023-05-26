@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 // This class is used to handle the host's responses
 public class ClientSideHandler implements RequestHandler{
-    private lightweightGameModel game;
+    lightweightGameModel game;
     public PrintWriter out;
     private Map<String, Consumer<String[]>> commandHandler;
     private Map<String, Consumer<String[]>> responseHandler;
@@ -106,7 +106,7 @@ public class ClientSideHandler implements RequestHandler{
                     game.playersOrder.add(args[i]); //Add players by order
                 }
                 game.addPlayers(players); //Add players to the game
-                gameStarted(); //Start the game on client side
+                //Game started in ClientCommuncation
             });
 
             put("!endGame", (String[] args)->{
@@ -202,92 +202,93 @@ public class ClientSideHandler implements RequestHandler{
         game.players.put(args[0], game.players.getOrDefault(args[0], 0) + Integer.parseInt(args[1]));
     }
 
-    public void gameStarted()
-    {
-        isGameStarted = true;
-        new Thread(()-> {        
-            try {
-                Scanner scanner = new Scanner(System.in);
-                while(isGameStarted)
-                {
-                    //TODO - Print board and tiles
-                    //TODO - Print scores
-                    //TODO - update board after each turn
+    // public void gameStarted()
+    // {
+    //     isGameStarted = true;
+    //     new Thread(()-> {        
+    //         try {
+    //             Scanner scanner = new Scanner(System.in);
+    //             while(isGameStarted)
+    //             {
+    //                 //TODO - Print board and tiles
+    //                 //TODO - Print scores
+    //                 //TODO - update board after each turn
 
 
-                    if(game.isItMyTurn()) //My turn and I can now place a word
-                    {
-                        System.out.println("It's your turn to play! Enter word to place: ");
-                        if(scanner.hasNextLine())
-                        {
-                            boolean allowedinput = true;
-                            String word;
-                            int row, col; 
-                            boolean isVertical = false;
-                            do
-                            {
-                                allowedinput = true;
-                                word = scanner.nextLine();
-                                if(!game.isStringLegal(word.toUpperCase().toCharArray()))
-                                {
-                                    System.out.println("Illegal word!");
-                                    allowedinput = false;
-                                }
-                            } while(!allowedinput);
+    //                 if(game.isItMyTurn()) //My turn and I can now place a word
+    //                 {
+    //                     System.out.println("It's your turn to play! Enter word to place: ");
+    //                     if(scanner.hasNextLine())
+    //                     {
+    //                         boolean allowedinput = true;
+    //                         String word;
+    //                         int row, col; 
+    //                         boolean isVertical = false;
+    //                         do
+    //                         {
+    //                             allowedinput = true;
+    //                             word = scanner.nextLine();
+    //                             if(!game.isStringLegal(word.toUpperCase().toCharArray()))
+    //                             {
+    //                                 System.out.println("Illegal word!");
+    //                                 allowedinput = false;
+    //                             }
+    //                         } while(!allowedinput);
 
-                            do
-                            {
-                                allowedinput = true;
-                                System.out.println("Enter row and col of starting character:");
-                                row = scanner.nextInt();
-                                col = scanner.nextInt();
-                                if(row < 0 || row >= game.BOARD_SIZE || col < 0 || col >= game.BOARD_SIZE)
-                                {
-                                    System.out.println("Illegal row or col!");
-                                    allowedinput = false;
-                                }
-                            } while(!allowedinput);
+    //                         do
+    //                         {
+    //                             allowedinput = true;
+    //                             System.out.println("Enter row and col of starting character:");
+    //                             row = scanner.nextInt();
+    //                             col = scanner.nextInt();
+    //                             if(row < 0 || row >= game.BOARD_SIZE || col < 0 || col >= game.BOARD_SIZE)
+    //                             {
+    //                                 System.out.println("Illegal row or col!");
+    //                                 allowedinput = false;
+    //                             }
+    //                         } while(!allowedinput);
 
-                            do
-                            {
-                                allowedinput = true;
-                                System.out.println("Enter 1 for vertical, 0 for horizontal:");
-                                int vertical = scanner.nextInt();
-                                if(vertical != 0 && vertical != 1)
-                                {
-                                    System.out.println("Illegal input!");
-                                    allowedinput = false;
-                                }
-                                else
-                                    isVertical = (vertical == 1);
+    //                         do
+    //                         {
+    //                             allowedinput = true;
+    //                             System.out.println("Enter 1 for vertical, 0 for horizontal:");
+    //                             int vertical = scanner.nextInt();
+    //                             if(vertical != 0 && vertical != 1)
+    //                             {
+    //                                 System.out.println("Illegal input!");
+    //                                 allowedinput = false;
+    //                             }
+    //                             else
+    //                                 isVertical = (vertical == 1);
                                 
-                            } while(!allowedinput);
+    //                         } while(!allowedinput);
                             
-                            String message = word + "," + row + "," + col + "," + isVertical;
-                            out.println(id + ":" + ClientModel.myName + "&Q" + message); //Adds the ID to the beginning of the message
-                            out.flush();
+    //                         String message = word + "," + row + "," + col + "," + isVertical;
+    //                         out.println(id + ":" + ClientModel.myName + "&Q" + message); //Adds the ID to the beginning of the message
+    //                         out.flush();
 
-                            while(!wordAccepted) //TODO
-                            {
-                                if(wordAccepted)
-                                    System.out.println("Word placed successfully!");
-                                else
-                                {
-                                    System.out.println("Word placement failed!");
-                                    if(game.challengeWord())
-                                        System.out.println("Challenge successful!");
-                                    else
-                                        System.out.println("Challenge failed!");
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-    }
+    //                         while(!wordAccepted) //TODO
+    //                         {
+    //                             if(wordAccepted)
+    //                                 System.out.println("Word placed successfully!");
+    //                             else
+    //                             {
+    //                                 System.out.println("Word placement failed!");
+    //                                 if(game.challengeWord())
+    //                                     System.out.println("Challenge successful!");
+    //                                 else
+    //                                     System.out.println("Challenge failed!");
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             scanner.close();
+    //         } catch (Exception e) {
+    //             throw new RuntimeException(e);
+    //         }
+    //     }).start();
+    // }
 
     @Override
     public void close() {

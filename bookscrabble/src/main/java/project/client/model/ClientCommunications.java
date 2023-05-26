@@ -5,12 +5,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientCommunications extends Communications{
+public class ClientCommunications implements Communications{
+    private ClientSideHandler requestHandler;
     private static Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
 
     public ClientCommunications(String hostIP, int hostPort) throws IOException { // Ctor
-        super(new ClientSideHandler(toHostSocket.getOutputStream()));
+        requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
         try {
             toHostSocket = new Socket(hostIP, hostPort);
             inFromHost = new Scanner(toHostSocket.getInputStream());
@@ -24,7 +25,7 @@ public class ClientCommunications extends Communications{
     }
 
     @Override
-    protected void run() { // A method that consistently receives messages from the host
+    public void run() { // A method that consistently receives messages from the host
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
                 if(inFromHost.hasNextLine()) {
@@ -37,16 +38,20 @@ public class ClientCommunications extends Communications{
                     String[] args = tmp[1].split(",");
                     String sender;
                     if(request.charAt(0) == '!') //Game update!
+                    {
                         sender = "!"; //To allow the handler to know that this is a game update from the host
+                        if(commandName.equals("!startGame"))
+                            gameStarted();
+                    }
                     else //A reply from the host
                         sender = ClientModel.myName;
                     
-                    super.getRequestHandler().handleClient(sender, commandName, args, toHostSocket.getOutputStream());
+                    requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                super.getRequestHandler().close();
+                requestHandler.close();
             }
         }
     }
@@ -69,4 +74,104 @@ public class ClientCommunications extends Communications{
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void start() {
+        new Thread(()-> {
+            try {
+                run();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    public void gameStarted()
+    {
+        requestHandler.isGameStarted = true;
+        new Thread(()-> {        
+            try {
+                Scanner scanner = new Scanner(System.in);
+                while(requestHandler.isGameStarted)
+                {
+                    //TODO - Print board and tiles
+                    //TODO - Print scores
+                    //TODO - update board after each turn
+
+
+                    if(game.isItMyTurn()) //My turn and I can now place a word
+                    {
+                        System.out.println("It's your turn to play! Enter word to place: ");
+                        if(scanner.hasNextLine())
+                        {
+                            boolean allowedinput = true;
+                            String word;
+                            int row, col; 
+                            boolean isVertical = false;
+                            do
+                            {
+                                allowedinput = true;
+                                word = scanner.nextLine();
+                                if(!game.isStringLegal(word.toUpperCase().toCharArray()))
+                                {
+                                    System.out.println("Illegal word!");
+                                    allowedinput = false;
+                                }
+                            } while(!allowedinput);
+
+                            do
+                            {
+                                allowedinput = true;
+                                System.out.println("Enter row and col of starting character:");
+                                row = scanner.nextInt();
+                                col = scanner.nextInt();
+                                if(row < 0 || row >= game.BOARD_SIZE || col < 0 || col >= game.BOARD_SIZE)
+                                {
+                                    System.out.println("Illegal row or col!");
+                                    allowedinput = false;
+                                }
+                            } while(!allowedinput);
+
+                            do
+                            {
+                                allowedinput = true;
+                                System.out.println("Enter 1 for vertical, 0 for horizontal:");
+                                int vertical = scanner.nextInt();
+                                if(vertical != 0 && vertical != 1)
+                                {
+                                    System.out.println("Illegal input!");
+                                    allowedinput = false;
+                                }
+                                else
+                                    isVertical = (vertical == 1);
+                                
+                            } while(!allowedinput);
+                            
+                            String message = word + "," + row + "," + col + "," + isVertical;
+                            out.println(id + ":" + ClientModel.myName + "&Q" + message); //Adds the ID to the beginning of the message
+                            out.flush();
+
+                            while(!wordAccepted) //TODO
+                            {
+                                if(wordAccepted)
+                                    System.out.println("Word placed successfully!");
+                                else
+                                {
+                                    System.out.println("Word placement failed!");
+                                    if(game.challengeWord())
+                                        System.out.println("Challenge successful!");
+                                    else
+                                        System.out.println("Challenge failed!");
+                                }
+                            }
+                        }
+                    }
+                }
+                scanner.close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
 }

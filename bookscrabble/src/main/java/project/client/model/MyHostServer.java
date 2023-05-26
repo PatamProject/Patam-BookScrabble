@@ -7,22 +7,22 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
 
 import project.client.Error_Codes;
 
-public class MyHostServer extends Communications{
-    private final int HOST_PORT, BOOK_SCRABBLE_PORT; // Ports
+public class MyHostServer implements Communications{
+    private HostSideHandler requestHandler;
+    private final int HOST_PORT, BOOK_SCRABBLE_PORT ,MAX_CLIENTS = 4; // Ports
     private final String BookScrabbleServerIP; // IP
     static HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
+    BlockingQueue<String> myTasks;
+    private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopServer = false;
     private boolean gameStarted = false;
-    public final int MAX_CLIENTS = 4;
-    private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
-    String HostName;
-
-    public MyHostServer(String hostName, int port, int bsPort, String bs_IP) { // Ctor
-        super(new HostSideHandler());
-        this.HostName = hostName;
+ 
+    public MyHostServer(int port, int bsPort, String bs_IP) { // Ctor
+        requestHandler = new HostSideHandler();
         HOST_PORT = port;
         BOOK_SCRABBLE_PORT = bsPort;
         BookScrabbleServerIP = bs_IP;
@@ -32,7 +32,7 @@ public class MyHostServer extends Communications{
     }
 
     @Override
-    protected void run() throws Exception { // A method that operates as the central junction between all users and the BookScrabbleServer
+    public void run() throws Exception { // A method that operates as the central junction between all users and the BookScrabbleServer
         ServerSocket hostSocket = new ServerSocket(HOST_PORT);
         hostSocket.setSoTimeout(2000);
         while(!stopServer) // Loop's until the end of the game
@@ -64,7 +64,7 @@ public class MyHostServer extends Communications{
                         playerCount++; //Increment player count
                         ArrayList<String> args = new ArrayList<>(){{add(sender); add(playerCount.toString());}}; //Add sender and ID
                         args.addAll(connectedClients.keySet()); //Add all players in game to the arguments
-                        super.getRequestHandler().handleClient(sender, "join", args.toArray(new String[args.size()]), aClient.getOutputStream());
+                        requestHandler.handleClient(sender, "join", args.toArray(new String[args.size()]), aClient.getOutputStream());
                         continue; //Add new player and continue
                     } else if(connectedClients.get(sender) == null && id == "0" && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
                         if(gameStarted)
@@ -96,18 +96,18 @@ public class MyHostServer extends Communications{
                         add("Q"); //query
                     }};
 
-                    if(!sender.equals(HostName) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
+                    if(!sender.equals(ClientModel.myName) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
                     { //Host only commands
                         throwError(Error_Codes.ACCESS_DENIED, out);
                         continue;  
                     } else if(acceptableCommands.contains(commandName)) //Known command
-                        super.getRequestHandler().handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
+                        requestHandler.handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
                     else //Unknown command
                         throwError(Error_Codes.UNKNOWN_CMD, out);
         
                 } catch (Exception e) {
                 } finally {
-                    super.getRequestHandler().close();
+                    requestHandler.close();
                 }
             } catch (SocketTimeoutException e){} 
         }
@@ -126,7 +126,7 @@ public class MyHostServer extends Communications{
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
         try {
-            PrintWriter outToHost = new PrintWriter(connectedClients.get(HostName).getOutputStream());
+            PrintWriter outToHost = new PrintWriter(connectedClients.get(ClientModel.myName).getOutputStream());
             Socket socket = new Socket(BookScrabbleServerIP, BOOK_SCRABBLE_PORT); // A socket for a single use
             try (Scanner inFromServer = new Scanner(socket.getInputStream());
                 PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
@@ -222,4 +222,15 @@ public class MyHostServer extends Communications{
         stopServer = true;
         playerCount = 0;
     } // A method to close the hostServer
+
+    @Override
+    public void start() {
+        new Thread(()-> {
+            try {
+                run();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
 }
