@@ -186,7 +186,7 @@ public class MyHostServer implements Communications{
 
             if(doNotSendToPlayer != null)
                 doNotSendStream.flush();
-            }           
+                     
         } catch (IOException e) {
             e.printStackTrace();
         }
