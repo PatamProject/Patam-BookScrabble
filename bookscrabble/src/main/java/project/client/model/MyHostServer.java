@@ -85,8 +85,7 @@ public class MyHostServer implements Communications{
                     String[] tmp = body[1].split(","); //Split the arguments
                     String[] commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
                     commandArgs[0] = sender;
-                    for(int i = 0; i < tmp.length; i++)
-                        commandArgs[i+1] = tmp[i];
+                    System.arraycopy(tmp, 0, commandArgs, 1, tmp.length);
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
                         add("startGame");
@@ -94,7 +93,7 @@ public class MyHostServer implements Communications{
                         add("join");
                         add("leave");
                         add("skipTurn");
-                        add("C"); //challange
+                        add("C"); //challenge
                         add("Q"); //query
                     }};
 
@@ -149,12 +148,7 @@ public class MyHostServer implements Communications{
                     //Failed to communicate with the BookScrabbleServer
                 } 
                 else //The BookScrabbleServer responded with true/false
-                {
-                    if(response == "true") //Word accepted
-                        return true;
-                    else //Word rejected
-                        return false;
-                }
+                    return response.equals("true");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -191,7 +185,6 @@ public class MyHostServer implements Communications{
             });
 
             if(doNotSendToPlayer != null)
-            {
                 doNotSendStream.flush();
             }           
         } catch (IOException e) {

@@ -28,23 +28,22 @@ public class ClientSideHandler implements RequestHandler{
         responseHandler = new HashMap<>(){{
             //Tried to join the game
             put("join", (String[] args) -> 
-            { //Seccussful join, args[0] = id, args[1]... = players
+            { //Successful join, args[0] = id, args[1]... = players
                 id = Integer.parseInt(args[0]);
                 String[] connectedPlayers = new String[args.length - 1];
-                for (int i = 1; i < args.length; i++) 
-                    connectedPlayers[i - 1] = args[i];
+                System.arraycopy(args, 1, connectedPlayers, 0, args.length - 1);
     
                 game.addPlayers(connectedPlayers);
             });
     
             //Tried to place a word on the board
             put("Q", (String[] args) -> 
-            { //Seccussful word placement, args[0] = score, args[1]... = players
+            { //Successful word placement, args[0] = score, args[1]... = players
                 Integer score = Integer.parseInt(args[1]);
                 if(score == 0) //Not boardLegal
                 {
                     //TODO try again
-                } else if(score == -1) //Not dictornaryLegal
+                } else if(score == -1) //Not dictionaryLegal
                 {
                     //TODO try again
                 } else //Word was placed successfully
@@ -58,13 +57,13 @@ public class ClientSideHandler implements RequestHandler{
     
             //Tried to challenge a failed word placement
             put("C", (String[] args) -> 
-            { //Seccussful join, args[0] = id, args[1]... = players
+            { //Successful join, args[0] = id, args[1]... = players
                 Integer score = Integer.parseInt(args[1]);
                 if(score == 0) //Not boardLegal
                 {
                     numOfChallenges++;
                     //TODO try again
-                } else if(score == -1) //Not dictornaryLegal
+                } else if(score == -1) //Not dictionaryLegal
                 {
                     numOfChallenges++;
                     //TODO try again

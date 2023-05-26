@@ -104,48 +104,48 @@ public class ClientCommunications implements Communications{
                         System.out.println("It's your turn to play! Enter word to place: ");
                         if(scanner.hasNextLine())
                         {
-                            boolean allowedinput = true;
+                            boolean allowedInput;
                             String word;
                             int row, col; 
                             boolean isVertical = false;
                             do
                             {
-                                allowedinput = true;
+                                allowedInput = true;
                                 word = scanner.nextLine();
                                 if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                                 {
                                     System.out.println("Illegal word!");
-                                    allowedinput = false;
+                                    allowedInput = false;
                                 }
-                            } while(!allowedinput);
+                            } while(!allowedInput);
 
                             do
                             {
-                                allowedinput = true;
+                                allowedInput = true;
                                 System.out.println("Enter row and col of starting character:");
                                 row = scanner.nextInt();
                                 col = scanner.nextInt();
                                 if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                                 {
                                     System.out.println("Illegal row or col!");
-                                    allowedinput = false;
+                                    allowedInput = false;
                                 }
-                            } while(!allowedinput);
+                            } while(!allowedInput);
 
                             do
                             {
-                                allowedinput = true;
+                                allowedInput = true;
                                 System.out.println("Enter 1 for vertical, 0 for horizontal:");
                                 int vertical = scanner.nextInt();
                                 if(vertical != 0 && vertical != 1)
                                 {
                                     System.out.println("Illegal input!");
-                                    allowedinput = false;
+                                    allowedInput = false;
                                 }
                                 else
                                     isVertical = (vertical == 1);
                                 
-                            } while(!allowedinput);
+                            } while(!allowedInput);
                             
                             String message = word + "," + row + "," + col + "," + isVertical;
                             sendAMessage(requestHandler.getId(), message);
