@@ -92,14 +92,13 @@ public class ClientCommunications implements Communications{
         new Thread(()-> {        
             try {
                 Scanner scanner = new Scanner(System.in);
-                while(requestHandler.isGameStarted)
+                while(requestHandler.isGameStarted) //While the game is running
                 {
                     //TODO - Print board and tiles
                     //TODO - Print scores
                     //TODO - update board after each turn
 
-
-                    if(game.isItMyTurn()) //My turn and I can now place a word
+                    if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                     {
                         System.out.println("It's your turn to play! Enter word to place: ");
                         if(scanner.hasNextLine())
@@ -112,7 +111,7 @@ public class ClientCommunications implements Communications{
                             {
                                 allowedinput = true;
                                 word = scanner.nextLine();
-                                if(!game.isStringLegal(word.toUpperCase().toCharArray()))
+                                if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                                 {
                                     System.out.println("Illegal word!");
                                     allowedinput = false;
@@ -125,7 +124,7 @@ public class ClientCommunications implements Communications{
                                 System.out.println("Enter row and col of starting character:");
                                 row = scanner.nextInt();
                                 col = scanner.nextInt();
-                                if(row < 0 || row >= game.BOARD_SIZE || col < 0 || col >= game.BOARD_SIZE)
+                                if(row < 0 || row >= requestHandler.game.BOARD_SIZE || col < 0 || col >= requestHandler.game.BOARD_SIZE)
                                 {
                                     System.out.println("Illegal row or col!");
                                     allowedinput = false;
@@ -148,22 +147,7 @@ public class ClientCommunications implements Communications{
                             } while(!allowedinput);
                             
                             String message = word + "," + row + "," + col + "," + isVertical;
-                            out.println(id + ":" + ClientModel.myName + "&Q" + message); //Adds the ID to the beginning of the message
-                            out.flush();
-
-                            while(!wordAccepted) //TODO
-                            {
-                                if(wordAccepted)
-                                    System.out.println("Word placed successfully!");
-                                else
-                                {
-                                    System.out.println("Word placement failed!");
-                                    if(game.challengeWord())
-                                        System.out.println("Challenge successful!");
-                                    else
-                                        System.out.println("Challenge failed!");
-                                }
-                            }
+                            sendAMessage(requestHandler.getId(), message);
                         }
                     }
                 }

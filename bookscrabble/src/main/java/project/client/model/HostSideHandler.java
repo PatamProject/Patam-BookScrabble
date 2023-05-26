@@ -54,7 +54,7 @@ public class HostSideHandler implements RequestHandler{
     
             commandHandler.put("skipTurn", (String[] args) -> 
             {
-                game.nextPlayer(); // Switch to next player and update ALL players if game continues
+                game.nextTurn(); // Switch to next player and update ALL players if game continues
                 if (!game.isGameEnded())
                     MyHostServer.updateAll("!skipTurn:" + game.getCurrentPlayersName(), null);
                 else {
@@ -137,7 +137,7 @@ public class HostSideHandler implements RequestHandler{
             {
                 try { //Take tiles from bag
                     tiles = game.getPlayer(args[0]).getRack().takeTilesFromBag();
-                    game.nextPlayer(); //next player's turn
+                    game.nextTurn(); //next player's turn
                     out.println(commandName+":"+score + "," + tiles + "," + game.getCurrentPlayersName()); //Send score and tiles to client
                     MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score + "," + game.getCurrentPlayersName(), args[0]); //Send score to all players
                 } catch (Exception e) {

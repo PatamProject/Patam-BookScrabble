@@ -2,19 +2,22 @@ package project.client.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import project.client.model.assets.PlayerModel;
 
-public class lightweightGameModel {
+public class GameModel {
     PlayerModel myPlayer;
     HashMap<String,Integer> players; //Name of player and their score
-    ArrayList<String> playersOrder;
+    PriorityQueue<String> playersOrder; //The order of the players in the game (0 goes first...)
     String[] board;
     public final int BOARD_SIZE = 15;
 
-    public lightweightGameModel() {
+    public GameModel() {
         myPlayer = new PlayerModel(ClientModel.getName());
-        playersOrder = new ArrayList<>(); //Will be updated by startGame
+        playersOrder = new PriorityQueue<>(); //Will be updated by startGame
         this.players = new HashMap<>();
         this.board = new String[BOARD_SIZE];
     }
@@ -56,27 +59,14 @@ public class lightweightGameModel {
         return true;    
     }
 
-    public boolean placeWord(String word, int row, int col, boolean isVertical)
+    public boolean nextTurn()
     {
-        //TODO
-        return false;
+        String currentPlayer = playersOrder.poll();
+        if(currentPlayer == null)
+            return false;
+        playersOrder.add(currentPlayer);
+        return isItMyTurn();
     }
 
-    public boolean challengeWord()
-    {
-        //TODO
-        return false;
-    }
-
-    public boolean isItMyTurn()
-    {
-        return playersOrder.get(0).equals(myPlayer.getName());
-    }
-
-    public void nextTurn()
-    {
-        String player = playersOrder.remove(0);
-        playersOrder.add(player);
-    }
-
+    public boolean isItMyTurn(){return playersOrder.peek().equals(ClientModel.myName);}
 }

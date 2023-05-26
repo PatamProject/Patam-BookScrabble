@@ -3,20 +3,19 @@ package project.client.model.assets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 public class GameManager{
     Board board;
     HashMap<String,PlayerModel> players; //Maps between player's name to player's object
-    Queue<String> playersOrder; //The order of the players in the game (0 goes first...)
+    PriorityQueue<String> playersOrder; //The order of the players in the game (0 goes first...)
     public boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
     public GameManager() { //Ctor
         this.board = Board.getBoard();
         this.players = new HashMap<>();
-        this.playersOrder = new LinkedList<>();
+        this.playersOrder = new PriorityQueue<>();
     }
 
     public String[] startGame() throws Exception { // Starts the game and returns a string that contains all names and racks by the random order of play
@@ -38,8 +37,10 @@ public class GameManager{
                 players.get(player).getRack().takeTilesFromBag();  
     }
 
-    public void nextPlayer() { // Switching turns and checks for conclusion of the game
+    public void nextTurn() { // Switching turns and checks for conclusion of the game
         String currentPlayer = playersOrder.poll();
+        if(currentPlayer == null)
+            return;
         playersOrder.add(currentPlayer);
         checkEndGameConditions();
     }
@@ -53,7 +54,7 @@ public class GameManager{
 
     private void setRandomPlayOrder() { //Randomize the order of the players
         ArrayList<String> shuffle = new ArrayList<>();
-        Queue<String> order = new LinkedList<>(playersOrder);
+        PriorityQueue<String> order = new PriorityQueue<>(playersOrder);
         while(!order.isEmpty())
             shuffle.add(order.poll());
 
