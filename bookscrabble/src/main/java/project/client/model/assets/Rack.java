@@ -1,5 +1,6 @@
 package project.client.model.assets;
 import project.client.model.assets.Tile.Bag;
+
 import java.util.HashMap;
 
 
@@ -27,10 +28,11 @@ public class Rack {
     public int size(){return tiles.size();}
     
     //take tile from bag at random
-    public String takeTilesFromBag(int num) throws Exception 
+    public String takeTilesFromBag() throws Exception 
     { //returns the letter of the tile taken
+        int tilesToTake = START_SIZE - size();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < tilesToTake; i++) {
             Tile tile = Bag.getBag().getRand();
             if(tile == null)
             {
@@ -78,11 +80,23 @@ public class Rack {
         }
     }
 
-    public void addTiles(Tile... tilesToAdd) //Used to pass tiles back to rack after a failed work placement
+    public void returnTilesToRack(Tile... tilesToAdd) //Used to pass tiles back to rack after a failed work placement
     {
         for (int i = 0; i < tilesToAdd.length; i++) {
             tiles.put(tilesToAdd[i], tiles.getOrDefault(tilesToAdd[i], 0) + 1);
         }
+    }
+
+    @Override
+    public String toString() //returns a string of all the tiles in the rack (including duplicates)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Tile tile : tiles.keySet()) {
+            for (int i = 0; i < tiles.get(tile); i++) {
+                sb.append(tile.letter);
+            }
+        }
+        return sb.toString();
     }
 
     public boolean isEmpty(){return size() == 0;}
