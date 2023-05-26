@@ -85,13 +85,15 @@ public class GameManager{
 
     public boolean removePlayer(String pName)
     { // Removes a player from the game and checks if there's enough players to continue the game
-        if(players.containsKey(pName)) {
+        if(players.containsKey(pName))
             players.remove(pName);
-            return true;
-        }
+
         if(players.size() <= 1)
+        {
             gameEnded = true;
-        return false;
+            return false;
+        }
+        return true;
     }
 
     public String getWinner() { //The winner is the player with the highest score

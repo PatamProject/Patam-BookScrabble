@@ -1,6 +1,7 @@
 package project.client.model;
 
 import project.client.Error_Codes;
+import project.client.MyLogger;
 import project.client.model.assets.GameManager;
 import project.client.model.assets.Word;
 
@@ -125,14 +126,14 @@ public class HostSideHandler implements RequestHandler{
         //Check if all words are dictionaryLegal
         Boolean areWordsLegal = true;
         for (String word : words)
-            areWordsLegal |= ClientModel.myHostServer.msgToBSServer(word);
+            areWordsLegal &= ClientModel.myHostServer.msgToBSServer(word);
         
         if(!areWordsLegal) //Not all words are dictionaryLegal
             out.println(commandName+":-1"); //Score = -1
         else
         {
             Integer score = game.getScoreFromWord(args[0], w);
-            String tiles = "";
+            String tiles;
             if(score != 0)
             {
                 try { //Take tiles from bag

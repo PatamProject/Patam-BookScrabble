@@ -1,90 +1,86 @@
 package project.client;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import project.client.model.MyHostServer;
+import project.client.model.ClientModel;
 import project.server.serverHandler.BookScrabbleHandler;
 import project.server.serverHandler.MyServer;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.Scanner;
 
-/**
- * JavaFX App
- */
-public class RunClient  { // extends Application
+public class RunClient{
+    static ClientModel myClient;
 
-//    private static Scene scene;
-//
-//    @Override
-//    public void start(Stage stage) throws IOException {
-//        scene = new Scene(loadFXML("primary"), 640, 480);
-//        stage.setScene(scene);
-//        stage.show();
-//    }
-//
-//    static void setRoot(String fxml) throws IOException {
-//        scene.setRoot(loadFXML(fxml));
-//    }
-//
-//    private static Parent loadFXML(String fxml) throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader(RunClient.class.getResource(fxml + ".fxml"));
-//        return fxmlLoader.load();
-//    }
-
-    public static void client_check1()
-    {
-        String response;
-        try {
-            Socket server=new Socket("localhost",5050);
-            PrintWriter outToServer=new PrintWriter(server.getOutputStream());
-            Scanner in=new Scanner(server.getInputStream());
-            outToServer.println("Q,Hello");
-            outToServer.flush();
-            response = in.next();
-            System.out.println(response);
-            outToServer.close();
-            in.close();
-            server.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public static void client_check2()
-    {
-        String response;
-        try {
-            Socket server=new Socket("localhost",5050);
-            PrintWriter outToServer=new PrintWriter(server.getOutputStream());
-            Scanner in=new Scanner(server.getInputStream());
-            outToServer.println("!Q|Hello");
-            outToServer.flush();
-            response = in.next();
-            System.out.println(response);
-            outToServer.close();
-            in.close();
-            server.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
     public static void main(String[] args) {
-        // Client logging game progress
-        //Prints.log("Welcome to the game!");
-        //Prints.log("Choose your role. Are you a guest or the host?");
-        MyServer myServer = new MyServer(1234,new BookScrabbleHandler());
+        MyServer myServer = new MyServer(1234,new BookScrabbleHandler()); //Local server
         myServer.start();
-        MyHostServer myHostServer = new MyHostServer(5050,1234,"localhost");
-        myHostServer.start();
-        client_check1();
-     //   client_check2();
-        myServer.close();
-        myHostServer.close();
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to the game!");
+        System.out.println("Please enter your name:");
+        String name;
+        do {
+            name = scanner.nextLine();
+        } while (name.length() == 0);
+        System.out.println("Welcome " + name + "!\nAre you joining a game or creating a new one? Choose 1 or 2.");
+        System.out.println("1. Join a game");
+        System.out.println("2. Create a new game");
+        boolean invalidInput = false;
+        do {
+            invalidInput = false;
+            String input = scanner.nextLine();
+            if (input.equals("1")) {
+                System.out.println("Enter the host's IP address:");
+                String ip = scanner.nextLine();
+                System.out.println("Enter the host's port number:");
+                String port = scanner.nextLine();
+                System.out.println("Connecting to host...");
+                myClient = new ClientModel(false, ip, Integer.parseInt(port) , name); //Guest client
+
+            } else if (input.equals("2")) {
+                System.out.println("Enter the port number you want to host the game on:");
+                String port = scanner.nextLine();
+                System.out.println("Creating game on port " + port + "...");
+                myClient = new ClientModel(true, "localhost", Integer.parseInt(port) , name); //Host client
+                System.out.println("Waiting for other players to join...");
+            } else {
+                System.out.println("Invalid input. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+        scanner.close();
     }
 
+    public boolean welcomeClient()
+    {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to the game!");
+        System.out.println("Please enter your name:");
+        String name = scanner.nextLine();
+        System.out.println("Are you joining a game or creating a new one? Choose 1 or 2.");
+        System.out.println("1. Join a game");
+        System.out.println("2. Create a new game");
+        boolean invalidInput = false;
+        do {
+            invalidInput = false;
+            String input = scanner.nextLine();
+            if (input.equals("1")) {
+                System.out.println("Enter the host's IP address:");
+                String ip = scanner.nextLine();
+                System.out.println("Enter the host's port number:");
+                String port = scanner.nextLine();
+                System.out.println("Connecting to host...");
+                myClient = new ClientModel(false, ip, Integer.parseInt(port) , name); //Guest client
+
+            } else if (input.equals("2")) {
+                System.out.println("Enter the port number you want to host the game on:");
+                String port = scanner.nextLine();
+                System.out.println("Creating game on port " + port + "...");
+                myClient = new ClientModel(true, "localhost", Integer.parseInt(port) , name); //Host client
+                System.out.println("Waiting for other players to join...");
+            } else {
+                System.out.println("Invalid input. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+        scanner.close();
+        return true;
+    }
 }
