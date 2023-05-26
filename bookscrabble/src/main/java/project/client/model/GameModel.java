@@ -1,10 +1,7 @@
 package project.client.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.Queue;
 
 import project.client.model.assets.PlayerModel;
 
