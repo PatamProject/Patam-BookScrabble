@@ -29,7 +29,7 @@ public class TestRack {
         } catch (Exception e) {
             System.out.println(" testTakeTilesFromBag Exception caught: " + e.getMessage());
         }
-        Tile[]tiles = rack.getTiles();
+        Tile[] tiles = rack.getTiles();
         if(rack.size() > 7)
             System.out.println(" testTakeTilesFromBag Failed");
     }
