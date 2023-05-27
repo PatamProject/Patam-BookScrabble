@@ -12,7 +12,7 @@ public class TestRunClient {
         myServer.start();
 
         RunClient host = new RunClient();
-        ClientModel guest = new ClientModel(false, "localhost", 5005, "guest");
+        // ClientModel guest = new ClientModel(false, "localhost", 8009, "guest");
 
     }
 

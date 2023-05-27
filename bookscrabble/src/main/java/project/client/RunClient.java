@@ -47,6 +47,7 @@ public class RunClient{
 
         if(isHost)
         {
+            scanner.nextLine();
             System.out.println("Type 'start' to begin the game or 'exit' to close.");
             System.out.println("Remember, a game is played with 2-4 players.");
             boolean exit = false;
