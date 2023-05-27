@@ -32,7 +32,8 @@ public class ClientModel {
         try {
             myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
-        } catch (IOException e) {
+            Thread.sleep(5000);
+        } catch (Exception e) {
             System.out.println("Unable to connect to host!");
             e.printStackTrace();
         }  

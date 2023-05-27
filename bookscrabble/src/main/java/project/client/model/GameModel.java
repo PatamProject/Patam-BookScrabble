@@ -3,6 +3,7 @@ package project.client.model;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import project.client.MyLogger;
 import project.client.model.assets.PlayerModel;
 
 public class GameModel {
@@ -27,7 +28,10 @@ public class GameModel {
 
     public void addPlayers(String... players) {
         for (String player : players)
+        {
             this.players.put(player, 0); //Each player starts with score 0
+            MyLogger.playerJoined(player);
+        }
     }
 
     public void removePlayer(String player)

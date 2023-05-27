@@ -20,9 +20,9 @@ public class ClientSideHandler implements RequestHandler{
     private int numOfChallenges = 0;
     boolean isGameStarted = false;
 
-    public ClientSideHandler(OutputStream out) {
+    public ClientSideHandler(PrintWriter out) {
         game = new GameModel();
-        this.out = new PrintWriter(out, true);
+        this.out = out;
         
         //ResponseHandler (responses from the server to the client's request)
         responseHandler = new HashMap<>(){{
@@ -70,6 +70,11 @@ public class ClientSideHandler implements RequestHandler{
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "C");
                 }
             }); 
+
+            put("hello", (String[] args) -> 
+            { //Used for testing
+                MyLogger.log("Hello recieved");
+            });
         }};
 
         //CommandHandler (commands from the host to the client about game updates)

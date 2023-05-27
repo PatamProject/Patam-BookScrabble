@@ -1,6 +1,8 @@
 package project.client;
 
 import project.client.model.ClientModel;
+import project.client.model.MyHostServer;
+
 import java.util.Scanner;
 
 public class RunClient{
@@ -57,13 +59,13 @@ public class RunClient{
                     String input = scanner.nextLine();
 
                     if (input.equals("start")) {
-                        ClientModel.myHostServer.startGame();
-                        System.out.println("Starting game...");
-                        exit = true;
+                        exit = ClientModel.myHostServer.startGame();
                     } else if (input.equals("exit")) {
                         System.out.println("Exiting...");
                         exit = true;
-                    } else {
+                    }
+                    else
+                    {
                         System.out.println("Invalid input. Please try again.");
                     }
                 }

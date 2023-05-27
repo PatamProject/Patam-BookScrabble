@@ -11,25 +11,30 @@ public class ClientCommunications implements Communications{
     private ClientSideHandler requestHandler;
     private static Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
+    private static PrintWriter outToHost;
 
-    public ClientCommunications(String hostIP, int hostPort) throws IOException { // Ctor
+    public ClientCommunications(String hostIP, int hostPort) throws IOException, InterruptedException { // Ctor
         toHostSocket = new Socket(hostIP, hostPort);
-        requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
+        outToHost = new PrintWriter(toHostSocket.getOutputStream());
+        requestHandler = new ClientSideHandler(outToHost);
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
     
     @Override
     public void run() { // A method that consistently receives messages from the host
         sendAMessage(0,ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0
-        while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
+        while (!toHostSocket.isClosed() && inFromHost.hasNextLine()) { // The socket will be open until the game is over
             try {
                 if(inFromHost.hasNextLine()) {
                     String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
-                    // if(isError(request)) //If the host sent an error
-                    //     super.getRequestHandler().handleError(request);
+                    if(request.charAt(0) == '#') //If the host sent an error
+                    {
+                        requestHandler.handleClient("#", request.substring(1), null, null); //Error
+                        continue;
+                    }
                         
                     String[] tmp = request.split(":");
-                    String commandName = tmp[0].substring(1);
+                    String commandName = tmp[0];
                     String[] args = tmp[1].split(",");
                     String sender;
                     if(request.charAt(0) == '!') //Game update!
@@ -51,12 +56,8 @@ public class ClientCommunications implements Communications{
     }
 
     public static void sendAMessage(int id, String message) { // A method that sends a message to the host
-        try (PrintWriter outToHost = new PrintWriter(toHostSocket.getOutputStream())) {
-            outToHost.println(id + ":" + message); //Adds the ID to the beginning of the message
-            outToHost.flush();
-        } catch (IOException e) { 
-            throw new RuntimeException(e);
-        }
+        outToHost.println(id + ":" + message); //Adds the ID to the beginning of the message
+        outToHost.flush();
     }
 
     @Override
