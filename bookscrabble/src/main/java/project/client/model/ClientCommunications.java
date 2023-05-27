@@ -87,7 +87,7 @@ public class ClientCommunications implements Communications{
         requestHandler.isGameStarted = true;
         new Thread(()-> {        
             try {
-                Scanner scanner = new Scanner(System.in);
+                Scanner scanner = MyLogger.getScanner();
                 MyLogger.printBoard(null); //Print empty board
                 while(requestHandler.isGameStarted) //While the game is running
                 {
@@ -148,7 +148,6 @@ public class ClientCommunications implements Communications{
                         }
                     }
                 }
-                scanner.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

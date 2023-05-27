@@ -144,19 +144,15 @@ public class MyHostServer implements Communications{
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
         try {
-            PrintWriter outToHost = new PrintWriter(connectedClients.get(ClientModel.myName).getOutputStream());
             Socket socket = new Socket(BookScrabbleServerIP, BOOK_SCRABBLE_PORT); // A socket for a single use
             try (Scanner inFromServer = new Scanner(socket.getInputStream());
                 PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
                 outToServer.println(message); // Sends the message
                 outToServer.flush();
                 if(inFromServer.hasNext())
-                {
                     response = inFromServer.next(); // The response from the BookScrabbleServer
-                    //Add a loop? Wait?
-                }
 
-                if(response == null) //Invalid response
+                if(response == null) //Invalid response from the BookScrabbleServer
                 {
                     throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.myName).getOutputStream());
                     return false;
@@ -168,7 +164,6 @@ public class MyHostServer implements Communications{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                outToHost.close();
                 socket.close();
             }
         } catch (IOException e) {
@@ -213,7 +208,6 @@ public class MyHostServer implements Communications{
             PrintWriter out = new PrintWriter(connectedClients.get(player).getOutputStream());
             out.println(msg);
             out.flush();
-            out.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -240,15 +234,14 @@ public class MyHostServer implements Communications{
             throw new RuntimeException(e);
         }
         pw.flush();
-        pw.close();
     }
 
     @Override
-    public void close()
+    public void close() // A method to close the hostServer
     {
         stopServer = true;
         playerCount = 0;
-    } // A method to close the hostServer
+    } 
 
     @Override
     public void start() {

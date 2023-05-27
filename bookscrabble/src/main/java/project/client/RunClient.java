@@ -8,7 +8,7 @@ public class RunClient{
 
     public RunClient() {
         boolean isHost = false;
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = MyLogger.getScanner();
         System.out.println("Welcome to the game!");
         System.out.println("Please enter your name:");
         String name;
@@ -83,10 +83,5 @@ public class RunClient{
                 }
             } while (!exit);
         }
-
-
-        scanner.close();
-    }
-
-    
+    }    
 }
