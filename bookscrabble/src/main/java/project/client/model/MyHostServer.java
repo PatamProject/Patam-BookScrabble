@@ -99,7 +99,7 @@ public class MyHostServer implements Communications{
                             commandArgs[i] = tmp[i-1];  
                     }
                     
-                    //System.arraycopy(tmp, 0, commandArgs, 1, tmp.length); מה זה החרא הזה אורי @UriB1
+                    
 
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
