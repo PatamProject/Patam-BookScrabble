@@ -14,6 +14,8 @@ public class ServerMain{
         Integer port = scanner.nextInt();
         MyServer myServer = new MyServer(port,new BookScrabbleHandler()); //Local server
         System.out.println("Lunching server...");
+        myServer.start();
+        scanner.close();
     }
 
 }

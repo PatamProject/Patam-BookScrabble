@@ -30,6 +30,7 @@ public class MyHostServer implements Communications{
         connectedClients = new HashMap<>();
         stopServer = false;
         gameStarted = false;
+
     }
 
     @Override
@@ -171,7 +172,7 @@ public class MyHostServer implements Communications{
                 socket.close();
             }
         } catch (IOException e) {
-            MyLogger.log("Failed to communicate with the BookScrabbleServer");
+            e.printStackTrace();
         }
         //Failed to communicate with the BookScrabbleServer
         return false;
@@ -253,7 +254,6 @@ public class MyHostServer implements Communications{
     public void start() {
         new Thread(()-> {
             try {
-                Thread.sleep(1000); 
                 run();
             } catch (Exception e) {
                 throw new RuntimeException(e);
