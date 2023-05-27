@@ -16,11 +16,11 @@ public class ClientCommunications implements Communications{
         toHostSocket = new Socket(hostIP, hostPort);
         requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
         inFromHost = new Scanner(toHostSocket.getInputStream());
-        sendAMessage(0,ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0 (marked after "$")
     }
-
+    
     @Override
     public void run() { // A method that consistently receives messages from the host
+        sendAMessage(0,ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
                 if(inFromHost.hasNextLine()) {
@@ -90,7 +90,7 @@ public class ClientCommunications implements Communications{
                 Scanner scanner = MyLogger.scanner;
                 while(requestHandler.isGameStarted) //While the game is running
                 {
-                    //TODO - Print board and tiles
+                    
                     //TODO - Print scores
                     //TODO - update board after each turn
 

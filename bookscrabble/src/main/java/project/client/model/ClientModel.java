@@ -10,7 +10,7 @@ public class ClientModel {
     public static MyHostServer myHostServer;
     static String myName;
 
-    public ClientModel(boolean isHost, String hostIP, int hostPort , String playerName) //Basic constructor
+    public ClientModel(boolean isHost, String hostIP, int hostPort , String playerName)
     {
         myName = playerName;
         if(!isHost)
@@ -30,11 +30,16 @@ public class ClientModel {
         } 
 
         try {
-            myConnectionToHost = new ClientCommunications(hostIP, hostPort);
+            myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
         } catch (IOException e) {
             System.out.println("Unable to connect to host!");
             e.printStackTrace();
+        }  
+
+        if(isHost)
+        {
+            myHostServer.checkBSConnection(); //Check if connection to BookScrabble server is established
         }
     }
 
