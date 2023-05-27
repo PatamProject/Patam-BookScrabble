@@ -144,7 +144,6 @@ public class MyHostServer implements Communications{
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
         try {
-            PrintWriter outToHost = new PrintWriter(connectedClients.get(ClientModel.myName).getOutputStream());
             Socket socket = new Socket(BookScrabbleServerIP, BOOK_SCRABBLE_PORT); // A socket for a single use
             try (Scanner inFromServer = new Scanner(socket.getInputStream());
                 PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
@@ -168,7 +167,6 @@ public class MyHostServer implements Communications{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                outToHost.close();
                 socket.close();
             }
         } catch (IOException e) {
