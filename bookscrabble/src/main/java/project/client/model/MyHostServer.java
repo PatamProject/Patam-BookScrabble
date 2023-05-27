@@ -197,7 +197,6 @@ public class MyHostServer implements Communications{
             PrintWriter out = new PrintWriter(connectedClients.get(player).getOutputStream());
             out.println(msg);
             out.flush();
-            out.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

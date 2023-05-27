@@ -5,7 +5,7 @@ import java.util.Scanner;
 import project.client.model.ClientModel;
 
 public class MyLogger {
-    Scanner scanner = new Scanner(System.in);
+    public static Scanner scanner = new Scanner(System.in);
 
     public MyLogger(){}
 

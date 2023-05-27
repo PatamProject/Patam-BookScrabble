@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+import project.client.MyLogger;
+
 public class ClientCommunications implements Communications{
     private ClientSideHandler requestHandler;
     private static Socket toHostSocket; // A socket to the host
@@ -85,7 +87,7 @@ public class ClientCommunications implements Communications{
         requestHandler.isGameStarted = true;
         new Thread(()-> {        
             try {
-                Scanner scanner = new Scanner(System.in);
+                Scanner scanner = MyLogger.scanner;
                 while(requestHandler.isGameStarted) //While the game is running
                 {
                     //TODO - Print board and tiles
@@ -145,7 +147,6 @@ public class ClientCommunications implements Communications{
                         }
                     }
                 }
-                scanner.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
