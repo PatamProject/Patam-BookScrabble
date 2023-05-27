@@ -6,9 +6,42 @@ import java.util.ArrayList;
 
 public class TestGameManager {
     final int MAX_PLAYERS = 4, RACK_SIZE = 7;
+
     public void testMethod1()
     {
-        //Tests the following methods:
+        // Tests the following methods:
+        // createWordFromClientInput
+        // getWordsFromClientInput
+        // getScoreFromWord
+
+        GameManager gameManager = new GameManager();
+        gameManager.addNewPlayer("player1");
+        gameManager.addNewPlayer("player2");
+        gameManager.getPlayer("player1").getRack().takeTiles("IS");
+        gameManager.getPlayer("player2").getRack().takeTiles("ANT");
+
+        Word w1 = gameManager.createWordFromClientInput("player1","IS",7,7,true);
+        if (!w1.toString().equals("IS"))
+            System.out.println("Problem with createWordFromClientInput method");
+
+        String[] arrWords = gameManager.getWordsFromClientInput(w1);
+        if (!arrWords[0].equals(w1.toString()))
+            System.out.println("Problem with getWordsFromClientInput method");
+
+        int score1 = gameManager.getScoreFromWord("player1",w1);
+        Word w2 = gameManager.createWordFromClientInput("player2","ANTS",8,4,false);
+        String[] newWords = gameManager.getWordsFromClientInput(w2);
+        if (!newWords[0].equals("ANTS"))
+            System.out.println("Problem with getWordsFromClientInput method");
+
+        int score2 = gameManager.getScoreFromWord("player2",w2);
+        if(score1 != 4 || score2 != 5)
+            System.out.println("Problem with getScoreFromWord method");
+    }
+
+    public void testMethod2()
+    {
+        // Tests the following methods:
         // getBoard
         // addNewPlayer
         // getPlayersOrder
@@ -42,7 +75,7 @@ public class TestGameManager {
         if (gameManager.getPlayersAmount() != MAX_PLAYERS || playersOrder.size() != MAX_PLAYERS)
             System.out.println("Problem with removePlayer method");
 
-        testMethod1Helper(gameManager, playersOrder);
+        testMethod2Helper(gameManager, playersOrder);
         gameManager.gameEnded = false;
         flag = true;
         for (String name : names2)
@@ -58,10 +91,10 @@ public class TestGameManager {
             System.out.println("Problem with addNewPlayer method");
 
         playersOrder = gameManager.getPlayersOrder();
-        testMethod1Helper(gameManager, playersOrder);
+        testMethod2Helper(gameManager, playersOrder);
     }
 
-    private void testMethod1Helper(GameManager gameManager, ArrayList<String> playersOrder) {
+    private void testMethod2Helper(GameManager gameManager, ArrayList<String> playersOrder) {
         boolean flag;
         flag = true;
         for (String player : playersOrder)
@@ -72,7 +105,7 @@ public class TestGameManager {
         playersOrder.clear();
     }
 
-    public void testMethod2() {
+    public void testMethod3() {
         //Tests the following methods:
         // startGame
         // initialRacks
@@ -118,7 +151,7 @@ public class TestGameManager {
             System.out.println("Problem with checkEndGameConditions method");
     }
 
-    public void testMethod3()
+    public void testMethod4()
     {
         //Tests the following methods:
         // getWinner
@@ -151,64 +184,13 @@ public class TestGameManager {
         gameManager.gameEnded = false;
     }
 
-    public void testMethod4()
-    {
-        GameManager gameManager = new GameManager();
-//        gameManager.addNewPlayer("player1");
-//        gameManager.addNewPlayer("player2");
-//        gameManager.getPlayer("player1").getRack().takeTiles("IS");
-//        gameManager.getPlayer("player2").getRack().takeTiles("ANT");
-//
-//        Word w1 = gameManager.createWordFromClientInput("player1","IS",7,7,true);
-//        if (w1 == null)
-//            System.out.println("Problem with createWordFromClientInput method");
-//
-//        if (w1 != null) {
-//            int score1 = gameManager.getScoreFromWord("player1",w1);
-//            if(score1 != 4)
-//                System.out.println("Problem with getScoreFromWord method");
-//        }
-//
-//        Word w2 = gameManager.createWordFromClientInput("player2","ANTS",8,4,false);
-//        if (w2 == null)
-//            System.out.println("Problem with createWordFromClientInput method");
-//
-//        if (w2 != null) {
-//            int score2 = gameManager.getScoreFromWord("player2",w2);
-//            if(score2 != 5)
-//                System.out.println("Problem with getScoreFromWord method");
-//        }
-//
-//        String[] newWords = gameManager.getWordsFromClientInput(w2);
-//        if(!newWords[0].equals("ANTS"))
-//            System.out.println("Problem with getWordsFromClientInput method");
-
-        boolean flag = true;
-        flag = gameManager.addNewPlayer("player1");
-        flag = gameManager.addNewPlayer("player2");
-        if(!flag)
-            System.out.println("testAddNewPlayer Failed");
-        gameManager.getPlayer("player1").getRack().takeTiles("IS");
-        gameManager.getPlayer("player2").getRack().takeTiles("ANT");
-        Word w1 = gameManager.createWordFromClientInput("player1","IS",7,7,true);
-        String[] arrWords = gameManager.getWordsFromClientInput(w1);
-        if (!arrWords[0].equals(w1.toString()))
-            System.out.println("Problem with getWordsFromClientInput method");
-        int score1 = gameManager.getScoreFromWord("player1",w1);
-        Word w2 = gameManager.createWordFromClientInput("player2","ANTS",8,4,false);
-        String[] newWords = gameManager.getWordsFromClientInput(w2);
-        int score2 = gameManager.getScoreFromWord("player2",w2);
-        if(score1 != 4 || score2 != 5 || !newWords[0].equals("ANTS"))
-            System.out.println("testPlaceWord Failed");
-    }
-
     public static void main(String[] args)
     {
         TestGameManager testGameManager = new TestGameManager();
-        testGameManager.testMethod4();
         testGameManager.testMethod1();
         testGameManager.testMethod2();
         testGameManager.testMethod3();
+        testGameManager.testMethod4();
         System.out.println("Done!");
     }
 }
