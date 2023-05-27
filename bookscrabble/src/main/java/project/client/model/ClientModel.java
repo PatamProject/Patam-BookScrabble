@@ -3,6 +3,8 @@ package project.client.model;
 import java.io.IOException;
 import java.util.Scanner;
 
+import project.client.MyLogger;
+
 public class ClientModel {
     ClientCommunications myConnectionToHost;
     public static MyHostServer myHostServer;
@@ -15,7 +17,7 @@ public class ClientModel {
             myHostServer = null;
         else
         {
-            Scanner sc = new Scanner(System.in);
+            Scanner sc = MyLogger.getScanner();
             String bs_IP;
             int bs_port;
             System.out.println("Please connect to a BookScrabble server");
@@ -23,7 +25,6 @@ public class ClientModel {
             bs_IP = sc.nextLine();
             System.out.println("Enter Port: ");
             bs_port = sc.nextInt();
-            sc.close();
             myHostServer = new MyHostServer(hostPort, bs_port, bs_IP); //Create host-side
             myHostServer.start();
         } 
@@ -38,6 +39,7 @@ public class ClientModel {
 
         if(isHost)
         {
+            while(MyHostServer.connectedClients.size() == 0); //Wait for host to join
             myHostServer.checkBSConnection(); //Check if connection to BookScrabble server is established
         }
     }

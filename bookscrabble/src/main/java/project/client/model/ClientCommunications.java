@@ -45,10 +45,9 @@ public class ClientCommunications implements Communications{
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } finally {
-                requestHandler.close();
-            }
+            } 
         }
+        requestHandler.close();
     }
 
     public static void sendAMessage(int id, String message) { // A method that sends a message to the host
@@ -87,8 +86,8 @@ public class ClientCommunications implements Communications{
         requestHandler.isGameStarted = true;
         new Thread(()-> {        
             try {
-                Scanner scanner = new Scanner(System.in);
-                MyLogger.printBoard(null); //Print empty board
+                Scanner scanner = MyLogger.getScanner();
+                MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
                 while(requestHandler.isGameStarted) //While the game is running
                 {
                     
@@ -148,7 +147,6 @@ public class ClientCommunications implements Communications{
                         }
                     }
                 }
-                scanner.close();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

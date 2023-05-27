@@ -20,7 +20,7 @@ public class MyHostServer implements Communications{
     BlockingQueue<String> myTasks;
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopServer = false;
-    private boolean gameStarted = false;
+    static boolean gameStarted = false;
  
     public MyHostServer(int port, int bsPort, String bs_IP) { // Ctor
         requestHandler = new HostSideHandler();
@@ -122,12 +122,12 @@ public class MyHostServer implements Communications{
                         throwError(Error_Codes.UNKNOWN_CMD, aClient.getOutputStream());
                         
                 } catch (Exception e) {
-                } finally {
-                    requestHandler.close();
+                    e.printStackTrace();
                 }
             } catch (SocketTimeoutException e){} 
         }
         //Runs only when close() is called
+        requestHandler.close();
         if (out != null) out.close();
         if(in != null) in.close(); 
         connectedClients.values().forEach(c-> { // All sockets will be closed after the game has ended (reusing them for all messages)
@@ -144,31 +144,26 @@ public class MyHostServer implements Communications{
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
         try {
-            PrintWriter outToHost = new PrintWriter(connectedClients.get(ClientModel.myName).getOutputStream());
             Socket socket = new Socket(BookScrabbleServerIP, BOOK_SCRABBLE_PORT); // A socket for a single use
             try (Scanner inFromServer = new Scanner(socket.getInputStream());
                 PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
                 outToServer.println(message); // Sends the message
                 outToServer.flush();
                 if(inFromServer.hasNext())
-                {
                     response = inFromServer.next(); // The response from the BookScrabbleServer
-                    //Add a loop? Wait?
-                }
 
-                if(response == null) //Invalid response
+                if(response == null) //Invalid response from the BookScrabbleServer
                 {
                     throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.myName).getOutputStream());
                     return false;
                     //Failed to communicate with the BookScrabbleServer
-                } else if(message.equals("S")) //First message from the BookScrabbleServer
-                    return response.equals("Hello from BookScrabble server!");
+                } else if(message.equals("S,hello")) //First message from the BookScrabbleServer
+                    return response.equals("Hello");
                 else //The BookScrabbleServer responded with true/false
                     return response.equals("true");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                outToHost.close();
                 socket.close();
             }
         } catch (IOException e) {
@@ -213,20 +208,18 @@ public class MyHostServer implements Communications{
             PrintWriter out = new PrintWriter(connectedClients.get(player).getOutputStream());
             out.println(msg);
             out.flush();
-            out.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public void startGame() { // A method to start the game
-        gameStarted = true;
         sendUpdate("startGame", ClientModel.myName);
     }
 
     void checkBSConnection()
     {
-        if(msgToBSServer("S"))
+        if(msgToBSServer("S,hello"))
             MyLogger.log("Connected to BookScrabbleServer!");
         else
             MyLogger.log("Couldn't connect to BookScrabbleServer!");    
@@ -240,15 +233,14 @@ public class MyHostServer implements Communications{
             throw new RuntimeException(e);
         }
         pw.flush();
-        pw.close();
     }
 
     @Override
-    public void close()
+    public void close() // A method to close the hostServer
     {
         stopServer = true;
         playerCount = 0;
-    } // A method to close the hostServer
+    } 
 
     @Override
     public void start() {

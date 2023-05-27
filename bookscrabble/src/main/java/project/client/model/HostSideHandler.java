@@ -69,6 +69,7 @@ public class HostSideHandler implements RequestHandler{
                 if (args[0].equals(ClientModel.myName) && game.getPlayersAmount() >= 2) //Enough players and is the host
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
                     try {
+                        MyHostServer.gameStarted = true; //Set gameStarted to true
                         String[] tilesAndPlayers = game.startGame(); //Start the game
                         StringBuilder playersOrder = new StringBuilder();
                         for (String tilesAndPlayer : tilesAndPlayers)
