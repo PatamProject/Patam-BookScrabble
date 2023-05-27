@@ -83,10 +83,23 @@ public class MyHostServer implements Communications{
                     //Now we have a known client and will process his request
                     String[] body = user_body_split[1].split(":");
                     String commandName = body[0]; //Split the body to command and arguments
-                    String[] tmp = body[1].split(","); //Split the arguments
-                    String[] commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
-                    commandArgs[0] = sender;
-                    System.arraycopy(tmp, 0, commandArgs, 1, tmp.length);
+                    String[] tmp, commandArgs;
+                    if(body.length == 1) //No arguments (startGame, endGame)
+                    {
+                        commandArgs = new String[1];
+                        commandArgs[0] = sender;
+                    } 
+                    else //Arguments exist
+                    {
+                        tmp = body[1].split(","); //Split the arguments 
+                        commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
+                        commandArgs[0] = sender;
+                        for (int i = 1; i < commandArgs.length; i++)
+                            commandArgs[i] = tmp[i-1];  
+                    }
+                    
+                    //System.arraycopy(tmp, 0, commandArgs, 1, tmp.length); מה זה החרא הזה אורי @UriB1
+
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
                         add("startGame");
@@ -158,7 +171,7 @@ public class MyHostServer implements Communications{
                 socket.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            MyLogger.log("Failed to communicate with the BookScrabbleServer");
         }
         //Failed to communicate with the BookScrabbleServer
         return false;
