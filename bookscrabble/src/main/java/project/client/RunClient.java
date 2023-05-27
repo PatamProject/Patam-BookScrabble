@@ -51,6 +51,7 @@ public class RunClient{
             System.out.println("Remember, a game is played with 2-4 players.");
             boolean exit = false;
             do {
+                while(scanner.hasNextLine() == false);
                 String input = scanner.nextLine();
                 if (input.equals("start")) {
                     System.out.println("Starting game...");

@@ -35,6 +35,7 @@ public class ClientModel {
             e.printStackTrace();
         }
         myConnectionToHost.start();
+        myHostServer.checkBSConnection();
     }
 
     public ClientCommunications getMyClientCommunications() {

@@ -11,7 +11,7 @@ public class TestRunClient {
         MyServer myServer = new MyServer(5555,new BookScrabbleHandler()); //Local server
         myServer.start();
         RunClient host = new RunClient();
-        ClientModel guest = new ClientModel(false, "localhost", 5009, "guest");
+        ClientModel guest = new ClientModel(false, "localhost", 5005, "guest");
 
     }
 
