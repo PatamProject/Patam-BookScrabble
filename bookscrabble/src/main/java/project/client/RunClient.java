@@ -1,6 +1,8 @@
 package project.client;
 
 import project.client.model.ClientModel;
+import project.client.model.MyHostServer;
+
 import java.util.Scanner;
 
 public class RunClient{
@@ -8,7 +10,7 @@ public class RunClient{
 
     public RunClient() {
         boolean isHost = false;
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = MyLogger.getScanner();
         System.out.println("Welcome to the game!");
         System.out.println("Please enter your name:");
         String name;
@@ -47,20 +49,25 @@ public class RunClient{
 
         if(isHost)
         {
+            scanner.nextLine();
             System.out.println("Type 'start' to begin the game or 'exit' to close.");
             System.out.println("Remember, a game is played with 2-4 players.");
             boolean exit = false;
+            
             do {
-                String input = scanner.nextLine();
-                if (input.equals("start")) {
-                    System.out.println("Starting game...");
-                    ClientModel.myHostServer.startGame();
-                    exit = true;
-                } else if (input.equals("exit")) {
-                    System.out.println("Exiting...");
-                    exit = true;
-                } else {
-                    System.out.println("Invalid input. Please try again.");
+                if(scanner.hasNextLine()) {
+                    String input = scanner.nextLine();
+
+                    if (input.equals("start")) {
+                        exit = ClientModel.myHostServer.startGame();
+                    } else if (input.equals("exit")) {
+                        System.out.println("Exiting...");
+                        exit = true;
+                    }
+                    else
+                    {
+                        System.out.println("Invalid input. Please try again.");
+                    }
                 }
             } while (!exit);
         }
@@ -79,10 +86,5 @@ public class RunClient{
                 }
             } while (!exit);
         }
-
-
-        scanner.close();
-    }
-
-    
+    }    
 }

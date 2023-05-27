@@ -48,13 +48,16 @@ public class Rack {
     {
         for (int i = 0; i < tiles.length(); i++) {
             Tile tile = Bag.getBag().getTile(tiles.charAt(i));
-            this.tiles.put(tile, this.tiles.getOrDefault(tile, 0) + 1);
+            if(tile != null)
+                this.tiles.put(tile, this.tiles.getOrDefault(tile, 0) + 1);
+            else
+                i--;
         }
     }
 
     public Tile takeTileFromRack(char letter) //returns the tile taken
     {
-        Tile t;
+        Tile t = null;
         for (Tile tile : tiles.keySet()) {
             if(tile.letter == letter)
             {
@@ -62,10 +65,10 @@ public class Rack {
                 tiles.put(tile, tiles.get(tile) - 1);
                 if(tiles.get(tile) == 0)
                     tiles.remove(tile);
-                return t;
+                break;
             }
         }
-        return null;
+        return t;
     }
 
     public void removeTiles(Tile... tilesToRemove)

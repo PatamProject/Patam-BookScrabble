@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 
 import project.client.Error_Codes;
+import project.client.MyLogger;
 
 public class MyHostServer implements Communications{
     private HostSideHandler requestHandler;
@@ -19,7 +20,7 @@ public class MyHostServer implements Communications{
     BlockingQueue<String> myTasks;
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopServer = false;
-    private boolean gameStarted = false;
+    static boolean gameStarted = false;
  
     public MyHostServer(int port, int bsPort, String bs_IP) { // Ctor
         requestHandler = new HostSideHandler();
@@ -29,12 +30,13 @@ public class MyHostServer implements Communications{
         connectedClients = new HashMap<>();
         stopServer = false;
         gameStarted = false;
+
     }
 
     @Override
     public void run() throws Exception { // A method that operates as the central junction between all users and the BookScrabbleServer
         ServerSocket hostSocket = new ServerSocket(HOST_PORT);
-        hostSocket.setSoTimeout(2000);
+        hostSocket.setSoTimeout(10000);
         PrintWriter out = null;
         Scanner in = null;
         while(!stopServer) // Loop's until the end of the game
@@ -82,10 +84,23 @@ public class MyHostServer implements Communications{
                     //Now we have a known client and will process his request
                     String[] body = user_body_split[1].split(":");
                     String commandName = body[0]; //Split the body to command and arguments
-                    String[] tmp = body[1].split(","); //Split the arguments
-                    String[] commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
-                    commandArgs[0] = sender;
-                    System.arraycopy(tmp, 0, commandArgs, 1, tmp.length);
+                    String[] tmp, commandArgs;
+                    if(body.length == 1) //No arguments (startGame, endGame)
+                    {
+                        commandArgs = new String[1];
+                        commandArgs[0] = sender;
+                    } 
+                    else //Arguments exist
+                    {
+                        tmp = body[1].split(","); //Split the arguments 
+                        commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
+                        commandArgs[0] = sender;
+                        for (int i = 1; i < commandArgs.length; i++)
+                            commandArgs[i] = tmp[i-1];  
+                    }
+                    
+                    
+
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
                         add("startGame");
@@ -101,18 +116,22 @@ public class MyHostServer implements Communications{
                     { //Host only commands
                         throwError(Error_Codes.ACCESS_DENIED, aClient.getOutputStream());
                         continue;  
-                    } else if(acceptableCommands.contains(commandName)) //Known command
+                    } else if (commandName.equals("startGame") && connectedClients.size() < 2) 
+                    {
+                        throwError(Error_Codes.NOT_ENOUGH_PLAYERS, aClient.getOutputStream());
+                    }
+                    else if(acceptableCommands.contains(commandName)) //Known command
                         requestHandler.handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
                     else //Unknown command
                         throwError(Error_Codes.UNKNOWN_CMD, aClient.getOutputStream());
                         
                 } catch (Exception e) {
-                } finally {
-                    requestHandler.close();
+                    e.printStackTrace();
                 }
             } catch (SocketTimeoutException e){} 
         }
         //Runs only when close() is called
+        requestHandler.close();
         if (out != null) out.close();
         if(in != null) in.close(); 
         connectedClients.values().forEach(c-> { // All sockets will be closed after the game has ended (reusing them for all messages)
@@ -129,30 +148,26 @@ public class MyHostServer implements Communications{
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
         String response = null;
         try {
-            PrintWriter outToHost = new PrintWriter(connectedClients.get(ClientModel.myName).getOutputStream());
             Socket socket = new Socket(BookScrabbleServerIP, BOOK_SCRABBLE_PORT); // A socket for a single use
             try (Scanner inFromServer = new Scanner(socket.getInputStream());
                 PrintWriter outToServer = new PrintWriter(socket.getOutputStream())) {
                 outToServer.println(message); // Sends the message
                 outToServer.flush();
                 if(inFromServer.hasNext())
-                {
                     response = inFromServer.next(); // The response from the BookScrabbleServer
-                    //Add a loop? Wait?
-                }
 
-                if(response == null) //Invalid response
+                if(response == null) //Invalid response from the BookScrabbleServer
                 {
                     throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.myName).getOutputStream());
                     return false;
                     //Failed to communicate with the BookScrabbleServer
-                } 
+                } else if(message.equals("S,hello")) //First message from the BookScrabbleServer
+                    return response.equals("Hello");
                 else //The BookScrabbleServer responded with true/false
                     return response.equals("true");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                outToHost.close();
                 socket.close();
             }
         } catch (IOException e) {
@@ -197,34 +212,55 @@ public class MyHostServer implements Communications{
             PrintWriter out = new PrintWriter(connectedClients.get(player).getOutputStream());
             out.println(msg);
             out.flush();
-            out.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void startGame() { // A method to start the game
-        gameStarted = true;
-        sendUpdate("startGame", ClientModel.myName);
+    public boolean startGame() { // A method to start the game
+        if(connectedClients.size() > 1)
+        {
+            try {
+                System.out.println("Starting game...");
+                requestHandler.handleClient(ClientModel.myName, "startGame", new String[]{ClientModel.myName}, connectedClients.get(ClientModel.myName).getOutputStream());
+            } catch (IOException e) {
+                MyLogger.log("Failed to start the game");
+                e.printStackTrace();
+            }
+            return true;
+        }
+        else
+        {
+            MyLogger.log("Not enough players to start the game");
+            return false;
+        }
+    }
+
+    void checkBSConnection()
+    {
+        if(msgToBSServer("S,hello"))
+            MyLogger.log("Connected to BookScrabbleServer!");
+        else
+            MyLogger.log("Couldn't connect to BookScrabbleServer!");    
     }
 
     void throwError(String error, OutputStream out) { // A method to send an error message to a client
+        MyLogger.logError(error);
         PrintWriter pw = new PrintWriter(out);
         try{
-            pw.println("#"+error);
+            pw.println(error);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         pw.flush();
-        pw.close();
     }
 
     @Override
-    public void close()
+    public void close() // A method to close the hostServer
     {
         stopServer = true;
         playerCount = 0;
-    } // A method to close the hostServer
+    } 
 
     @Override
     public void start() {

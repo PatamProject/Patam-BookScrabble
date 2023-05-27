@@ -5,7 +5,7 @@ import java.util.Scanner;
 import project.client.model.ClientModel;
 
 public class MyLogger {
-    Scanner scanner = new Scanner(System.in);
+    private static Scanner myScanner = new Scanner(System.in);
 
     public MyLogger(){}
 
@@ -126,6 +126,14 @@ public class MyLogger {
         log("Connections to guests are closed.");
     }
 
-    
+    public static Scanner getScanner()
+    {
+        return myScanner;
+    }
+
+    public static void close()
+    {
+        myScanner.close();
+    }
     
 }

@@ -69,6 +69,7 @@ public class HostSideHandler implements RequestHandler{
                 if (args[0].equals(ClientModel.myName) && game.getPlayersAmount() >= 2) //Enough players and is the host
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
                     try {
+                        MyHostServer.gameStarted = true; //Set gameStarted to true
                         String[] tilesAndPlayers = game.startGame(); //Start the game
                         StringBuilder playersOrder = new StringBuilder();
                         for (String tilesAndPlayer : tilesAndPlayers)
@@ -83,11 +84,7 @@ public class HostSideHandler implements RequestHandler{
                     } catch (Exception e) {
                         out.println(Error_Codes.SERVER_ERR);
                     }
-                }    
-                else if(args[0].equals(ClientModel.myName) && game.getPlayersAmount() < 2) //Is the host
-                    out.println(Error_Codes.NOT_ENOUGH_PLAYERS); //Can't play alone
-                else
-                    out.println(Error_Codes.ACCESS_DENIED); //Not the host - unauthorized
+                } //else not host
             });
     
             //End the game and declare a winner (Host only)

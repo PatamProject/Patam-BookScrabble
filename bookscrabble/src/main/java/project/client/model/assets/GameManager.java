@@ -3,19 +3,19 @@ package project.client.model.assets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
 
 public class GameManager{
     Board board;
     HashMap<String,PlayerModel> players; //Maps between player's name to player's object
-    PriorityQueue<String> playersOrder; //The order of the players in the game (0 goes first...)
+    LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     public boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
     public GameManager() { //Ctor
         this.board = Board.getBoard();
         this.players = new HashMap<>();
-        this.playersOrder = new PriorityQueue<>();
+        this.playersOrder = new LinkedList<>();
     }
 
     public String[] startGame() throws Exception { // Starts the game and returns a string that contains all names and racks by the random order of play
@@ -54,7 +54,7 @@ public class GameManager{
 
     private void setRandomPlayOrder() { //Randomize the order of the players
         ArrayList<String> shuffle = new ArrayList<>();
-        PriorityQueue<String> order = new PriorityQueue<>(playersOrder);
+        LinkedList<String> order = new LinkedList<>(playersOrder);
         while(!order.isEmpty())
             shuffle.add(order.poll());
 
@@ -65,7 +65,7 @@ public class GameManager{
     }
 
     public boolean addNewPlayer(String pName) { // Adds a new player to the game if possible
-        if(players.size() < MAX_PLAYERS)
+        if(players.size() < MAX_PLAYERS && pName != null)
         {
             players.put(pName, new PlayerModel(pName));
             playersOrder.add(pName);
@@ -85,11 +85,11 @@ public class GameManager{
 
     public boolean removePlayer(String pName)
     { // Removes a player from the game and checks if there's enough players to continue the game
-        if(players.containsKey(pName))
+        if(players.containsKey(pName)) {
             players.remove(pName);
-
-        if(players.size() <= 1)
-        {
+            playersOrder.remove(pName);
+        }
+        if(players.size() <= 1) {
             gameEnded = true;
             return false;
         }
@@ -131,6 +131,7 @@ public class GameManager{
             return null;
 
         int tmpRow = row, tmpCol = col;
+        Tile tile = null;
         ArrayList<Tile> tilesArr = new ArrayList<>();
         Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
         for (int i = 0; i < tiles.length(); i++)
@@ -140,8 +141,8 @@ public class GameManager{
                 tilesArr.add(null); //Word on board, do not take
                 //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
             }
-            else if(p.getRack().takeTileFromRack(tiles.charAt(i)) != null) //Tile is on the rack
-                tilesArr.add(p.getRack().takeTileFromRack(tiles.charAt(i)));
+            else if((tile = p.getRack().takeTileFromRack(tiles.charAt(i))) != null) //Tile is on the rack
+                tilesArr.add(tile);
             else{ return null; } //Can't find tile!
             
             //Adjust tmpRow and tmpCol according to vertical

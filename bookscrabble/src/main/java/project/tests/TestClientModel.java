@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+//not finished yet
 public class TestClientModel
 {
     public static void TestMsgToBS() // 'id':'name'&join' || 'word,row,col,isVertical'

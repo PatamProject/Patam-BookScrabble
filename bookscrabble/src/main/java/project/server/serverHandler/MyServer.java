@@ -32,7 +32,7 @@ public class MyServer {
     private void run() throws Exception
     {
         ServerSocket server = new ServerSocket(port);
-        server.setSoTimeout(2000);
+        server.setSoTimeout(100000);
         while(!stopServer)
         {
             try {
