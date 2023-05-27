@@ -203,6 +203,11 @@ public class MyHostServer implements Communications{
         }
     }
 
+    public void startGame() { // A method to start the game
+        gameStarted = true;
+        sendUpdate("startGame", ClientModel.myName);
+    }
+
     void throwError(String error, OutputStream out) { // A method to send an error message to a client
         PrintWriter pw = new PrintWriter(out);
         try{

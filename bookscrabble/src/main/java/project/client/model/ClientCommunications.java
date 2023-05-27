@@ -11,17 +11,10 @@ public class ClientCommunications implements Communications{
     private Scanner inFromHost;
 
     public ClientCommunications(String hostIP, int hostPort) throws IOException { // Ctor
-        try {
-            toHostSocket = new Socket(hostIP, hostPort);
-            requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
-            inFromHost = new Scanner(toHostSocket.getInputStream());
-            PrintWriter out = new PrintWriter(toHostSocket.getOutputStream()); 
-            out.println("0$"+ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0 (marked after "$")
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        toHostSocket = new Socket(hostIP, hostPort);
+        requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
+        inFromHost = new Scanner(toHostSocket.getInputStream());
+        sendAMessage(0,ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0 (marked after "$")
     }
 
     @Override

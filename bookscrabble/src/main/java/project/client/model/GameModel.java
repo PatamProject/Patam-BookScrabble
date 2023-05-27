@@ -1,7 +1,6 @@
 package project.client.model;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.PriorityQueue;
 
 import project.client.model.assets.PlayerModel;

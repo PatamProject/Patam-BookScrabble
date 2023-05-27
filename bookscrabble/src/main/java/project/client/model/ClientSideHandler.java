@@ -40,18 +40,15 @@ public class ClientSideHandler implements RequestHandler{
             put("Q", (String[] args) -> 
             { //Successful word placement, args[0] = score, args[1]... = players
                 Integer score = Integer.parseInt(args[1]);
-                if(score == 0) //Not boardLegal
-                {
-                    //TODO try again
-                } else if(score == -1) //Not dictionaryLegal
-                {
-                    //TODO try again
-                } else //Word was placed successfully
+                if(score == 0 || score == -1) //Not boardLegal
+                    MyLogger.failedWordPlacement(score);
+                
+                else //Word was placed successfully
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
                     game.myPlayer.getRack().takeTiles(args[2]); //Take tiles
                     game.nextTurn(); //Next turn
-                    //TODO print to screen
+                    MyLogger.playerPlacedWord(ClientModel.getName(), score, "Q");
                 }
             });
     
@@ -59,20 +56,18 @@ public class ClientSideHandler implements RequestHandler{
             put("C", (String[] args) -> 
             { //Successful join, args[0] = id, args[1]... = players
                 Integer score = Integer.parseInt(args[1]);
-                if(score == 0) //Not boardLegal
+                MyLogger.log("Challenging dictonary...");
+                if(score == 0 || score == -1) //Not boardLegal
                 {
                     numOfChallenges++;
-                    //TODO try again
-                } else if(score == -1) //Not dictionaryLegal
-                {
-                    numOfChallenges++;
-                    //TODO try again
-                } else //Word was placed successfully
+                    MyLogger.failedWordPlacement(score);
+                } 
+                else //Word was placed successfully
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
                     game.myPlayer.getRack().takeTiles(args[2]); //Take tiles
                     game.nextTurn(); //Next turn
-                    //TODO print to screen
+                    MyLogger.playerPlacedWord(ClientModel.getName(), score, "C");
                 }
             }); 
         }};
@@ -83,14 +78,14 @@ public class ClientSideHandler implements RequestHandler{
             put("!join", (String[] args) -> 
             { //args[0] = new player
                 game.addPlayers(args[0]);
-                MyLogger.clientJoined(args[0]);
+                MyLogger.playerJoined(args[0]);
             });
     
             //A player left the game
             put("!leave", (String[] args) -> 
             { //args[0] = leaving player
                 game.removePlayer(args[0]);
-                MyLogger.clientLeft(args[0]);
+                MyLogger.playertLeft(args[0]);
             });
 
             //Game started, tiles are sent to each player individually
