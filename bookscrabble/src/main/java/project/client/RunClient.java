@@ -57,8 +57,8 @@ public class RunClient{
                     String input = scanner.nextLine();
 
                     if (input.equals("start")) {
-                        System.out.println("Starting game...");
                         ClientModel.myHostServer.startGame();
+                        System.out.println("Starting game...");
                         exit = true;
                     } else if (input.equals("exit")) {
                         System.out.println("Exiting...");

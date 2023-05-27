@@ -20,7 +20,7 @@ public class MyHostServer implements Communications{
     BlockingQueue<String> myTasks;
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopServer = false;
-    private boolean gameStarted = false;
+    static boolean gameStarted = false;
  
     public MyHostServer(int port, int bsPort, String bs_IP) { // Ctor
         requestHandler = new HostSideHandler();
@@ -122,12 +122,12 @@ public class MyHostServer implements Communications{
                         throwError(Error_Codes.UNKNOWN_CMD, aClient.getOutputStream());
                         
                 } catch (Exception e) {
-                } finally {
-                    requestHandler.close();
+                    e.printStackTrace();
                 }
             } catch (SocketTimeoutException e){} 
         }
         //Runs only when close() is called
+        requestHandler.close();
         if (out != null) out.close();
         if(in != null) in.close(); 
         connectedClients.values().forEach(c-> { // All sockets will be closed after the game has ended (reusing them for all messages)
@@ -157,8 +157,8 @@ public class MyHostServer implements Communications{
                     throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.myName).getOutputStream());
                     return false;
                     //Failed to communicate with the BookScrabbleServer
-                } else if(message.equals("S")) //First message from the BookScrabbleServer
-                    return response.equals("Hello from BookScrabble server!");
+                } else if(message.equals("S,hello")) //First message from the BookScrabbleServer
+                    return response.equals("Hello");
                 else //The BookScrabbleServer responded with true/false
                     return response.equals("true");
             } catch (IOException e) {
@@ -214,13 +214,12 @@ public class MyHostServer implements Communications{
     }
 
     public void startGame() { // A method to start the game
-        gameStarted = true;
         sendUpdate("startGame", ClientModel.myName);
     }
 
     void checkBSConnection()
     {
-        if(msgToBSServer("S"))
+        if(msgToBSServer("S,hello"))
             MyLogger.log("Connected to BookScrabbleServer!");
         else
             MyLogger.log("Couldn't connect to BookScrabbleServer!");    

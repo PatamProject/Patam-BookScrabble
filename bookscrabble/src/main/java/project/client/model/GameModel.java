@@ -1,19 +1,19 @@
 package project.client.model;
 
 import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
 
 import project.client.model.assets.PlayerModel;
 
 public class GameModel {
     PlayerModel myPlayer;
     HashMap<String,Integer> players; //Name of player and their score
-    PriorityQueue<String> playersOrder; //The order of the players in the game (0 goes first...)
+    LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board;
 
     public GameModel() {
         myPlayer = new PlayerModel(ClientModel.getName());
-        playersOrder = new PriorityQueue<>(); //Will be updated by startGame
+        playersOrder = new LinkedList<>(); //Will be updated by startGame
         this.players = new HashMap<>();
     }
 
@@ -62,6 +62,8 @@ public class GameModel {
         playersOrder.add(currentPlayer);
         return isItMyTurn();
     }
+
+    public String getCurrentPlayersName() {return playersOrder.peek();}
 
     public String getBoard() {
         return board;
