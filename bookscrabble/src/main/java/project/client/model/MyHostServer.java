@@ -116,7 +116,11 @@ public class MyHostServer implements Communications{
                     { //Host only commands
                         throwError(Error_Codes.ACCESS_DENIED, aClient.getOutputStream());
                         continue;  
-                    } else if(acceptableCommands.contains(commandName)) //Known command
+                    } else if (commandName.equals("startGame") && connectedClients.size() < 2) 
+                    {
+                        throwError(Error_Codes.NOT_ENOUGH_PLAYERS, aClient.getOutputStream());
+                    }
+                    else if(acceptableCommands.contains(commandName)) //Known command
                         requestHandler.handleClient(sender, commandName, commandArgs ,connectedClients.get(sender).getOutputStream());
                     else //Unknown command
                         throwError(Error_Codes.UNKNOWN_CMD, aClient.getOutputStream());
@@ -214,7 +218,12 @@ public class MyHostServer implements Communications{
     }
 
     public void startGame() { // A method to start the game
-        sendUpdate("startGame", ClientModel.myName);
+        try {
+            requestHandler.handleClient(ClientModel.myName, "startGame", new String[]{ClientModel.myName}, connectedClients.get(ClientModel.myName).getOutputStream());
+        } catch (IOException e) {
+            MyLogger.log("Failed to start the game");
+            e.printStackTrace();
+        }
     }
 
     void checkBSConnection()
@@ -226,9 +235,10 @@ public class MyHostServer implements Communications{
     }
 
     void throwError(String error, OutputStream out) { // A method to send an error message to a client
+        MyLogger.logError(error);
         PrintWriter pw = new PrintWriter(out);
         try{
-            pw.println("#"+error);
+            pw.println(error);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,8 @@
 package project.client;
 
 import project.client.model.ClientModel;
+import project.client.model.MyHostServer;
+
 import java.util.Scanner;
 
 public class RunClient{
@@ -63,7 +65,9 @@ public class RunClient{
                     } else if (input.equals("exit")) {
                         System.out.println("Exiting...");
                         exit = true;
-                    } else {
+                    }
+                    else
+                    {
                         System.out.println("Invalid input. Please try again.");
                     }
                 }
