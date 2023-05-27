@@ -60,7 +60,7 @@ The project relies on the following dependencies:
 2. Java Standard Library
 
 Contributors:
-Itay Evron
-Ofek Shpirer
-Maya Geva
+Itay Evron, 
+Ofek Shpirer, 
+Maya Geva, 
 Uri Beeri
