@@ -30,11 +30,11 @@ public class ClientModel {
 
         try {
             myConnectionToHost = new ClientCommunications(hostIP, hostPort);
+            myConnectionToHost.start();
         } catch (IOException e) {
             System.out.println("Unable to connect to host!");
             e.printStackTrace();
         }
-        myConnectionToHost.start();
     }
 
     public ClientCommunications getMyClientCommunications() {

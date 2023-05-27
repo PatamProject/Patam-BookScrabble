@@ -50,17 +50,21 @@ public class RunClient{
             System.out.println("Type 'start' to begin the game or 'exit' to close.");
             System.out.println("Remember, a game is played with 2-4 players.");
             boolean exit = false;
+            
             do {
-                String input = scanner.nextLine();
-                if (input.equals("start")) {
-                    System.out.println("Starting game...");
-                    ClientModel.myHostServer.startGame();
-                    exit = true;
-                } else if (input.equals("exit")) {
-                    System.out.println("Exiting...");
-                    exit = true;
-                } else {
-                    System.out.println("Invalid input. Please try again.");
+                if(scanner.hasNextLine()) {
+                    String input = scanner.nextLine();
+
+                    if (input.equals("start")) {
+                        System.out.println("Starting game...");
+                        ClientModel.myHostServer.startGame();
+                        exit = true;
+                    } else if (input.equals("exit")) {
+                        System.out.println("Exiting...");
+                        exit = true;
+                    } else {
+                        System.out.println("Invalid input. Please try again.");
+                    }
                 }
             } while (!exit);
         }
