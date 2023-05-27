@@ -35,6 +35,12 @@ public class Tile {
             return myBag;
         }
 
+        static Bag resetBag() //resets the bag (ONLY FOR TESTING PURPOSES)
+        {
+            myBag = new Bag();
+            return myBag;
+        }
+
         private Bag(){} //works only via getBag
 
         private void incTilesAmount(){num_Of_Tiles++;}
@@ -74,13 +80,12 @@ public class Tile {
 
         Tile getTile(char c) //returns a specific tile if left in bag
         {
-            int n = (int)c;
-            if(n >= 65 && n <= 90) // A <= c >= Z
-                if(currentTilesAmount[n - 65] > 0) //Tiles that exist in bag
+            if(c >= 'A' && c <= 'Z') // A <= c >= Z
+                if(currentTilesAmount[c - 'A'] > 0) //Tiles that exist in bag
                 {
-                    currentTilesAmount[n - 65]--;
+                    currentTilesAmount[c - 'A']--;
                     decTilesAmount();
-                    return TilesArray[n - 65];
+                    return TilesArray[c - 'A'];
                 }
             return null;            
         }

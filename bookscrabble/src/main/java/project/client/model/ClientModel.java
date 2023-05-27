@@ -8,7 +8,7 @@ public class ClientModel {
     public static MyHostServer myHostServer;
     static String myName;
 
-    public ClientModel(boolean isHost, String hostIP, int hostPort , String playerName) //Basic constructor
+    public ClientModel(boolean isHost, String hostIP, int hostPort , String playerName)
     {
         myName = playerName;
         if(!isHost)
@@ -24,16 +24,21 @@ public class ClientModel {
             System.out.println("Enter Port: ");
             bs_port = sc.nextInt();
             sc.close();
-            myHostServer = new MyHostServer(hostPort, bs_port, bs_IP);
+            myHostServer = new MyHostServer(hostPort, bs_port, bs_IP); //Create host-side
             myHostServer.start();
         } 
 
         try {
-            myConnectionToHost = new ClientCommunications(hostIP, hostPort);
+            myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
         } catch (IOException e) {
             System.out.println("Unable to connect to host!");
             e.printStackTrace();
+        }  
+
+        if(isHost)
+        {
+            myHostServer.checkBSConnection(); //Check if connection to BookScrabble server is established
         }
     }
 

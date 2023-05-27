@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 
 import project.client.Error_Codes;
+import project.client.MyLogger;
 
 public class MyHostServer implements Communications{
     private HostSideHandler requestHandler;
@@ -29,12 +30,13 @@ public class MyHostServer implements Communications{
         connectedClients = new HashMap<>();
         stopServer = false;
         gameStarted = false;
+
     }
 
     @Override
     public void run() throws Exception { // A method that operates as the central junction between all users and the BookScrabbleServer
         ServerSocket hostSocket = new ServerSocket(HOST_PORT);
-        hostSocket.setSoTimeout(2000);
+        hostSocket.setSoTimeout(10000);
         PrintWriter out = null;
         Scanner in = null;
         while(!stopServer) // Loop's until the end of the game
@@ -82,10 +84,23 @@ public class MyHostServer implements Communications{
                     //Now we have a known client and will process his request
                     String[] body = user_body_split[1].split(":");
                     String commandName = body[0]; //Split the body to command and arguments
-                    String[] tmp = body[1].split(","); //Split the arguments
-                    String[] commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
-                    commandArgs[0] = sender;
-                    System.arraycopy(tmp, 0, commandArgs, 1, tmp.length);
+                    String[] tmp, commandArgs;
+                    if(body.length == 1) //No arguments (startGame, endGame)
+                    {
+                        commandArgs = new String[1];
+                        commandArgs[0] = sender;
+                    } 
+                    else //Arguments exist
+                    {
+                        tmp = body[1].split(","); //Split the arguments 
+                        commandArgs = new String[tmp.length + 1]; //Add the sender name to the arguments
+                        commandArgs[0] = sender;
+                        for (int i = 1; i < commandArgs.length; i++)
+                            commandArgs[i] = tmp[i-1];  
+                    }
+                    
+                    //System.arraycopy(tmp, 0, commandArgs, 1, tmp.length); מה זה החרא הזה אורי @UriB1
+
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
                         add("startGame");
@@ -146,7 +161,8 @@ public class MyHostServer implements Communications{
                     throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.myName).getOutputStream());
                     return false;
                     //Failed to communicate with the BookScrabbleServer
-                } 
+                } else if(message.equals("S")) //First message from the BookScrabbleServer
+                    return response.equals("Hello from BookScrabble server!");
                 else //The BookScrabbleServer responded with true/false
                     return response.equals("true");
             } catch (IOException e) {
@@ -206,6 +222,14 @@ public class MyHostServer implements Communications{
     public void startGame() { // A method to start the game
         gameStarted = true;
         sendUpdate("startGame", ClientModel.myName);
+    }
+
+    void checkBSConnection()
+    {
+        if(msgToBSServer("S"))
+            MyLogger.log("Connected to BookScrabbleServer!");
+        else
+            MyLogger.log("Couldn't connect to BookScrabbleServer!");    
     }
 
     void throwError(String error, OutputStream out) { // A method to send an error message to a client

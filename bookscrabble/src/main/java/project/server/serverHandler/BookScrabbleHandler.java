@@ -35,6 +35,9 @@ public class BookScrabbleHandler implements ClientHandler{
                 out.println("true");
             else
                 out.println("false");
+        } else if(c == 'S')
+        {
+            out.println("Hello from BookScrabble server!");
         }
         out.flush();
     }

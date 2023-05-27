@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+import project.client.MyLogger;
+
 public class ClientCommunications implements Communications{
     private ClientSideHandler requestHandler;
     private static Socket toHostSocket; // A socket to the host
@@ -14,11 +16,11 @@ public class ClientCommunications implements Communications{
         toHostSocket = new Socket(hostIP, hostPort);
         requestHandler = new ClientSideHandler(toHostSocket.getOutputStream());
         inFromHost = new Scanner(toHostSocket.getInputStream());
-        sendAMessage(0,ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0 (marked after "$")
     }
-
+    
     @Override
     public void run() { // A method that consistently receives messages from the host
+        sendAMessage(0,ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
                 if(inFromHost.hasNextLine()) {
@@ -86,9 +88,10 @@ public class ClientCommunications implements Communications{
         new Thread(()-> {        
             try {
                 Scanner scanner = new Scanner(System.in);
+                MyLogger.printBoard(null); //Print empty board
                 while(requestHandler.isGameStarted) //While the game is running
                 {
-                    //TODO - Print board and tiles
+                    
                     //TODO - Print scores
                     //TODO - update board after each turn
 
