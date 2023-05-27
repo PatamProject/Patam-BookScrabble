@@ -217,12 +217,22 @@ public class MyHostServer implements Communications{
         }
     }
 
-    public void startGame() { // A method to start the game
-        try {
-            requestHandler.handleClient(ClientModel.myName, "startGame", new String[]{ClientModel.myName}, connectedClients.get(ClientModel.myName).getOutputStream());
-        } catch (IOException e) {
-            MyLogger.log("Failed to start the game");
-            e.printStackTrace();
+    public boolean startGame() { // A method to start the game
+        if(connectedClients.size() > 1)
+        {
+            try {
+                System.out.println("Starting game...");
+                requestHandler.handleClient(ClientModel.myName, "startGame", new String[]{ClientModel.myName}, connectedClients.get(ClientModel.myName).getOutputStream());
+            } catch (IOException e) {
+                MyLogger.log("Failed to start the game");
+                e.printStackTrace();
+            }
+            return true;
+        }
+        else
+        {
+            MyLogger.log("Not enough players to start the game");
+            return false;
         }
     }
 

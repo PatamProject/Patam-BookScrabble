@@ -84,11 +84,7 @@ public class HostSideHandler implements RequestHandler{
                     } catch (Exception e) {
                         out.println(Error_Codes.SERVER_ERR);
                     }
-                }    
-                else if(args[0].equals(ClientModel.myName) && game.getPlayersAmount() < 2) //Is the host
-                    out.println(Error_Codes.NOT_ENOUGH_PLAYERS); //Can't play alone
-                else
-                    out.println(Error_Codes.ACCESS_DENIED); //Not the host - unauthorized
+                } //else not host
             });
     
             //End the game and declare a winner (Host only)
