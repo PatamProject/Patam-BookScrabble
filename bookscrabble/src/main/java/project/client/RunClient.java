@@ -1,7 +1,6 @@
 package project.client;
 
 import project.client.model.ClientModel;
-import project.client.model.MyHostServer;
 
 import java.util.Scanner;
 
@@ -50,7 +49,7 @@ public class RunClient{
         if(isHost)
         {
             scanner.nextLine();
-            System.out.println("Type 'start' to begin the game or 'exit' to close.");
+            System.out.println("Type 'start' to begin the game, 'exit' to close or 'who' to see who's connected.");
             System.out.println("Remember, a game is played with 2-4 players.");
             boolean exit = false;
             
@@ -63,6 +62,12 @@ public class RunClient{
                     } else if (input.equals("exit")) {
                         System.out.println("Exiting...");
                         exit = true;
+                    } else if(input.equals("who"))
+                    {
+                       String[] players = ClientModel.myHostServer.getConnectedClients();
+                       for(int i = 0; i < players.length; i++)
+                           MyLogger.log((players[i])+ " is connected.");
+                       
                     }
                     else
                     {

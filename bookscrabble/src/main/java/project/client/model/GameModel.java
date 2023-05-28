@@ -73,5 +73,5 @@ public class GameModel {
         return board;
     }
 
-    public boolean isItMyTurn(){return playersOrder.peek().equals(ClientModel.myName);}
+    public boolean isItMyTurn(){return playersOrder.peek().equals(ClientModel.getName());}
 }
