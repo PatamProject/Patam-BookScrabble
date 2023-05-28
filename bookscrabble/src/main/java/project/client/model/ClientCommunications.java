@@ -22,7 +22,7 @@ public class ClientCommunications implements Communications{
     
     @Override
     public void run() { // A method that consistently receives messages from the host
-        sendAMessage(0,ClientModel.myName+"&join"); // Send a message to the host that the client wants to join with id = 0
+        sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed() && inFromHost.hasNextLine()) { // The socket will be open until the game is over
             try {
                 if(inFromHost.hasNextLine()) {
@@ -44,7 +44,7 @@ public class ClientCommunications implements Communications{
                             gameStarted();
                     }
                     else //A reply from the host
-                        sender = ClientModel.myName;
+                        sender = ClientModel.getName();
                     
                     requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
                 }

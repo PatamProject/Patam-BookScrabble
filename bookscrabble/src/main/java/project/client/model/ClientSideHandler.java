@@ -189,7 +189,7 @@ public class ClientSideHandler implements RequestHandler{
 
     @Override
     public void handleClient(String sender, String commandName, String[] args, OutputStream outToClient) {
-        if(sender.equals(ClientModel.myName)) //A response to a command sent by this client
+        if(sender.equals(ClientModel.getName())) //A response to a command sent by this client
             responseHandler.get(commandName).accept(args);
         else if(sender.charAt(0) == '!') //Game update from host
             commandHandler.get(commandName).accept(args);

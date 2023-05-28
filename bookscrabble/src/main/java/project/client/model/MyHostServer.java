@@ -112,7 +112,7 @@ public class MyHostServer implements Communications{
                         add("Q"); //query
                     }};
 
-                    if(!sender.equals(ClientModel.myName) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
+                    if(!sender.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
                     { //Host only commands
                         throwError(Error_Codes.ACCESS_DENIED, aClient.getOutputStream());
                         continue;  
@@ -158,7 +158,7 @@ public class MyHostServer implements Communications{
 
                 if(response == null) //Invalid response from the BookScrabbleServer
                 {
-                    throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.myName).getOutputStream());
+                    throwError(Error_Codes.SERVER_ERR,connectedClients.get(ClientModel.getName()).getOutputStream());
                     return false;
                     //Failed to communicate with the BookScrabbleServer
                 } else if(message.equals("S,hello")) //First message from the BookScrabbleServer
@@ -221,7 +221,11 @@ public class MyHostServer implements Communications{
         if(connectedClients.size() > 1)
         {
             System.out.println("Starting game...");
-            requestHandler.handleClient(ClientModel.myName, "startGame", new String[]{ClientModel.myName}, null);
+            try {
+                requestHandler.handleClient(ClientModel.getName(), "startGame", new String[]{ClientModel.getName()}, connectedClients.get(ClientModel.getName()).getOutputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return true;
         }
         else

@@ -1,6 +1,5 @@
 package project.client.model;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 import project.client.MyLogger;
@@ -8,7 +7,7 @@ import project.client.MyLogger;
 public class ClientModel {
     ClientCommunications myConnectionToHost;
     public static MyHostServer myHostServer;
-    static String myName;
+    private static String myName;
 
     public ClientModel(boolean isHost, String hostIP, int hostPort , String playerName)
     {
