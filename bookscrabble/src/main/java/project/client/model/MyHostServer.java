@@ -220,13 +220,8 @@ public class MyHostServer implements Communications{
     public boolean startGame() { // A method to start the game
         if(connectedClients.size() > 1)
         {
-            try {
-                System.out.println("Starting game...");
-                requestHandler.handleClient(ClientModel.myName, "startGame", new String[]{ClientModel.myName}, connectedClients.get(ClientModel.myName).getOutputStream());
-            } catch (IOException e) {
-                MyLogger.log("Failed to start the game");
-                e.printStackTrace();
-            }
+            System.out.println("Starting game...");
+            requestHandler.handleClient(ClientModel.myName, "startGame", new String[]{ClientModel.myName}, null);
             return true;
         }
         else
@@ -253,6 +248,11 @@ public class MyHostServer implements Communications{
             throw new RuntimeException(e);
         }
         pw.flush();
+    }
+
+    public String[] getConnectedClients()
+    {
+        return connectedClients.keySet().toArray(new String[connectedClients.size()]);
     }
 
     @Override
