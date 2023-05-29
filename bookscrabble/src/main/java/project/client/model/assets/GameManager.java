@@ -24,17 +24,15 @@ public class GameManager{
         setRandomPlayOrder();
         ArrayList<String> dupPlayersOrder = getPlayersOrder(); // Random order of play as an ArrayList
         String[] output = new String[dupPlayersOrder.size()];
+        int i = 0;
         for (String player : dupPlayersOrder) // Creating a string that contains all names and racks by the random order of play
-            for (int i = 0; i < output.length; i++)
-                output[i] = player + "%" + players.get(player).getRack().toString();
-        
+            output[i++] = player + "%" + players.get(player).getRack().toString();
         return output;
     }
     
     private void initialRacks() throws Exception{ // Each player receives his initial rack
         for (String player : playersOrder)
-            for (int i = 0; i < players.get(player).getRack().START_SIZE; i++)
-                players.get(player).getRack().takeTilesFromBag();  
+            players.get(player).getRack().takeTilesFromBag();
     }
 
     public void nextTurn() { // Switching turns and checks for conclusion of the game

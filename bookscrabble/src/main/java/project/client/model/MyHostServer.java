@@ -30,7 +30,6 @@ public class MyHostServer implements Communications{
         connectedClients = new HashMap<>();
         stopServer = false;
         gameStarted = false;
-
     }
 
     @Override
@@ -98,8 +97,6 @@ public class MyHostServer implements Communications{
                         for (int i = 1; i < commandArgs.length; i++)
                             commandArgs[i] = tmp[i-1];  
                     }
-                    
-                    
 
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
@@ -188,7 +185,8 @@ public class MyHostServer implements Communications{
             connectedClients.values().forEach(c-> {
                 try {
                     if (c.getOutputStream() != doNotSendStream) { // Preventing from the message to be sent twice
-                        try (PrintWriter out = new PrintWriter(c.getOutputStream())){
+                        try {
+                            PrintWriter out = new PrintWriter(c.getOutputStream());
                             out.println(message);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
