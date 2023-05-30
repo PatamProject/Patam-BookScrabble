@@ -18,7 +18,7 @@ public class ClientSideHandler implements RequestHandler{
     private Map<String, Consumer<String[]>> errorHandler;
     private int id = 0;
     private int numOfChallenges = 0;
-    boolean isGameStarted = false;
+    boolean isGameRunning = false;
 
     public ClientSideHandler(PrintWriter out) {
         game = new GameModel();
@@ -109,7 +109,7 @@ public class ClientSideHandler implements RequestHandler{
             });
 
             put("!endGame", (String[] args)->{
-                isGameStarted = false;
+                isGameRunning = false;
                 MyLogger.gameEnded(args[0]);
             });
     

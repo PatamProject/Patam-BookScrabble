@@ -70,7 +70,7 @@ public class HostSideHandler implements RequestHandler{
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
                     try {
                         MyHostServer.isGameRunning = true; //Set gameStarted to true
-                        String[] tilesAndPlayers = game.startGame(); //Start the game
+                        String[] tilesAndPlayers = game.startGame(); //Start the game on the host's side
                         StringBuilder playersOrder = new StringBuilder();
                         for (String tilesAndPlayer : tilesAndPlayers)
                             playersOrder.append(tilesAndPlayer.split("%")[0]).append(",");
@@ -79,7 +79,7 @@ public class HostSideHandler implements RequestHandler{
                         for (String tilesAndPlayer : tilesAndPlayers) {
                             String playerName = tilesAndPlayer.split("%")[0];
                             String tiles = tilesAndPlayer.split("%")[1];
-                            MyHostServer.sendUpdate("!startGame:" + tiles + "," + playersOrder, playerName);
+                            MyHostServer.sendUpdate("!startGame:" + tiles + "," + playersOrder, playerName); //Send startGame command to all players
                         }
                     } catch (Exception e) {
                         out.println(Error_Codes.SERVER_ERR);

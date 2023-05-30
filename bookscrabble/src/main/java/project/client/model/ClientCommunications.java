@@ -23,10 +23,11 @@ public class ClientCommunications implements Communications{
     @Override
     public void run() { // A method that consistently receives messages from the host
         sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
-        while (!toHostSocket.isClosed() && inFromHost.hasNextLine()) { // The socket will be open until the game is over
+        while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
                 if(inFromHost.hasNextLine()) {
                     String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
+                    MyLogger.log("Client received: " + request);
                     if(request.charAt(0) == '#') //If the host sent an error
                     {
                         requestHandler.handleClient("#", request.substring(1), null, null); //Error
@@ -41,7 +42,12 @@ public class ClientCommunications implements Communications{
                     {
                         sender = "!"; //To allow the handler to know that this is a game update from the host
                         if(commandName.equals("!startGame"))
+                        {
+                            requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());   
+                            Thread.sleep(1000);  
                             gameStarted();
+                            continue;
+                        }
                     }
                     else //A reply from the host
                         sender = ClientModel.getName();
@@ -50,7 +56,7 @@ public class ClientCommunications implements Communications{
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } 
+            } catch (InterruptedException e) {} 
         }
         requestHandler.close();
         if(toHostSocket.isClosed())
@@ -86,12 +92,13 @@ public class ClientCommunications implements Communications{
     public void gameStarted()
     {
         int BOARD_SIZE = 15;
-        requestHandler.isGameStarted = true;
+
+        requestHandler.isGameRunning = true;
         new Thread(()-> {        
             try {
                 Scanner scanner = MyLogger.getScanner();
                 MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
-                while(requestHandler.isGameStarted) //While the game is running
+                while(requestHandler.isGameRunning) //While the game is running
                 {
                     
                     //TODO - Print scores

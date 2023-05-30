@@ -23,7 +23,7 @@ public class RunClient{
         do {
             invalidInput = false;
             String input = scanner.nextLine();
-            if (input.equals("1")) {
+            if (input.equals("1")) { //Guest client
                 isHost = false;
                 System.out.println("Enter the host's IP address:");
                 String ip = scanner.nextLine();
@@ -32,7 +32,7 @@ public class RunClient{
                 System.out.println("Connecting to host...");
                 myClient = new ClientModel(isHost, ip, Integer.parseInt(port) , name); //Guest client
 
-            } else if (input.equals("2")) {
+            } else if (input.equals("2")) { //Host client
                 isHost = true;
                 System.out.println("Enter the port number you want to host the game on:");
                 String port = scanner.nextLine();
@@ -62,8 +62,7 @@ public class RunClient{
                     } else if (input.equals("exit")) {
                         System.out.println("Exiting...");
                         exit = true;
-                    } else if(input.equals("who"))
-                    {
+                    } else if(input.equals("who")){
                        String[] players = ClientModel.myHostServer.getConnectedClients();
                        for(int i = 0; i < players.length; i++)
                            MyLogger.log((players[i])+ " is connected.");
