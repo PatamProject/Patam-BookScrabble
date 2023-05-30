@@ -30,7 +30,6 @@ public class MyHostServer implements Communications{
         connectedClients = new HashMap<>();
         stopServer = false;
         gameStarted = false;
-
     }
 
     @Override
@@ -51,6 +50,7 @@ public class MyHostServer implements Communications{
                         continue; 
                     }
                     String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
+                    MyLogger.log("Host received: " + request);
                     String[] user_body_split = request.split("&");
                     String id_sender = user_body_split[0];
                     String id = id_sender.split(":")[0]; //Sender's ID
@@ -98,8 +98,6 @@ public class MyHostServer implements Communications{
                         for (int i = 1; i < commandArgs.length; i++)
                             commandArgs[i] = tmp[i-1];  
                     }
-                    
-                    
 
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
@@ -126,7 +124,7 @@ public class MyHostServer implements Communications{
                         throwError(Error_Codes.UNKNOWN_CMD, aClient.getOutputStream());
                         
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    MyLogger.log("Error in MyHostServer: " + e.getMessage());
                 }
             } catch (SocketTimeoutException e){} 
         }
@@ -188,7 +186,8 @@ public class MyHostServer implements Communications{
             connectedClients.values().forEach(c-> {
                 try {
                     if (c.getOutputStream() != doNotSendStream) { // Preventing from the message to be sent twice
-                        try (PrintWriter out = new PrintWriter(c.getOutputStream())){
+                        try {
+                            PrintWriter out = new PrintWriter(c.getOutputStream());
                             out.println(message);
                         } catch (Exception e) {
                             throw new RuntimeException(e);

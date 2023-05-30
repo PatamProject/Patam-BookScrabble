@@ -94,6 +94,11 @@ public class MyLogger {
         log("Player " + player + " won the game!");
     }
 
+    public static void disconnectedFromHost()
+    {
+        logError("Connection to host is lost!");
+    }
+
     public void useless() {
 
         // Host logging game progress

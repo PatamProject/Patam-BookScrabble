@@ -20,7 +20,6 @@ public class testGame {
             m.setAccessible(true);
             int t = (int) m.invoke(b, w);
         } catch (NoSuchMethodException | SecurityException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

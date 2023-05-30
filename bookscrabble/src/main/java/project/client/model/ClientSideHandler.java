@@ -105,7 +105,7 @@ public class ClientSideHandler implements RequestHandler{
                     game.playersOrder.add(args[i]); //Add players by order
                 }
                 game.addPlayers(players); //Add players to the game
-                //Game started in ClientCommuncation
+                //Game started in ClientCommunication
             });
 
             put("!endGame", (String[] args)->{
