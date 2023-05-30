@@ -50,6 +50,7 @@ public class MyHostServer implements Communications{
                         continue; 
                     }
                     String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
+                    MyLogger.log("Host received: " + request);
                     String[] user_body_split = request.split("&");
                     String id_sender = user_body_split[0];
                     String id = id_sender.split(":")[0]; //Sender's ID
@@ -123,7 +124,7 @@ public class MyHostServer implements Communications{
                         throwError(Error_Codes.UNKNOWN_CMD, aClient.getOutputStream());
                         
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    MyLogger.log("Error in MyHostServer: " + e.getMessage());
                 }
             } catch (SocketTimeoutException e){} 
         }

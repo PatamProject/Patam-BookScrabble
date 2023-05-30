@@ -78,8 +78,7 @@ public class RunClient{
         }
         else //Guest client
         {
-            System.out.println("Joined game successfully! Waiting for host to start...");
-            System.out.println("Type 'exit' to close game.");
+            System.out.println("Welcome to the game lobby. If you want to leave type 'exit' to close the game.");
             boolean exit = false;
             do {
                 String input = scanner.nextLine();

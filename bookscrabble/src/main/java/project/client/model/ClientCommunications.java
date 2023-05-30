@@ -53,6 +53,8 @@ public class ClientCommunications implements Communications{
             } 
         }
         requestHandler.close();
+        if(toHostSocket.isClosed())
+            MyLogger.disconnectedFromHost();
     }
 
     public static void sendAMessage(int id, String message) { // A method that sends a message to the host
