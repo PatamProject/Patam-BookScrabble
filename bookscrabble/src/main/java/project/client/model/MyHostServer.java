@@ -20,7 +20,7 @@ public class MyHostServer implements Communications{
     BlockingQueue<String> myTasks;
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopServer = false;
-    static boolean gameStarted = false;
+    public static volatile boolean isGameRunning = false;
  
     public MyHostServer(int port, int bsPort, String bs_IP) { // Ctor
         requestHandler = new HostSideHandler();
@@ -29,7 +29,7 @@ public class MyHostServer implements Communications{
         BookScrabbleServerIP = bs_IP;
         connectedClients = new HashMap<>();
         stopServer = false;
-        gameStarted = false;
+        isGameRunning = false;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MyHostServer implements Communications{
                     }
 
                     //Now we check the client to see if he's new or not and if allowed to join
-                    if(connectedClients.get(sender) == null && id.equals("0") && connectedClients.size() < MAX_CLIENTS && !gameStarted){ 
+                    if(connectedClients.get(sender) == null && id.equals("0") && connectedClients.size() < MAX_CLIENTS && !isGameRunning){ 
                         //Add new client to the HashMap and to the game
                         connectedClients.put(sender, aClient);
                         playerCount++; //Increment player count
@@ -70,8 +70,8 @@ public class MyHostServer implements Communications{
                         args.addAll(connectedClients.keySet()); //Add all players in game to the arguments
                         requestHandler.handleClient(sender, "join", args.toArray(new String[args.size()]), aClient.getOutputStream());
                         continue; //Add new player and continue
-                    } else if(connectedClients.get(sender) == null && id.equals("0") && (connectedClients.size() >= MAX_CLIENTS || gameStarted)) { //Server is full / game has started
-                        if(gameStarted)
+                    } else if(connectedClients.get(sender) == null && id.equals("0") && (connectedClients.size() >= MAX_CLIENTS || isGameRunning)) { //Server is full / game has started
+                        if(isGameRunning)
                             throwError(Error_Codes.GAME_STARTED, aClient.getOutputStream());
                         else
                             throwError(Error_Codes.SERVER_FULL, aClient.getOutputStream());

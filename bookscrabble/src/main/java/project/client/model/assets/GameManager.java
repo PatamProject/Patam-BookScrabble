@@ -5,11 +5,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import project.client.model.MyHostServer;
+
 public class GameManager{
     Board board;
     HashMap<String,PlayerModel> players; //Maps between player's name to player's object
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
-    public boolean gameEnded = false;
     public final int MAX_PLAYERS = 4;
 
     public GameManager() { //Ctor
@@ -72,10 +73,10 @@ public class GameManager{
         return false;
     }
 
-    public boolean isGameEnded() {return gameEnded;}
+    public boolean isGameEnded() {return !MyHostServer.isGameRunning;}
     private boolean checkEndGameConditions() { //Game ends when the bag is empty or there are less than 2 players
         if(Tile.Bag.isEmpty() || players.size() < 2) {
-            gameEnded = true;
+            MyHostServer.isGameRunning = false;
             return true;
         }
         return false;
@@ -88,7 +89,7 @@ public class GameManager{
             playersOrder.remove(pName);
         }
         if(players.size() <= 1) {
-            gameEnded = true;
+            MyHostServer.isGameRunning = false;
             return false;
         }
         return true;
@@ -103,7 +104,7 @@ public class GameManager{
                 if(p.getRack().size() < winner.getRack().size())
                     winner = p;
         }
-        gameEnded = true;
+        MyHostServer.isGameRunning = false;
         return "E,".concat(winner.getName());
     }
 
