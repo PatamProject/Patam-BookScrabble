@@ -93,74 +93,73 @@ public class ClientCommunications implements Communications{
     {
         int BOARD_SIZE = 15;
 
-        requestHandler.isGameRunning = true;
-        new Thread(()-> {        
-            try {
-                Scanner scanner = MyLogger.getScanner();
-                MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
-                while(requestHandler.isGameRunning) //While the game is running
+        requestHandler.isGameRunning = true;      
+        try {
+            Scanner scanner = MyLogger.getScanner();
+            MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
+            GameModel game = requestHandler.game;
+            while(requestHandler.isGameRunning) //While the game is running
+            {
+                MyLogger.log(game.myPlayer.getRack().toString());        
+                //TODO - Print scores and player names
+                //TODO - update board after each turn
+
+                if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    
-                    //TODO - Print scores
-                    //TODO - update board after each turn
-
-                    if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
+                    System.out.println("It's your turn to play! Enter word to place: ");
+                    if(scanner.hasNextLine())
                     {
-                        System.out.println("It's your turn to play! Enter word to place: ");
-                        if(scanner.hasNextLine())
+                        boolean allowedInput;
+                        String word;
+                        int row, col; 
+                        boolean isVertical = false;
+                        do
                         {
-                            boolean allowedInput;
-                            String word;
-                            int row, col; 
-                            boolean isVertical = false;
-                            do
+                            allowedInput = true;
+                            word = scanner.nextLine();
+                            if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                             {
-                                allowedInput = true;
-                                word = scanner.nextLine();
-                                if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
-                                {
-                                    System.out.println("Illegal word!");
-                                    allowedInput = false;
-                                }
-                            } while(!allowedInput);
+                                System.out.println("Illegal word!");
+                                allowedInput = false;
+                            }
+                        } while(!allowedInput);
 
-                            do
+                        do
+                        {
+                            allowedInput = true;
+                            System.out.println("Enter row and col of starting character:");
+                            row = scanner.nextInt();
+                            col = scanner.nextInt();
+                            if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                             {
-                                allowedInput = true;
-                                System.out.println("Enter row and col of starting character:");
-                                row = scanner.nextInt();
-                                col = scanner.nextInt();
-                                if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
-                                {
-                                    System.out.println("Illegal row or col!");
-                                    allowedInput = false;
-                                }
-                            } while(!allowedInput);
+                                System.out.println("Illegal row or col!");
+                                allowedInput = false;
+                            }
+                        } while(!allowedInput);
 
-                            do
+                        do
+                        {
+                            allowedInput = true;
+                            System.out.println("Enter 1 for vertical, 0 for horizontal:");
+                            int vertical = scanner.nextInt();
+                            if(vertical != 0 && vertical != 1)
                             {
-                                allowedInput = true;
-                                System.out.println("Enter 1 for vertical, 0 for horizontal:");
-                                int vertical = scanner.nextInt();
-                                if(vertical != 0 && vertical != 1)
-                                {
-                                    System.out.println("Illegal input!");
-                                    allowedInput = false;
-                                }
-                                else
-                                    isVertical = (vertical == 1);
-                                
-                            } while(!allowedInput);
+                                System.out.println("Illegal input!");
+                                allowedInput = false;
+                            }
+                            else
+                                isVertical = (vertical == 1);
                             
-                            String message = word + "," + row + "," + col + "," + isVertical;
-                            sendAMessage(requestHandler.getId(), message);
-                        }
+                        } while(!allowedInput);
+                        
+                        String message = word + "," + row + "," + col + "," + isVertical;
+                        sendAMessage(requestHandler.getId(), message);
                     }
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
-        }).start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

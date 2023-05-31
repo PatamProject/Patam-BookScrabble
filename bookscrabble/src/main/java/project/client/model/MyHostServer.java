@@ -59,7 +59,7 @@ public class MyHostServer{
 
     public void run() throws Exception {
         ServerSocket hostSocket = new ServerSocket(hostPort);
-        hostSocket.setSoTimeout(30000);
+        //hostSocket.setSoTimeout(30000);
         MyLogger.log("Host is listening on port " + hostPort);
         while (!stopServer) {
             try {
@@ -111,7 +111,7 @@ public class MyHostServer{
                     new Thread(() -> handleClientConnection(clientSocket,sender,id)).start();
                 }
             } catch (SocketTimeoutException e) {
-                MyLogger.log("Socket exception: " + e.getMessage());
+                MyLogger.log("Socket exception in MyHostServer: " + e.getMessage());
                 //Host is still listening
             }
         }
@@ -191,7 +191,8 @@ public class MyHostServer{
 
            closeConnection(clientSocket, out, in); //Remove client from the HashMap
         } catch (IOException e) {
-            MyLogger.log("Error in MyHostServer: " + e.getMessage());
+            MyLogger.log("Error in MyHostServer with client " + clientName + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
@@ -204,12 +205,6 @@ public class MyHostServer{
         } catch (IOException e) {
             MyLogger.log("Error closing connection: " + e.getMessage());
         }
-    }
-
-    public void stopServer()
-    {
-        stopServer = true;
-        playerCount = 0;
     }
 
     Boolean msgToBSServer(String message) { // A method that communicates with the BookScrabbleServer
@@ -238,7 +233,7 @@ public class MyHostServer{
                 socket.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            MyLogger.logError("Error with BS communication: " + e.getMessage());
         }
         //Failed to communicate with the BookScrabbleServer
         return false;
@@ -322,6 +317,7 @@ public class MyHostServer{
 
     public void close() // A method to close the hostServer
     {
+        MyLogger.log("Stopping server...");
         stopServer = true;
         playerCount = 0;
     } 
