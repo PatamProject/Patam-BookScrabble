@@ -10,7 +10,7 @@ public class TestRunClient {
         MyServer myServer = new MyServer(5555,new BookScrabbleHandler()); //Local server
         myServer.start();
 
-        RunClient host = new RunClient();
+        new RunClient();
         
     }
 

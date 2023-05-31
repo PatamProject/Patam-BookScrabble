@@ -73,10 +73,10 @@ public class GameManager{
         return false;
     }
 
-    public boolean isGameEnded() {return !MyHostServer.isGameRunning;}
+    public boolean isGameEnded() {return !MyHostServer.getHostServer().isGameRunning;}
     private boolean checkEndGameConditions() { //Game ends when the bag is empty or there are less than 2 players
         if(Tile.Bag.isEmpty() || players.size() < 2) {
-            MyHostServer.isGameRunning = false;
+            MyHostServer.getHostServer().isGameRunning = false;
             return true;
         }
         return false;
@@ -89,7 +89,7 @@ public class GameManager{
             playersOrder.remove(pName);
         }
         if(players.size() <= 1) {
-            MyHostServer.isGameRunning = false;
+            MyHostServer.getHostServer().isGameRunning = false;
             return false;
         }
         return true;
@@ -104,7 +104,7 @@ public class GameManager{
                 if(p.getRack().size() < winner.getRack().size())
                     winner = p;
         }
-        MyHostServer.isGameRunning = false;
+        MyHostServer.getHostServer().isGameRunning = false;
         return "E,".concat(winner.getName());
     }
 

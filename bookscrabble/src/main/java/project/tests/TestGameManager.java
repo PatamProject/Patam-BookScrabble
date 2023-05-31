@@ -77,7 +77,7 @@ public class TestGameManager {
             System.out.println("Problem with removePlayer method");
 
         testMethod2Helper(gameManager, playersOrder);
-        MyHostServer.isGameRunning = false;
+        MyHostServer.getHostServer().isGameRunning = false;
         flag = true;
         for (String name : names2)
             flag &= gameManager.addNewPlayer(name);
@@ -175,14 +175,14 @@ public class TestGameManager {
         if(!pName.equals("E,Arnold") || !gameManager.isGameEnded())
             System.out.println("Problem with getWinner method");
 
-        MyHostServer.isGameRunning = false;
+        MyHostServer.getHostServer().isGameRunning = false;
         gameManager.getPlayer("Zvolon").addScore(1);
         Tile[] rack = gameManager.getPlayer("Arnold").getRack().getTiles();
         gameManager.getPlayer("Arnold").getRack().removeTiles(rack);
         pName = gameManager.getWinner();
         if (!pName.equals("E,Arnold") || !gameManager.isGameEnded())
             System.out.println("Problem with getWinner method");
-        MyHostServer.isGameRunning = false;
+        MyHostServer.getHostServer().isGameRunning = false;
     }
 
     public static void main(String[] args)

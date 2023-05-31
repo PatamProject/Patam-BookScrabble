@@ -1,22 +1,19 @@
 package project.tests;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-import project.client.Error_Codes;
 import project.client.model.MyHostServer;
 
 public class TestMyHostServer {
 
     public static void main(String[] args) {
         // Create an instance of MyHostServer
-        MyHostServer hostServer = new MyHostServer(8009, 5555, "localhost");
+        MyHostServer hostServer = MyHostServer.getHostServer();
 
         // Start the server
-        hostServer.start();
+        hostServer.start(8009, 5555, "localhost");
 
         // Simulate some client interactions
         simulateClientInteraction(hostServer, "Client1");

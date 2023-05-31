@@ -42,11 +42,11 @@ public class HostSideHandler implements RequestHandler{
                 //Return tiles to back? Delete playerModel completely from view?
                 game.removePlayer(args[0]); //Remove from gameModel
                 try { //Close the socket
-                    MyHostServer.connectedClients.get(args[0]).close();
+                    MyHostServer.getHostServer().connectedClients.get(args[0]).close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } 
-                MyHostServer.connectedClients.remove(args[0]); //Remove from connectedClients
+                MyHostServer.getHostServer().connectedClients.remove(args[0]); //Remove from connectedClients
                 MyHostServer.updateAll("!leave:" + args[0], args[0]);
                 if (game.getPlayersAmount() < 2)
                     get("endGame");
@@ -69,7 +69,7 @@ public class HostSideHandler implements RequestHandler{
                 if (args[0].equals(ClientModel.getName()) && game.getPlayersAmount() >= 2) //Enough players and is the host
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
                     try {
-                        MyHostServer.isGameRunning = true; //Set gameStarted to true
+                        MyHostServer.getHostServer().isGameRunning = true; //Set gameStarted to true
                         String[] tilesAndPlayers = game.startGame(); //Start the game on the host's side
                         StringBuilder playersOrder = new StringBuilder();
                         for (String tilesAndPlayer : tilesAndPlayers)
@@ -122,7 +122,7 @@ public class HostSideHandler implements RequestHandler{
         //Check if all words are dictionaryLegal
         Boolean areWordsLegal = true;
         for (String word : words)
-            areWordsLegal &= ClientModel.myHostServer.msgToBSServer(word);
+            areWordsLegal &= MyHostServer.getHostServer().msgToBSServer(word);
         
         if(!areWordsLegal) //Not all words are dictionaryLegal
             out.println(commandName+":-1"); //Score = -1
