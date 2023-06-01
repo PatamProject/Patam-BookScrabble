@@ -5,12 +5,25 @@ import java.util.Scanner;
 import project.client.model.ClientModel;
 
 public class MyLogger {
+    private static final Object lock = new Object();
     private static Scanner myScanner = new Scanner(System.in);
 
     public MyLogger(){}
 
-    public static void log(String message) {System.out.println(message);}
-    public static void logError(String errorMessage) {System.err.println(errorMessage);}
+    public static void log(String message)
+    {
+        synchronized (lock) {
+            System.out.println(message);
+            System.out.flush();
+        } 
+    }
+    public static void logError(String errorMessage)
+    {
+        synchronized (lock) {
+            System.err.println(errorMessage);
+            System.out.flush();
+        }
+    }
     public static void printBoard(String input) 
     { // Example: AB-C&D--E
         String[] board = null;
@@ -39,8 +52,8 @@ public class MyLogger {
         for (String s : board) 
         {
             for (int i = 0; i < s.length(); i++)
-                System.out.print(s.charAt(i) + " ");
-            System.out.print("\n");
+                log(s.charAt(i) + " ");
+            log("\n");
         }
     }
 
@@ -99,37 +112,37 @@ public class MyLogger {
         logError("Connection to host is lost!");
     }
 
-    public void useless() {
+    // public void useless() {
 
-        // Host logging game progress
-        log("Waiting for other players to join...");
-        log("Maximum amount of players achieved.");
+    //     // Host logging game progress
+    //     log("Waiting for other players to join...");
+    //     log("Maximum amount of players achieved.");
 
-        // Game logic and progress updates
-        log("Its your turn to play!");
-        log("Its dickFace turn to play."); // change
-        log("You won the game!");
-        log("Player dickFace won the game!"); // change
+    //     // Game logic and progress updates
+    //     log("Its your turn to play!");
+    //     log("Its dickFace turn to play."); // change
+    //     log("You won the game!");
+    //     log("Player dickFace won the game!"); // change
 
-        // Client logging game errors
-        logError("Host connection Failed.");
-        logError("Connection lost.");
-        logError("Connection to player dickFace Failed.");
-        logError("Invalid input. Please try again.");
+    //     // Client logging game errors
+    //     logError("Host connection Failed.");
+    //     logError("Connection lost.");
+    //     logError("Connection to player dickFace Failed.");
+    //     logError("Invalid input. Please try again.");
 
-        // Host logging game errors
-        logError("No players in sight."); // If no one connects the host
-        logError("Not enough players to start."); // If the host wants to play alone
+    //     // Host logging game errors
+    //     logError("No players in sight."); // If no one connects the host
+    //     logError("Not enough players to start."); // If the host wants to play alone
 
-        // Client game cleanup and exit
-        log("Closing connection to the host...");
-        log("Connection to host is closed.");
-        log("Game ended. Thanks for playing!");
+    //     // Client game cleanup and exit
+    //     log("Closing connection to the host...");
+    //     log("Connection to host is closed.");
+    //     log("Game ended. Thanks for playing!");
 
-        // Host game cleanup and exit
-        log("Closing Connections to guests...");
-        log("Connections to guests are closed.");
-    }
+    //     // Host game cleanup and exit
+    //     log("Closing Connections to guests...");
+    //     log("Connections to guests are closed.");
+    // }
 
     public static Scanner getScanner()
     {

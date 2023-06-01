@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import project.client.MyLogger;
 
-public class ClientCommunications implements Communications{
+public class ClientCommunications{
     private ClientSideHandler requestHandler;
     private static Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
@@ -20,7 +20,6 @@ public class ClientCommunications implements Communications{
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
     
-    @Override
     public void run() { // A method that consistently receives messages from the host
         sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
@@ -68,7 +67,6 @@ public class ClientCommunications implements Communications{
         outToHost.flush();
     }
 
-    @Override
     public void close() { // Closing the connection to the host
         try {
             inFromHost.close();
@@ -78,7 +76,6 @@ public class ClientCommunications implements Communications{
         }
     }
 
-    @Override
     public void start() {
         new Thread(()-> {
             try {
@@ -98,15 +95,16 @@ public class ClientCommunications implements Communications{
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
             GameModel game = requestHandler.game;
+            MyLogger.log(game.myPlayer.getRack().toString());        
+            //TODO - Print scores and player names
+            
             while(requestHandler.isGameRunning) //While the game is running
             {
-                MyLogger.log(game.myPlayer.getRack().toString());        
-                //TODO - Print scores and player names
                 //TODO - update board after each turn
 
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    System.out.println("It's your turn to play! Enter word to place: ");
+                    MyLogger.log("It's your turn to play! Enter word to place: ");
                     if(scanner.hasNextLine())
                     {
                         boolean allowedInput;
@@ -119,7 +117,7 @@ public class ClientCommunications implements Communications{
                             word = scanner.nextLine();
                             if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                             {
-                                System.out.println("Illegal word!");
+                                MyLogger.log("Illegal word!");
                                 allowedInput = false;
                             }
                         } while(!allowedInput);
@@ -127,12 +125,12 @@ public class ClientCommunications implements Communications{
                         do
                         {
                             allowedInput = true;
-                            System.out.println("Enter row and col of starting character:");
+                            MyLogger.log("Enter row and col of starting character:");
                             row = scanner.nextInt();
                             col = scanner.nextInt();
                             if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                             {
-                                System.out.println("Illegal row or col!");
+                                MyLogger.log("Illegal row or col!");
                                 allowedInput = false;
                             }
                         } while(!allowedInput);
@@ -140,11 +138,11 @@ public class ClientCommunications implements Communications{
                         do
                         {
                             allowedInput = true;
-                            System.out.println("Enter 1 for vertical, 0 for horizontal:");
+                            MyLogger.log("Enter 1 for vertical, 0 for horizontal:");
                             int vertical = scanner.nextInt();
                             if(vertical != 0 && vertical != 1)
                             {
-                                System.out.println("Illegal input!");
+                                MyLogger.log("Illegal input!");
                                 allowedInput = false;
                             }
                             else

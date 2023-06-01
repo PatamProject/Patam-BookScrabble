@@ -7,6 +7,8 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import project.client.Error_Codes;
 import project.client.MyLogger;
@@ -20,6 +22,7 @@ public class MyHostServer{
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopServer = false;
     public volatile boolean isGameRunning = false;
+    BlockingQueue<String[]> myTasks;
     private final int MAX_CLIENTS = 4;
  
     public static MyHostServer getHostServer() //singleton design
@@ -32,6 +35,7 @@ public class MyHostServer{
 
     private MyHostServer() { // Ctor
         requestHandler = new HostSideHandler();
+        myTasks = new LinkedBlockingQueue<>();
         connectedClients = new HashMap<>();
         stopServer = false;
         isGameRunning = false;
