@@ -56,7 +56,7 @@ public class ClientSideHandler implements RequestHandler{
             put("C", (String[] args) -> 
             { //Successful join, args[0] = id, args[1]... = players
                 Integer score = Integer.parseInt(args[1]);
-                MyLogger.log("Challenging dictonary...");
+                MyLogger.println("Challenging dictonary...");
                 if(score == 0 || score == -1) //Not boardLegal
                 {
                     numOfChallenges++;
@@ -73,7 +73,7 @@ public class ClientSideHandler implements RequestHandler{
 
             put("hello", (String[] args) -> 
             { //Used for testing
-                MyLogger.log("Hello recieved");
+                MyLogger.println("Hello recieved");
             });
         }};
 
@@ -133,56 +133,56 @@ public class ClientSideHandler implements RequestHandler{
         errorHandler = new HashMap<>(){{
             put(Error_Codes.UNKNOWN_CMD, (String[] args) -> 
             { 
-                MyLogger.log("Unknown command");
+                MyLogger.println("Unknown command");
             });
 
             put(Error_Codes.INVALID_ARGS, (String[] args) -> 
             { 
-                MyLogger.log("Invalid arguments for command");
+                MyLogger.println("Invalid arguments for command");
             });
             put(Error_Codes.MISSING_ARGS, (String[] args) -> 
             { 
-                MyLogger.log("Missing arguments for command");
+                MyLogger.println("Missing arguments for command");
             });
     
             put(Error_Codes.SERVER_ERR, (String[] args) -> 
             { 
-                MyLogger.log("Server error");
+                MyLogger.println("Server error");
             });
     
             put(Error_Codes.ACCESS_DENIED, (String[] args) -> 
             { 
-                MyLogger.log("Access denied, you are not premitted to use this command");
+                MyLogger.println("Access denied, you are not premitted to use this command");
             });
     
             put(Error_Codes.SERVER_FULL, (String[] args) -> 
             { 
-                MyLogger.log("Server is full, try again later");
+                MyLogger.println("Server is full, try again later");
             });
     
             put(Error_Codes.GAME_STARTED, (String[] args) -> 
             {
-                MyLogger.log("Game has already started, you can't join now");
+                MyLogger.println("Game has already started, you can't join now");
             });
     
             put(Error_Codes.NAME_TAKEN, (String[] args) -> 
             { 
-                MyLogger.log("Name is already taken, try another name");
+                MyLogger.println("Name is already taken, try another name");
             });
      
             put(Error_Codes.NOT_YOUR_TURN, (String[] args) -> 
             { 
-                MyLogger.log("It's not your turn, you can't use this command now");
+                MyLogger.println("It's not your turn, you can't use this command now");
             });
 
             put(Error_Codes.NOT_ENOUGH_PLAYERS, (String[] args) -> 
             { 
-                MyLogger.log("Can't start game, not enough players");
+                MyLogger.println("Can't start game, not enough players");
             });
 
             put(Error_Codes.GAME_ENDED, (String[] args) -> //Do we need this?
             { 
-                MyLogger.log("The game has ended, you can't use this command now");
+                MyLogger.println("The game has ended, you can't use this command now");
             });
         }};
     }

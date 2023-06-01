@@ -123,7 +123,7 @@ public class RunClient{
                 } else if(input.equals("who")){
                     String[] players = MyHostServer.getHostServer().getConnectedClients();
                     for(int i = 0; i < players.length; i++)
-                        MyLogger.log((players[i])+ " is connected.");
+                        MyLogger.println((players[i])+ " is connected.");
                 }
                 else
                     System.out.println("Invalid input. Please try again.");   

@@ -48,7 +48,7 @@ public class MyHostServer{
         if(!msgToBSServer("S,hello")) //Check connection to BS server
         {
             MyLogger.logError("Unable to connect to BookScrabble server!");
-            MyLogger.log("Host did not start! \nUse 'start' to try again or change BookScrabble server IP and port using 'setBSIP' and 'setBSPort'");
+            MyLogger.println("Host did not start! \nUse 'start' to try again or change BookScrabble server IP and port using 'setBSIP' and 'setBSPort'");
             return;
         }
         //Connected to BS server    
@@ -63,7 +63,7 @@ public class MyHostServer{
 
     public void run() throws Exception {
         ServerSocket hostSocket = new ServerSocket(hostPort);
-        MyLogger.log("Host is listening on port " + hostPort);
+        MyLogger.println("Host is listening on port " + hostPort);
         while (!stopServer) {
             try {
                 Socket clientSocket = hostSocket.accept();
@@ -71,7 +71,7 @@ public class MyHostServer{
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 if(in.hasNextLine()){
                     String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
-                    MyLogger.log("Host received: " + request);
+                    MyLogger.println("Host received: " + request);
                     String[] user_body_split = request.split("&");
                     if(user_body_split.length != 2){ //Must contain a sender name and a body
                         throwError(Error_Codes.UNKNOWN_CMD, out);
@@ -114,7 +114,7 @@ public class MyHostServer{
                     new Thread(() -> handleClientConnection(clientSocket,sender,id)).start();
                 }
             } catch (SocketTimeoutException e) {
-                MyLogger.log("Socket exception in MyHostServer: " + e.getMessage());
+                MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
                 //Host is still listening
             }
         }
@@ -194,7 +194,7 @@ public class MyHostServer{
 
            closeConnection(clientSocket, out, in); //Remove client from the HashMap
         } catch (IOException e) {
-            MyLogger.log("Error in MyHostServer with client " + clientName + ": " + e.getMessage());
+            MyLogger.println("Error in MyHostServer with client " + clientName + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -206,7 +206,7 @@ public class MyHostServer{
             clientSocket.close();
             connectedClients.values().removeIf(v -> v.equals(clientSocket));
         } catch (IOException e) {
-            MyLogger.log("Error closing connection: " + e.getMessage());
+            MyLogger.println("Error closing connection: " + e.getMessage());
         }
     }
 
@@ -243,33 +243,19 @@ public class MyHostServer{
     }
 
     public static void updateAll(String message, String doNotSendToPlayer) { // A method to update all relevant clients with new information
-        try{
-            OutputStream doNotSendStream;
-            if(doNotSendToPlayer == null) //If the message is for everyone doNotSendToPlayer is null
-                doNotSendStream = null;
-            else
-                doNotSendStream = MyHostServer.getHostServer().connectedClients.get(doNotSendToPlayer).getOutputStream();    
             
-                MyHostServer.getHostServer().connectedClients.values().forEach(c-> {
-                try {
-                    if (c.getOutputStream() != doNotSendStream) { // Preventing from the message to be sent twice
-                        try {
-                            PrintWriter out = new PrintWriter(c.getOutputStream());
-                            out.println(message);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        for (String player : MyHostServer.getHostServer().connectedClients.keySet()) {
+            if(!player.equals(doNotSendToPlayer))
+            {
+                try{
+                    PrintWriter out = new PrintWriter(MyHostServer.getHostServer().connectedClients.get(player).getOutputStream());
+                    out.println(message);
+                    out.flush();
+                } catch (Exception e) {
+                    MyLogger.logError("Error updating " + player + ": " + e.getMessage());
+                    e.printStackTrace();
                 }
-            });
-
-            if(doNotSendToPlayer != null)
-                doNotSendStream.flush();
-                     
-        } catch (IOException e) {
-            e.printStackTrace();
+            }
         }
     }
 
@@ -295,7 +281,7 @@ public class MyHostServer{
         }
         else
         {
-            MyLogger.log("Not enough players to start the game");
+            MyLogger.println("Not enough players to start the game");
             return false;
         }
     }
@@ -320,7 +306,7 @@ public class MyHostServer{
 
     public void close() // A method to close the hostServer
     {
-        MyLogger.log("Stopping server...");
+        MyLogger.println("Stopping server...");
         stopServer = true;
         playerCount = 0;
     } 

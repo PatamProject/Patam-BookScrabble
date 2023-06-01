@@ -5,24 +5,26 @@ import java.util.Scanner;
 import project.client.model.ClientModel;
 
 public class MyLogger {
-    private static final Object lock = new Object();
     private static Scanner myScanner = new Scanner(System.in);
 
     public MyLogger(){}
 
-    public static void log(String message)
+    public static synchronized void println(String message)
     {
-        synchronized (lock) {
-            System.out.println(message);
-            System.out.flush();
-        } 
+        System.out.println(message);
+        System.out.flush();
     }
-    public static void logError(String errorMessage)
+
+    public static synchronized void print(String message)
     {
-        synchronized (lock) {
-            System.err.println(errorMessage);
-            System.out.flush();
-        }
+        System.out.print(message);
+        System.out.flush();
+    }
+
+    public static synchronized void logError(String errorMessage)
+    {
+        System.err.println(errorMessage);
+        System.out.flush(); 
     }
     public static void printBoard(String input) 
     { // Example: AB-C&D--E
@@ -52,59 +54,59 @@ public class MyLogger {
         for (String s : board) 
         {
             for (int i = 0; i < s.length(); i++)
-                log(s.charAt(i) + " ");
-            log("\n");
+                print(s.charAt(i) + " ");
+            println("");
         }
     }
 
     public static void playerJoined(String name)
     {
-        log("Player " + name + " has joined the game!");
+        println("Player " + name + " has joined the game!");
     }
 
     public static void playertLeft(String name)
     {
-        log("Player " + name + " has left the game!");
+        println("Player " + name + " has left the game!");
     }
 
     public static void gameStarted(String firstPlayingPlayer)
     {
-        log("Game started!");
-        log("Player " + firstPlayingPlayer + " is playing first!");
+        println("Game started!");
+        println("Player " + firstPlayingPlayer + " is playing first!");
         printBoard(null); //Print empty board
     }
 
     public static void nextPlayer(String nextPlayer)
     {
-        log("Player " + nextPlayer + " is playing now!");
+        println("Player " + nextPlayer + " is playing now!");
     }
 
     public static void playerPlacedWord(String player, int score, String commandName)
     {
         if(ClientModel.getName().equals(player))
         {
-            log("You got " + score + " points!");
+            println("You got " + score + " points!");
             return;
         }
 
         if(commandName.equals("C"))
-            log("Player " + player + " challenged a word placement and got " + score + " points!");
+            println("Player " + player + " challenged a word placement and got " + score + " points!");
         else
-            log("Player " + player + " placed a word and got " + score + " points!");
+            println("Player " + player + " placed a word and got " + score + " points!");
     }
 
     public static void failedWordPlacement(int score)
     {
 
         if(score == 0)
-            log("Invalid word placement! Try again.");
+            println("Invalid word placement! Try again.");
         else // score == -1
-            log("Invalid word! Try again.");
+            println("Invalid word! Try again.");
     }
 
     public static void gameEnded(String player)
     {
-        log("Player " + player + " won the game!");
+        println("Player " + player + " won the game!");
     }
 
     public static void disconnectedFromHost()

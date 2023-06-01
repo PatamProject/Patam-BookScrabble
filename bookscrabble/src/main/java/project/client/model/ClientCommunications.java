@@ -26,7 +26,7 @@ public class ClientCommunications{
             try {
                 if(inFromHost.hasNextLine()) {
                     String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
-                    MyLogger.log("Client received: " + request);
+                    MyLogger.println("Client received: " + request);
                     if(request.charAt(0) == '#') //If the host sent an error
                     {
                         requestHandler.handleClient("#", request.substring(1), null, null); //Error
@@ -95,7 +95,7 @@ public class ClientCommunications{
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
             GameModel game = requestHandler.game;
-            MyLogger.log(game.myPlayer.getRack().toString());        
+            MyLogger.println(game.myPlayer.getRack().toString());        
             //TODO - Print scores and player names
             
             while(requestHandler.isGameRunning) //While the game is running
@@ -104,7 +104,7 @@ public class ClientCommunications{
 
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    MyLogger.log("It's your turn to play! Enter word to place: ");
+                    MyLogger.println("It's your turn to play! Enter word to place: ");
                     if(scanner.hasNextLine())
                     {
                         boolean allowedInput;
@@ -117,7 +117,7 @@ public class ClientCommunications{
                             word = scanner.nextLine();
                             if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                             {
-                                MyLogger.log("Illegal word!");
+                                MyLogger.println("Illegal word!");
                                 allowedInput = false;
                             }
                         } while(!allowedInput);
@@ -125,12 +125,12 @@ public class ClientCommunications{
                         do
                         {
                             allowedInput = true;
-                            MyLogger.log("Enter row and col of starting character:");
+                            MyLogger.println("Enter row and col of starting character:");
                             row = scanner.nextInt();
                             col = scanner.nextInt();
                             if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                             {
-                                MyLogger.log("Illegal row or col!");
+                                MyLogger.println("Illegal row or col!");
                                 allowedInput = false;
                             }
                         } while(!allowedInput);
@@ -138,11 +138,11 @@ public class ClientCommunications{
                         do
                         {
                             allowedInput = true;
-                            MyLogger.log("Enter 1 for vertical, 0 for horizontal:");
+                            MyLogger.println("Enter 1 for vertical, 0 for horizontal:");
                             int vertical = scanner.nextInt();
                             if(vertical != 0 && vertical != 1)
                             {
-                                MyLogger.log("Illegal input!");
+                                MyLogger.println("Illegal input!");
                                 allowedInput = false;
                             }
                             else

@@ -17,7 +17,7 @@ public class TestClientCommunication {
             out = new PrintWriter(client.getOutputStream());
             in = new Scanner(client.getInputStream());
             out.println("0:g&join");
-            MyLogger.log(in.nextLine());
+            MyLogger.println(in.nextLine());
             
         } catch (IOException e) {
             e.printStackTrace();
