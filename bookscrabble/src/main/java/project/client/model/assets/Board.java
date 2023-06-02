@@ -372,4 +372,22 @@ public class Board {
         if(boardTiles == tiles) //same address -> word is placed on board
             num_Of_Tiles_Placed += w.getWordLength();
     }
+
+    @Override
+    public String toString()
+    {
+        String str = "";
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if(tiles[i][j] == null)
+                    str += "-";
+                else
+                    str += tiles[i][j].letter;
+            }
+
+            if(i != SIZE - 1)
+                str += "&";
+        }
+        return str;  
+    }
 }

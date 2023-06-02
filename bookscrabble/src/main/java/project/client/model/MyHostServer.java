@@ -284,6 +284,7 @@ public class MyHostServer{
             try {
                 requestHandler.handleClient(ClientModel.getName(), "startGame", new String[]{ClientModel.getName()}, connectedClients.get(ClientModel.getName()).getOutputStream());
             } catch (IOException e) {
+                MyLogger.logError("Failed to start game on MyHostServer: " + e.getMessage());
                 e.printStackTrace();
             }
             return true;
@@ -300,6 +301,7 @@ public class MyHostServer{
         try{
             out.println(error);
         } catch (Exception e) {
+            MyLogger.logError("ThrowError failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

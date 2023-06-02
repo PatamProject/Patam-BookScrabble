@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import project.client.MyLogger;
 
@@ -109,18 +106,13 @@ public class ClientCommunications{
         
         try {
             Scanner scanner = MyLogger.getScanner();
-            MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
-            GameModel game = requestHandler.game;
-            MyLogger.println(game.myTiles);        
-            //TODO - Print scores and player names
+            MyLogger.gameStarted(requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
             
             while(requestHandler.isGameRunning) //While the game is running
-            {
-                //TODO - update board after each turn
-
+            {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    MyLogger.println("It's your turn to play! Enter word to place: ");
+                    MyLogger.println("It's your turn to play! Enter a word to place: ");
                     if(scanner.hasNextLine())
                     {
                         boolean allowedInput;
@@ -167,12 +159,16 @@ public class ClientCommunications{
                         } while(!allowedInput);
                         
                         String message = word + "," + row + "," + col + "," + isVertical;
-                        sendAMessage(requestHandler.getId(), message);
+                        sendAMessage(requestHandler.getId(), message); //TODO wait for response
+                    }
+                    else
+                    {
+                        //TODO wait for my turn
                     }
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            MyLogger.logError("Error in gameStarted: " + e.getMessage());
         }
     }
 

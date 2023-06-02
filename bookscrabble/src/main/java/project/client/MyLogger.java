@@ -1,5 +1,6 @@
 package project.client;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 import project.client.model.ClientModel;
@@ -59,6 +60,12 @@ public class MyLogger {
         }
     }
 
+    public static void printTiles(String tiles)
+    {
+        for (int i = 0; i < tiles.length(); i++)
+            print(tiles.charAt(i) + " ");
+    }
+
     public static void playerJoined(String name)
     {
         println("Player " + name + " has joined the game!");
@@ -69,11 +76,22 @@ public class MyLogger {
         println("Player " + name + " has left the game!");
     }
 
-    public static void gameStarted(String firstPlayingPlayer)
+    public static void gameStarted(String... players) //First player to play is the first in the list
     {
         println("Game started!");
-        println("Player " + firstPlayingPlayer + " is playing first!");
+        println("Player " + players[0] + " is playing first!");
+        HashMap<String, Integer> startingScores = new HashMap<>();
+        for (int i = 0; i < players.length; i++)
+            startingScores.put(players[i], 0);
+            
+        printPlayerAndScore(startingScores);
         printBoard(null); //Print empty board
+    }
+
+    public static void printPlayerAndScore(HashMap<String, Integer> players)
+    {
+        for (String name : players.keySet())
+            println(name + " has " + players.get(name) + " points!");
     }
 
     public static void nextPlayer(String nextPlayer)
@@ -97,11 +115,10 @@ public class MyLogger {
 
     public static void failedWordPlacement(int score)
     {
-
         if(score == 0)
             println("Invalid word placement! Try again.");
         else // score == -1
-            println("Invalid word! Try again.");
+            println("Illegal word! Try again.");
     }
 
     public static void gameEnded(String player)

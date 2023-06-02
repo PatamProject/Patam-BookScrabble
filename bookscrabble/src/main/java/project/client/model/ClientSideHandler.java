@@ -53,6 +53,7 @@ public class ClientSideHandler implements RequestHandler{
                     //game.myPlayer.getRack().takeTiles(args[2]); //old way TBR
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "Q");
+                    MyLogger.printTiles(game.myTiles); //Print my tiles
                 }
             });
     

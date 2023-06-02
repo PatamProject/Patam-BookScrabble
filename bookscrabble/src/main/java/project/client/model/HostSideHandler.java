@@ -122,7 +122,7 @@ public class HostSideHandler implements RequestHandler{
         //Check if all words are dictionaryLegal
         Boolean areWordsLegal = true;
         for (String word : words)
-            areWordsLegal &= MyHostServer.getHostServer().msgToBSServer(word);
+            areWordsLegal &= MyHostServer.getHostServer().msgToBSServer(commandName + "," + word);
         
         if(!areWordsLegal) //Not all words are dictionaryLegal
             out.println(commandName+":-1"); //Score = -1
