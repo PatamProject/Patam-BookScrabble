@@ -159,7 +159,7 @@ public class ClientCommunications{
                         } while(!allowedInput);
                         
                         String message = word + "," + row + "," + col + "," + isVertical;
-                        sendAMessage(requestHandler.getId(), message); //TODO wait for response
+                        sendAMessage(requestHandler.getId(), message); //TODO wait for response (try again/next turn)
                     }
                     else
                     {
