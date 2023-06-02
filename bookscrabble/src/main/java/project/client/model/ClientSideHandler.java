@@ -7,8 +7,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 // This class is used to handle the host's responses
@@ -20,13 +18,11 @@ public class ClientSideHandler implements RequestHandler{
     private Map<String, Consumer<String[]>> errorHandler;
     private int id = 0;
     private int numOfChallenges = 0;
-    public Lock lock = new ReentrantLock();
     boolean isGameRunning = false;
 
     public ClientSideHandler(PrintWriter out) {
         game = new GameModel();
         this.out = out;
-        lock.lock();
 
         //ResponseHandler (responses from the server to the client's request)
         responseHandler = new HashMap<>(){{
@@ -103,7 +99,7 @@ public class ClientSideHandler implements RequestHandler{
             //Game started, tiles are sent to each player individually
             put("!startGame", (String[] args) -> 
             { //args[0] = tiles, args[1] = player1, args[2] = player2, ...
-                game.myTiles = args[2]; //Updated the tiles    
+                game.myTiles = args[0]; //Updated the tiles    
                 //Add players by order
                 String[] players = new String[args.length - 1];
                 for(int i = 1; i < args.length; i++)
@@ -112,7 +108,7 @@ public class ClientSideHandler implements RequestHandler{
                     game.playersOrder.add(args[i]); //Add players by order
                 }
                 game.addPlayers(players); //Add players to the game
-                lock.unlock();
+                isGameRunning = true;
                 //Game started in ClientCommunication
             });
 

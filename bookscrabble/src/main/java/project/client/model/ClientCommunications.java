@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import project.client.MyLogger;
 
@@ -44,8 +45,24 @@ public class ClientCommunications{
                         sender = "!"; //To allow the handler to know that this is a game update from the host
                         if(commandName.equals("!startGame"))
                         {
-                            requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());     
-                            gameStarted();
+                            Object lock = new Object();
+
+                            synchronized (lock) {
+                                requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
+                                lock.notifyAll();
+                            }
+
+                            synchronized (lock) {
+                                if(!requestHandler.isGameRunning)
+                                {
+                                    try {
+                                        lock.wait();
+                                    } catch (InterruptedException e) {
+                                        MyLogger.logError("Unable to unlock!");
+                                    }
+                                }
+                                gameStarted();
+                            }
                             continue;
                         }
                     }
@@ -88,12 +105,6 @@ public class ClientCommunications{
 
     public void gameStarted()
     {
-        try {
-            requestHandler.lock.tryLock(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            MyLogger.logError("Unable to lock!");
-        }
-
         int BOARD_SIZE = 15;
         
         try {
