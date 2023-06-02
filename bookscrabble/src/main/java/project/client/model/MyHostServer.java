@@ -201,10 +201,19 @@ public class MyHostServer{
     
     private void closeConnection(Socket clientSocket, PrintWriter out, Scanner in) {
         try {
-            out.close();
-            in.close();
-            clientSocket.close();
-            connectedClients.values().removeIf(v -> v.equals(clientSocket));
+            String name = "";
+            for (String client : connectedClients.keySet())
+                if(connectedClients.get(client).equals(clientSocket))
+                {
+                    name = client;
+                    out.close();
+                    in.close();
+                    clientSocket.close();
+                    break;
+                }
+            
+            connectedClients.remove(name);
+            MyLogger.println("Player " + name + " has left the game.");
         } catch (IOException e) {
             MyLogger.println("Error closing connection: " + e.getMessage());
         }

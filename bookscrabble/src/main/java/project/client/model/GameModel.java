@@ -30,7 +30,6 @@ public class GameModel {
         for (String player : players)
         {
             this.players.put(player, 0); //Each player starts with score 0
-            MyLogger.playerJoined(player);
         }
     }
 
