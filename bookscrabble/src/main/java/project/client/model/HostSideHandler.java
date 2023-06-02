@@ -129,13 +129,13 @@ public class HostSideHandler implements RequestHandler{
         else
         {
             Integer score = game.getScoreFromWord(args[0], w);
-            String tiles;
             if(score != 0)
             {
                 try { //Take tiles from bag
-                    tiles = game.getPlayer(args[0]).getRack().takeTilesFromBag();
+                    game.getPlayer(args[0]).getRack().takeTilesFromBag();
+                    String currentTiles = game.getPlayer(args[0]).getRack().toString(); //The current tiles of the player
                     game.nextTurn(); //next player's turn
-                    out.println(commandName+":"+score + "," + tiles + "," + game.getCurrentPlayersName()); //Send score and tiles to client
+                    out.println(commandName+":"+score + "," + currentTiles + "," + game.getCurrentPlayersName()); //Send score and tiles to client
                     MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score + "," + game.getCurrentPlayersName(), args[0]); //Send score to all players
                 } catch (Exception e) {
                     String winner = game.getWinner(); //Game ended, bag is empty

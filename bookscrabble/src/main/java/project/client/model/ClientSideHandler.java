@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 // This class is used to handle the host's responses
@@ -18,12 +20,14 @@ public class ClientSideHandler implements RequestHandler{
     private Map<String, Consumer<String[]>> errorHandler;
     private int id = 0;
     private int numOfChallenges = 0;
+    public Lock lock = new ReentrantLock();
     boolean isGameRunning = false;
 
     public ClientSideHandler(PrintWriter out) {
         game = new GameModel();
         this.out = out;
-        
+        lock.lock();
+
         //ResponseHandler (responses from the server to the client's request)
         responseHandler = new HashMap<>(){{
             //Tried to join the game
@@ -32,8 +36,11 @@ public class ClientSideHandler implements RequestHandler{
                 id = Integer.parseInt(args[0]);
                 String[] connectedPlayers = new String[args.length - 1];
                 System.arraycopy(args, 1, connectedPlayers, 0, args.length - 1);
-    
-                game.addPlayers(connectedPlayers);
+                
+                game.addPlayers(ClientModel.getName()); //Add myself to the game
+                game.addPlayers(connectedPlayers); //Add the rest of existing players
+                for (String p : connectedPlayers)
+                    MyLogger.playerJoined(p);
             });
     
             //Tried to place a word on the board
@@ -46,7 +53,8 @@ public class ClientSideHandler implements RequestHandler{
                 else //Word was placed successfully
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
-                    game.myPlayer.getRack().takeTiles(args[2]); //Take tiles
+                    game.myTiles = args[2]; //Updated the tiles
+                    //game.myPlayer.getRack().takeTiles(args[2]); //old way TBR
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "Q");
                 }
@@ -65,7 +73,8 @@ public class ClientSideHandler implements RequestHandler{
                 else //Word was placed successfully
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
-                    game.myPlayer.getRack().takeTiles(args[2]); //Take tiles
+                    game.myTiles = args[2]; //Updated the tiles
+                    //game.myPlayer.getRack().takeTiles(args[2]); //old way TBR
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "C");
                 }
@@ -93,8 +102,8 @@ public class ClientSideHandler implements RequestHandler{
 
             //Game started, tiles are sent to each player individually
             put("!startGame", (String[] args) -> 
-            { //args[0] = tiles, args[1] = player1, args[2] = player2, ... 
-                game.myPlayer.getRack().takeTiles(args[0]); //Take tiles
+            { //args[0] = tiles, args[1] = player1, args[2] = player2, ...
+                game.myTiles = args[2]; //Updated the tiles    
                 //Add players by order
                 String[] players = new String[args.length - 1];
                 for(int i = 1; i < args.length; i++)
@@ -103,6 +112,7 @@ public class ClientSideHandler implements RequestHandler{
                     game.playersOrder.add(args[i]); //Add players by order
                 }
                 game.addPlayers(players); //Add players to the game
+                lock.unlock();
                 //Game started in ClientCommunication
             });
 

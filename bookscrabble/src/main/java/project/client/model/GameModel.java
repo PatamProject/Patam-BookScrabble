@@ -3,17 +3,16 @@ package project.client.model;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import project.client.MyLogger;
-import project.client.model.assets.PlayerModel;
 
 public class GameModel {
-    PlayerModel myPlayer;
+    //PlayerModel myPlayer;
+    String myTiles;
     HashMap<String,Integer> players; //Name of player and their score
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board;
 
     public GameModel() {
-        myPlayer = new PlayerModel(ClientModel.getName());
+        //myPlayer = new PlayerModel(ClientModel.getName());
         playersOrder = new LinkedList<>(); //Will be updated by startGame
         this.players = new HashMap<>();
     }
@@ -41,9 +40,6 @@ public class GameModel {
 
     public void updateScore(String player, int score)
     {
-        if(myPlayer.getName().equals(player))
-            myPlayer.addScore(score);
-
         int oldScore = players.get(player);
         players.remove(player);
         players.put(player, oldScore + score);

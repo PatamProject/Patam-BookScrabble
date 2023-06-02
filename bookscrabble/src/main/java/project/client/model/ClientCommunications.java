@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 import project.client.MyLogger;
 
@@ -42,8 +44,7 @@ public class ClientCommunications{
                         sender = "!"; //To allow the handler to know that this is a game update from the host
                         if(commandName.equals("!startGame"))
                         {
-                            requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());   
-                            Thread.sleep(1000);  
+                            requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());     
                             gameStarted();
                             continue;
                         }
@@ -55,7 +56,7 @@ public class ClientCommunications{
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } catch (InterruptedException e) {} 
+            } 
         }
         MyLogger.disconnectedFromHost();
         requestHandler.close();
@@ -87,14 +88,19 @@ public class ClientCommunications{
 
     public void gameStarted()
     {
-        int BOARD_SIZE = 15;
+        try {
+            requestHandler.lock.tryLock(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            MyLogger.logError("Unable to lock!");
+        }
 
-        requestHandler.isGameRunning = true;      
+        int BOARD_SIZE = 15;
+        
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.getCurrentPlayersName());
             GameModel game = requestHandler.game;
-            MyLogger.println(game.myPlayer.getRack().toString());        
+            MyLogger.println(game.myTiles);        
             //TODO - Print scores and player names
             
             while(requestHandler.isGameRunning) //While the game is running
