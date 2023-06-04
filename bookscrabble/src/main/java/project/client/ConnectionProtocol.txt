@@ -20,8 +20,8 @@ Host to client protocol: The host can either reply to a specific client or send 
 
 Types of responses and their arguments:
 "join:'id',pName1, pName2 ...." - Seccessfully joined a game - ID given for future identification and a list of players in the game
-"Q:'score','tiles','nextPlayer'" - Query was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles are sent
-"C:'score','tiles','nextPlayer'" - Challenge was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles are sent
+"Q:'score','tiles','nextPlayer'" - Query was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles (replaces myTiles String) are sent
+"C:'score','tiles','nextPlayer'" - Challenge was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles (replaces myTiles String) are sent
 
 Types of commands and their return values: (Errors are also handled by the client in a seperate handler)
 (Using updateAll and will have "!" to indicate a game update)

@@ -1,5 +1,6 @@
 package project.client;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 import project.client.model.ClientModel;
@@ -9,8 +10,23 @@ public class MyLogger {
 
     public MyLogger(){}
 
-    public static void log(String message) {System.out.println(message);}
-    public static void logError(String errorMessage) {System.err.println(errorMessage);}
+    public static synchronized void println(String message)
+    {
+        System.out.println(message);
+        System.out.flush();
+    }
+
+    public static synchronized void print(String message)
+    {
+        System.out.print(message);
+        System.out.flush();
+    }
+
+    public static synchronized void logError(String errorMessage)
+    {
+        System.err.println(errorMessage);
+        System.out.flush(); 
+    }
     public static void printBoard(String input) 
     { // Example: AB-C&D--E
         String[] board = null;
@@ -39,59 +55,75 @@ public class MyLogger {
         for (String s : board) 
         {
             for (int i = 0; i < s.length(); i++)
-                System.out.print(s.charAt(i) + " ");
-            System.out.print("\n");
+                print(s.charAt(i) + " ");
+            println("");
         }
+    }
+
+    public static void printTiles(String tiles)
+    {
+        for (int i = 0; i < tiles.length(); i++)
+            print(tiles.charAt(i) + " ");
     }
 
     public static void playerJoined(String name)
     {
-        log("Player " + name + " has joined the game!");
+        println("Player " + name + " has joined the game!");
     }
 
     public static void playertLeft(String name)
     {
-        log("Player " + name + " has left the game!");
+        println("Player " + name + " has left the game!");
     }
 
-    public static void gameStarted(String firstPlayingPlayer)
+    public static void gameStarted(String... players) //First player to play is the first in the list
     {
-        log("Game started!");
-        log("Player " + firstPlayingPlayer + " is playing first!");
+        println("Game started!");
+        println("Player " + players[0] + " is playing first!");
+        HashMap<String, Integer> startingScores = new HashMap<>();
+        for (int i = 0; i < players.length; i++)
+            startingScores.put(players[i], 0);
+            
+        printPlayerAndScore(startingScores);
         printBoard(null); //Print empty board
+    }
+
+    public static void printPlayerAndScore(HashMap<String, Integer> players)
+    {
+        for (String name : players.keySet())
+            println(name + " has " + players.get(name) + " points!");
     }
 
     public static void nextPlayer(String nextPlayer)
     {
-        log("Player " + nextPlayer + " is playing now!");
+        println("Player " + nextPlayer + " is playing now!");
     }
 
     public static void playerPlacedWord(String player, int score, String commandName)
     {
         if(ClientModel.getName().equals(player))
         {
-            log("You got " + score + " points!");
+            println("You got " + score + " points!");
             return;
         }
 
         if(commandName.equals("C"))
-            log("Player " + player + " challenged a word placement and got " + score + " points!");
+            println("Player " + player + " challenged a word placement and got " + score + " points!");
         else
-            log("Player " + player + " placed a word and got " + score + " points!");
+            println("Player " + player + " placed a word and got " + score + " points!");
     }
 
     public static void failedWordPlacement(int score)
     {
-
         if(score == 0)
-            log("Invalid word placement! Try again.");
+            println("Invalid word placement! Try again.");
         else // score == -1
-            log("Invalid word! Try again.");
+            println("Illegal word! Try again.");
     }
 
     public static void gameEnded(String player)
     {
-        log("Player " + player + " won the game!");
+        println("Player " + player + " won the game!");
     }
 
     public static void disconnectedFromHost()
@@ -99,37 +131,37 @@ public class MyLogger {
         logError("Connection to host is lost!");
     }
 
-    public void useless() {
+    // public void useless() {
 
-        // Host logging game progress
-        log("Waiting for other players to join...");
-        log("Maximum amount of players achieved.");
+    //     // Host logging game progress
+    //     log("Waiting for other players to join...");
+    //     log("Maximum amount of players achieved.");
 
-        // Game logic and progress updates
-        log("Its your turn to play!");
-        log("Its dickFace turn to play."); // change
-        log("You won the game!");
-        log("Player dickFace won the game!"); // change
+    //     // Game logic and progress updates
+    //     log("Its your turn to play!");
+    //     log("Its dickFace turn to play."); // change
+    //     log("You won the game!");
+    //     log("Player dickFace won the game!"); // change
 
-        // Client logging game errors
-        logError("Host connection Failed.");
-        logError("Connection lost.");
-        logError("Connection to player dickFace Failed.");
-        logError("Invalid input. Please try again.");
+    //     // Client logging game errors
+    //     logError("Host connection Failed.");
+    //     logError("Connection lost.");
+    //     logError("Connection to player dickFace Failed.");
+    //     logError("Invalid input. Please try again.");
 
-        // Host logging game errors
-        logError("No players in sight."); // If no one connects the host
-        logError("Not enough players to start."); // If the host wants to play alone
+    //     // Host logging game errors
+    //     logError("No players in sight."); // If no one connects the host
+    //     logError("Not enough players to start."); // If the host wants to play alone
 
-        // Client game cleanup and exit
-        log("Closing connection to the host...");
-        log("Connection to host is closed.");
-        log("Game ended. Thanks for playing!");
+    //     // Client game cleanup and exit
+    //     log("Closing connection to the host...");
+    //     log("Connection to host is closed.");
+    //     log("Game ended. Thanks for playing!");
 
-        // Host game cleanup and exit
-        log("Closing Connections to guests...");
-        log("Connections to guests are closed.");
-    }
+    //     // Host game cleanup and exit
+    //     log("Closing Connections to guests...");
+    //     log("Connections to guests are closed.");
+    // }
 
     public static Scanner getScanner()
     {

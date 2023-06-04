@@ -50,8 +50,6 @@ public class Rack {
             Tile tile = Bag.getBag().getTile(tiles.charAt(i));
             if(tile != null)
                 this.tiles.put(tile, this.tiles.getOrDefault(tile, 0) + 1);
-            else
-                i--;
         }
     }
 

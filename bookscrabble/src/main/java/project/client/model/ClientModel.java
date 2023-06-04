@@ -1,51 +1,49 @@
 package project.client.model;
 
-import java.util.Scanner;
-
 import project.client.MyLogger;
 
 public class ClientModel {
     ClientCommunications myConnectionToHost;
-    public static MyHostServer myHostServer;
+    MyHostServer myHostServer;
     private static String myName;
+    public boolean isConnectedToHost = false;
 
     public ClientModel(boolean isHost, String hostIP, int hostPort , String playerName)
     {
         myName = playerName;
         if(!isHost)
             myHostServer = null;
-        else
-        {
-            Scanner sc = MyLogger.getScanner();
-            String bs_IP;
-            int bs_port;
-            System.out.println("Please connect to a BookScrabble server");
-            System.out.println("Enter BookScrabble Server IP: ");
-            bs_IP = sc.nextLine();
-            System.out.println("Enter Port: ");
-            bs_port = sc.nextInt();
-            myHostServer = new MyHostServer(hostPort, bs_port, bs_IP); //Create host-side
-            myHostServer.start();
-        } 
+        else //isHost = true
+            myHostServer = MyHostServer.getHostServer(); //Create host-side   
+        
+        isConnectedToHost = createClientCommunications(hostIP, hostPort);    
+    }
 
+    public boolean createClientCommunications(String hostIP, int hostPort)
+    {
         try {
             myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
-            Thread.sleep(5000);
         } catch (Exception e) {
-            System.out.println("Unable to connect to host!");
-            e.printStackTrace();
+            MyLogger.logError("Unable to connect to host!");
+            return false;
         }  
-
-        if(isHost)
-        {
-            while(MyHostServer.connectedClients.size() == 0); //Wait for host to join
-            myHostServer.checkBSConnection(); //Check if connection to BookScrabble server is established
-        }
+        return true;
     }
 
     public ClientCommunications getMyClientCommunications() {
         return myConnectionToHost;
+    }
+
+    public MyHostServer getMyHostServer() {
+        return MyHostServer.getHostServer();
+    }
+
+    public void close()
+    {
+        if(myHostServer != null)
+            myHostServer.close();
+        myConnectionToHost.close();
     }
     
     public static String getName(){return myName;}

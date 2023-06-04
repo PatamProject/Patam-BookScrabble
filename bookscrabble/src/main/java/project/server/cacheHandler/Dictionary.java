@@ -1,37 +1,61 @@
 package project.server.cacheHandler;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Dictionary 
 {
-    String[] fileNames = null;
+    String[] dictionaryFileNames = null;
     CacheManager lruCache = null;
     CacheManager lfuCache = null;
     BloomFilter bf = null;
+
     Dictionary(String... files)
     {
-        this.fileNames = new String[files.length];
+        this.dictionaryFileNames = new String[files.length];
         for (int i = 0; i < files.length; i++)
-            fileNames[i] = files[i];
+            dictionaryFileNames[i] = files[i]; 
         
         lruCache = new CacheManager(400, new LRU()); //Used for real words
         lfuCache = new CacheManager(100, new LFU()); //Used for unreal words
-        bf = new BloomFilter(256, "MD5", "SHA1");
+        bf = new BloomFilter((int)(Math.pow(2, 17)), "MD5","SHA1","SHA256","SHA384","MD2","SHA512");
 
-        ArrayList<String> words = new ArrayList<>();
-        for (String fileName : fileNames) {
-            try {
-                words = IOSearcher.pullWordsForFile(fileName);
-            } catch (IOException e) {} 
-            
-            for (String word : words)
-                bf.add(word);      
+        try {
+            for (String fileName : dictionaryFileNames) {
+                File file = new File(fileName);
+                Scanner reader = new Scanner(file); // Declaring Scanner
+                while (reader.hasNextLine()) {
+                    String line = reader.nextLine();
+                    line = line.trim();
+                    line = line.toUpperCase();
+                    String[] words; // Array of words
+                    words = line.split(" "); // Splitting the array to words
+                    for (String word : words) // Adding words in separate
+                    {
+                        word = fixWord(word);
+                        if(word.length() > 0)
+                        {
+                            if(word.length() == 1 && (word.charAt(0) != 'A' && word.charAt(0) != 'I'))
+                                continue; //Ignore single letter words except A and I     
+                            
+                            bf.add(word);   
+                        }
+                    }
+                }
+                reader.close();
+            }
+        }catch (Exception e){ 
+            System.out.println("Problem in reading dictionary file " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     boolean query(String word)
     {
+        if(word.length() == 0)
+            return false;
+
         boolean res = false;
         if(lruCache.query(word))
             return true;
@@ -50,9 +74,12 @@ public class Dictionary
 
     boolean challenge(String word)
     {
+        if(word.length() == 0)
+            return false;
+
         boolean res = false;
         try {
-            res = IOSearcher.search(word, fileNames);
+            res = IOSearcher.search(word, dictionaryFileNames);
         } catch (IOException e) {
             return false;
         }
@@ -61,5 +88,16 @@ public class Dictionary
         else
             lfuCache.add(word);    
         return res;
+    }
+
+    private String fixWord(String word) //removes all non alphabetic characters from the end of the word
+    {
+        word = word.toUpperCase();
+        if(word.length() == 0)
+            return word;    
+        int i = word.length() - 1;
+        while(i >= 0 && (word.charAt(i) < 'A' || word.charAt(i) > 'Z'))
+            i--;
+        return word.substring(0, i + 1);    
     }
 }

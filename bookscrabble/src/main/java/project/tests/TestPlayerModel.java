@@ -1,7 +1,5 @@
 package project.tests;
 import project.client.model.assets.PlayerModel;
-import project.client.model.assets.Rack;
-import project.client.model.assets.Tile;
 
 public class TestPlayerModel
 {

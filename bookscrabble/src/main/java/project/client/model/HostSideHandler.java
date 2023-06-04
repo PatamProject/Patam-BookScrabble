@@ -42,11 +42,11 @@ public class HostSideHandler implements RequestHandler{
                 //Return tiles to back? Delete playerModel completely from view?
                 game.removePlayer(args[0]); //Remove from gameModel
                 try { //Close the socket
-                    MyHostServer.connectedClients.get(args[0]).close();
+                    MyHostServer.getHostServer().connectedClients.get(args[0]).close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } 
-                MyHostServer.connectedClients.remove(args[0]); //Remove from connectedClients
+                MyHostServer.getHostServer().connectedClients.remove(args[0]); //Remove from connectedClients
                 MyHostServer.updateAll("!leave:" + args[0], args[0]);
                 if (game.getPlayersAmount() < 2)
                     get("endGame");
@@ -69,8 +69,8 @@ public class HostSideHandler implements RequestHandler{
                 if (args[0].equals(ClientModel.getName()) && game.getPlayersAmount() >= 2) //Enough players and is the host
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
                     try {
-                        MyHostServer.isGameRunning = true; //Set gameStarted to true
-                        String[] tilesAndPlayers = game.startGame(); //Start the game
+                        MyHostServer.getHostServer().isGameRunning = true; //Set gameStarted to true
+                        String[] tilesAndPlayers = game.startGame(); //Start the game on the host's side
                         StringBuilder playersOrder = new StringBuilder();
                         for (String tilesAndPlayer : tilesAndPlayers)
                             playersOrder.append(tilesAndPlayer.split("%")[0]).append(",");
@@ -79,7 +79,7 @@ public class HostSideHandler implements RequestHandler{
                         for (String tilesAndPlayer : tilesAndPlayers) {
                             String playerName = tilesAndPlayer.split("%")[0];
                             String tiles = tilesAndPlayer.split("%")[1];
-                            MyHostServer.sendUpdate("!startGame:" + tiles + "," + playersOrder, playerName);
+                            MyHostServer.sendUpdate("!startGame:" + tiles + "," + playersOrder, playerName); //Send startGame command to all players
                         }
                     } catch (Exception e) {
                         out.println(Error_Codes.SERVER_ERR);
@@ -122,20 +122,20 @@ public class HostSideHandler implements RequestHandler{
         //Check if all words are dictionaryLegal
         Boolean areWordsLegal = true;
         for (String word : words)
-            areWordsLegal &= ClientModel.myHostServer.msgToBSServer(word);
+            areWordsLegal &= MyHostServer.getHostServer().msgToBSServer(commandName + "," + word);
         
         if(!areWordsLegal) //Not all words are dictionaryLegal
             out.println(commandName+":-1"); //Score = -1
         else
         {
             Integer score = game.getScoreFromWord(args[0], w);
-            String tiles;
             if(score != 0)
             {
                 try { //Take tiles from bag
-                    tiles = game.getPlayer(args[0]).getRack().takeTilesFromBag();
+                    game.getPlayer(args[0]).getRack().takeTilesFromBag();
+                    String currentTiles = game.getPlayer(args[0]).getRack().toString(); //The current tiles of the player
                     game.nextTurn(); //next player's turn
-                    out.println(commandName+":"+score + "," + tiles + "," + game.getCurrentPlayersName()); //Send score and tiles to client
+                    out.println(commandName+":"+score + "," + currentTiles + "," + game.getCurrentPlayersName()); //Send score and tiles to client
                     MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score + "," + game.getCurrentPlayersName(), args[0]); //Send score to all players
                 } catch (Exception e) {
                     String winner = game.getWinner(); //Game ended, bag is empty

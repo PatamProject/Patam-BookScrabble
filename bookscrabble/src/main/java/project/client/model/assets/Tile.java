@@ -83,7 +83,7 @@ public class Tile {
             if(c >= 'A' && c <= 'Z') // A <= c >= Z
                 if(currentTilesAmount[c - 'A'] > 0) //Tiles that exist in bag
                 {
-                    currentTilesAmount[c - 'A']--;
+                    currentTilesAmount[c - 'A'] -= 1;
                     decTilesAmount();
                     return TilesArray[c - 'A'];
                 }
