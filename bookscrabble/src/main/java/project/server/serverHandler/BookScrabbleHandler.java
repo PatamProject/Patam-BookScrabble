@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import project.client.MyLogger;
 import project.server.cacheHandler.DictionaryManager;
 
 public class BookScrabbleHandler implements ClientHandler{
@@ -28,7 +29,7 @@ public class BookScrabbleHandler implements ClientHandler{
 
     @Override
     public void handleClient(InputStream inFromClient, OutputStream outToClient) {
-        out=new PrintWriter(outToClient);
+        out=new PrintWriter(outToClient,true);
         in=new Scanner(inFromClient);
         String line = in.next();
         char c = line.charAt(0);
@@ -36,6 +37,7 @@ public class BookScrabbleHandler implements ClientHandler{
         String[] args = new String[dictionaries.length + 1];
         System.arraycopy(dictionaries, 0, args, 0, dictionaries.length);
         args[dictionaries.length] = line; //args = [dictionary1, dictionary2, ..., dictionaryN, word]
+        MyLogger.println("Server received: " + args[args.length - 1]);
 
         if(c == 'Q')
         {

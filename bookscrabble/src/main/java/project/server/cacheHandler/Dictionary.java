@@ -14,12 +14,22 @@ public class Dictionary
     Dictionary(String... files)
     {
         this.dictionaryFileNames = new String[files.length];
+        boolean isRealDictionary = false;
         for (int i = 0; i < files.length; i++)
+        {
+            if(files[i].contains("Dictionary"))
+                isRealDictionary = true;
             dictionaryFileNames[i] = files[i]; 
-        
+        }
+
         lruCache = new CacheManager(400, new LRU()); //Used for real words
         lfuCache = new CacheManager(100, new LFU()); //Used for unreal words
-        bf = new BloomFilter((int)(Math.pow(2, 17)), "MD5","SHA1","SHA256","SHA384","MD2","SHA512");
+        int size;
+        if(isRealDictionary)
+            size = (int)(Math.pow(2, 19));
+        else
+            size = (int)(Math.pow(2, 17));
+        bf = new BloomFilter(size, "MD5","SHA1","SHA256","SHA384","MD2","SHA512");
 
         try {
             for (String fileName : dictionaryFileNames) {
