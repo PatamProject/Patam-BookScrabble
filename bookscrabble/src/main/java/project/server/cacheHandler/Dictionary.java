@@ -9,6 +9,7 @@ public class Dictionary
     CacheManager lruCache = null;
     CacheManager lfuCache = null;
     BloomFilter bf = null;
+
     Dictionary(String... files)
     {
         this.fileNames = new String[files.length];

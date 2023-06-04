@@ -49,6 +49,7 @@ public class IOSearcher {
         String s;
         while((s = bf.readLine()) != null)
         {
+            s = s.trim();
             String[] words = s.split(" ");   
             for (String word : words)
                 if(word.length() > 0)
