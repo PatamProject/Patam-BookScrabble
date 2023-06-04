@@ -64,6 +64,7 @@ public class MyLogger {
     {
         for (int i = 0; i < tiles.length(); i++)
             print(tiles.charAt(i) + " ");
+        println("");    
     }
 
     public static void playerJoined(String name)
@@ -76,7 +77,7 @@ public class MyLogger {
         println("Player " + name + " has left the game!");
     }
 
-    public static void gameStarted(String... players) //First player to play is the first in the list
+    public static void gameStarted(String tiles, String... players) //First player to play is the first in the list
     {
         println("Game started!");
         println("Player " + players[0] + " is playing first!");
@@ -86,6 +87,7 @@ public class MyLogger {
             
         printPlayerAndScore(startingScores);
         printBoard(null); //Print empty board
+        printTiles(tiles);
     }
 
     public static void printPlayerAndScore(HashMap<String, Integer> players)

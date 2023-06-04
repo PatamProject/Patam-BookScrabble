@@ -104,70 +104,67 @@ public class ClientCommunications{
         int BOARD_SIZE = 15;
         try {
             Scanner scanner = MyLogger.getScanner();
-            MyLogger.gameStarted(requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
+            MyLogger.gameStarted(requestHandler.game.myTiles, requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
             
             while(requestHandler.isGameRunning) //While the game is running
             {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
                     MyLogger.println("It's your turn to play! Enter a word to place: ");
-                    if(scanner.hasNextLine())
+                    boolean allowedInput;
+                    String word;
+                    int row, col; 
+                    boolean isVertical = false;
+                    do
                     {
-                        boolean allowedInput;
-                        String word;
-                        int row, col; 
-                        boolean isVertical = false;
-                        do
+                        allowedInput = true;
+                        word = scanner.nextLine();
+                        if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                         {
-                            allowedInput = true;
-                            word = scanner.nextLine();
-                            if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
-                            {
-                                MyLogger.println("Illegal word!");
-                                allowedInput = false;
-                            }
-                        } while(!allowedInput);
+                            MyLogger.println("Illegal word!");
+                            allowedInput = false;
+                        }
+                    } while(!allowedInput);
 
-                        do
+                    do
+                    {
+                        allowedInput = true;
+                        MyLogger.println("Enter row and col of starting character:");
+                        row = scanner.nextInt();
+                        col = scanner.nextInt();
+                        if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                         {
-                            allowedInput = true;
-                            MyLogger.println("Enter row and col of starting character:");
-                            row = scanner.nextInt();
-                            col = scanner.nextInt();
-                            if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
-                            {
-                                MyLogger.println("Illegal row or col!");
-                                allowedInput = false;
-                            }
-                        } while(!allowedInput);
+                            MyLogger.println("Illegal row or col!");
+                            allowedInput = false;
+                        }
+                    } while(!allowedInput);
 
-                        do
+                    do
+                    {
+                        allowedInput = true;
+                        MyLogger.println("Enter 1 for vertical, 0 for horizontal:");
+                        int vertical = scanner.nextInt();
+                        if(vertical != 0 && vertical != 1)
                         {
-                            allowedInput = true;
-                            MyLogger.println("Enter 1 for vertical, 0 for horizontal:");
-                            int vertical = scanner.nextInt();
-                            if(vertical != 0 && vertical != 1)
-                            {
-                                MyLogger.println("Illegal input!");
-                                allowedInput = false;
-                            }
-                            else
-                                isVertical = (vertical == 1);
-                            
-                        } while(!allowedInput);
+                            MyLogger.println("Illegal input!");
+                            allowedInput = false;
+                        }
+                        else
+                            isVertical = (vertical == 1);
                         
-                        String message = word + "," + row + "," + col + "," + isVertical;
-                        sendAMessage(requestHandler.getId(), message); 
-                        lock.wait(); //Wait for the host to reply
-                    }
-                    else //Not my turn
-                        lock.wait(); //Wait for my turn
+                    } while(!allowedInput);
+                    
+                    String message = word + "," + row + "," + col + "," + isVertical;
+                    sendAMessage(requestHandler.getId(), message); 
+                    lock.wait(); //Wait for the host to reply   
                 }
+                else //Not my turn
+                    lock.wait(); //Wait for my turn
             }
         } catch (Exception e) {
             MyLogger.logError("Error in gameStarted: " + e.getMessage());
+            e.printStackTrace();
         }
         MyLogger.println("Game closed!");
     }
-
 }

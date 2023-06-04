@@ -32,7 +32,7 @@ public class MyServer {
     private void run() throws Exception
     {
         ServerSocket server = new ServerSocket(port);
-        server.setSoTimeout(60000); //Timeout of 1 minute
+        server.setSoTimeout(360*1000); //Timeout in seconds 
         while(!stopServer)
         {
             try {
