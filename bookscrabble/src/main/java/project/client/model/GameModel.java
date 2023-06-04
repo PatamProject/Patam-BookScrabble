@@ -3,6 +3,8 @@ package project.client.model;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import project.client.MyLogger;
+
 
 public class GameModel {
     //PlayerModel myPlayer;
@@ -59,6 +61,7 @@ public class GameModel {
         if(currentPlayer == null)
             return false;
         playersOrder.add(currentPlayer);
+        MyLogger.nextPlayer(currentPlayer);
         return isItMyTurn();
     }
 
@@ -68,5 +71,11 @@ public class GameModel {
         return board;
     }
 
-    public boolean isItMyTurn(){return playersOrder.peek().equals(ClientModel.getName());}
+    public boolean isItMyTurn()
+    {
+        boolean res = playersOrder.peek().equals(ClientModel.getName());
+        if(res)
+            ClientCommunications.lock.notifyAll();
+        return res; 
+    }
 }

@@ -12,6 +12,7 @@ public class ClientCommunications{
     private static Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
     private static PrintWriter outToHost;
+    public static Object lock = new Object();
 
     public ClientCommunications(String hostIP, int hostPort) throws IOException, InterruptedException { // Ctor
         toHostSocket = new Socket(hostIP, hostPort);
@@ -42,8 +43,6 @@ public class ClientCommunications{
                         sender = "!"; //To allow the handler to know that this is a game update from the host
                         if(commandName.equals("!startGame"))
                         {
-                            Object lock = new Object();
-
                             synchronized (lock) {
                                 requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
                                 lock.notifyAll();
@@ -103,7 +102,6 @@ public class ClientCommunications{
     public void gameStarted()
     {
         int BOARD_SIZE = 15;
-        
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
@@ -159,17 +157,17 @@ public class ClientCommunications{
                         } while(!allowedInput);
                         
                         String message = word + "," + row + "," + col + "," + isVertical;
-                        sendAMessage(requestHandler.getId(), message); //TODO wait for response (try again/next turn)
+                        sendAMessage(requestHandler.getId(), message); 
+                        lock.wait(); //Wait for the host to reply
                     }
-                    else
-                    {
-                        //TODO wait for my turn
-                    }
+                    else //Not my turn
+                        lock.wait(); //Wait for my turn
                 }
             }
         } catch (Exception e) {
             MyLogger.logError("Error in gameStarted: " + e.getMessage());
         }
+        MyLogger.println("Game closed!");
     }
 
 }

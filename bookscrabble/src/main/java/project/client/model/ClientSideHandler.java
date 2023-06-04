@@ -50,7 +50,6 @@ public class ClientSideHandler implements RequestHandler{
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
                     game.myTiles = args[2]; //Updated the tiles
-                    //game.myPlayer.getRack().takeTiles(args[2]); //old way TBR
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "Q");
                     MyLogger.printTiles(game.myTiles); //Print my tiles
@@ -71,9 +70,9 @@ public class ClientSideHandler implements RequestHandler{
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
                     game.myTiles = args[2]; //Updated the tiles
-                    //game.myPlayer.getRack().takeTiles(args[2]); //old way TBR
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "C");
+                    MyLogger.printTiles(game.myTiles); //Print my tiles
                 }
             }); 
 
@@ -123,6 +122,12 @@ public class ClientSideHandler implements RequestHandler{
             { 
                 game.setBoard(args[0]);
                 MyLogger.printBoard(game.getBoard());
+            });
+
+            put("!skipTurn", (String[] args) -> 
+            { 
+                game.nextTurn();
+                MyLogger.println("It's " + args[0] + "'s turn!");
             });
     
             //A player placed a word on the board
@@ -206,6 +211,7 @@ public class ClientSideHandler implements RequestHandler{
     { //args[0] = player, args[1] = score
         game.players.put(args[0], game.players.getOrDefault(args[0], 0) + Integer.parseInt(args[1]));
         MyLogger.playerPlacedWord(args[0], Integer.parseInt(args[1]), commandName);
+        game.nextTurn(); //Next turn
     }
 
     public int getId(){return id;}

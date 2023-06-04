@@ -54,9 +54,9 @@ public class HostSideHandler implements RequestHandler{
     
             put("skipTurn", (String[] args) -> 
             {
-                game.nextTurn(); // Switch to next player and update ALL players if game continues
+                game.nextTurn(); // Switch to next player and update ALL players that the game continues
                 if (!game.isGameEnded())
-                    MyHostServer.updateAll("!skipTurn:" + game.getCurrentPlayersName(), null);
+                    MyHostServer.updateAll("!skipTurn: " + game.getCurrentPlayersName(), null);
                 else {
                     String winner = game.getWinner();
                     MyHostServer.updateAll("!endGame:" + winner, null);
@@ -135,8 +135,9 @@ public class HostSideHandler implements RequestHandler{
                     game.getPlayer(args[0]).getRack().takeTilesFromBag();
                     String currentTiles = game.getPlayer(args[0]).getRack().toString(); //The current tiles of the player
                     game.nextTurn(); //next player's turn
-                    out.println(commandName+":"+score + "," + currentTiles + "," + game.getCurrentPlayersName()); //Send score and tiles to client
-                    MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score + "," + game.getCurrentPlayersName(), args[0]); //Send score to all players
+                    out.println(commandName+":"+score + "," + currentTiles); //Send score and tiles to client
+                    MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score, args[0]); //Send score to all players
+                    MyHostServer.updateAll("!board", game.toString()); //Send board to all players
                 } catch (Exception e) {
                     String winner = game.getWinner(); //Game ended, bag is empty
                     MyHostServer.updateAll("!endGame:" + winner, null);

@@ -20,15 +20,15 @@ Host to client protocol: The host can either reply to a specific client or send 
 
 Types of responses and their arguments:
 "join:'id',pName1, pName2 ...." - Seccessfully joined a game - ID given for future identification and a list of players in the game
-"Q:'score','tiles','nextPlayer'" - Query was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles (replaces myTiles String) are sent
-"C:'score','tiles','nextPlayer'" - Challenge was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles (replaces myTiles String) are sent
+"Q:'score','tiles'" - Query was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles (replaces myTiles String) are sent
+"C:'score','tiles'" - Challenge was received, score == 0 -> not boardLegal, score == -1 -> not dictionaryLegal, else score and tiles (replaces myTiles String) are sent
 
 Types of commands and their return values: (Errors are also handled by the client in a seperate handler)
 (Using updateAll and will have "!" to indicate a game update)
 "!join:'name'" - A player joined the game
 "!leave:'name'" - A player left the game
-"!Q:'name','score','nextPlayer'" - Player placed a word seccessfully and got 'score' points (Player will add up back to 7 tiles)
-"!C:'name','score','nextPlayer'" - Player challenged a failed word placement and got 'score' points (Player will add up back to 7 tiles)
+"!Q:'name','score'" - Player placed a word seccessfully and got 'score' points (Player will add up back to 7 tiles)
+"!C:'name','score'" - Player challenged a failed word placement and got 'score' points (Player will add up back to 7 tiles)
 "!skipTurn:'nextPlayer'" - Player skipped his turn
 "!board:'board'" - The board was updated (board = String[])
 "!startGame:'tiles','player1,player2..." - The game started and each player got 'tiles' tiles (This is sent to each player individually) and the order of the players
