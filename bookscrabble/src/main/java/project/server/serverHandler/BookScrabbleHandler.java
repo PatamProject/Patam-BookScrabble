@@ -11,18 +11,19 @@ import project.server.cacheHandler.DictionaryManager;
 public class BookScrabbleHandler implements ClientHandler{
     PrintWriter out;
     Scanner in;
-    String[] dictionaries;
+    public static String[] dictionaries;
 
     public BookScrabbleHandler()
     {
-        dictionaries = new String[7];
-        dictionaries[0] = "Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "alice_in_wonderland.txt";
-        dictionaries[1] = "Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "Frank Herbert - Dune.txt";
-        dictionaries[2] = "Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "Harry Potter.txt";
-        dictionaries[3] = "Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "mobydick.txt";
-        dictionaries[4] = "Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "pg10.txt";
-        dictionaries[5] = "Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "shakespeare.txt";
-        dictionaries[6] = "Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "The Matrix.txt";
+        dictionaries = new String[8];
+        dictionaries[0] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "alice_in_wonderland.txt";
+        dictionaries[1] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "Frank Herbert - Dune.txt";
+        dictionaries[2] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "Harry Potter.txt";
+        dictionaries[3] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "mobydick.txt";
+        dictionaries[4] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "pg10.txt";
+        dictionaries[5] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "shakespeare.txt";
+        dictionaries[6] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "The Matrix.txt";
+        dictionaries[7] = "bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "Dictionaries" + File.separator + "wordDictionary.txt";
     }
 
     @Override
@@ -32,7 +33,9 @@ public class BookScrabbleHandler implements ClientHandler{
         String line = in.next();
         char c = line.charAt(0);
         line = line.substring(2);
-        String[] args = line.split(",");
+        String[] args = new String[dictionaries.length + 1];
+        System.arraycopy(dictionaries, 0, args, 0, dictionaries.length);
+        args[dictionaries.length] = line; //args = [dictionary1, dictionary2, ..., dictionaryN, word]
 
         if(c == 'Q')
         {

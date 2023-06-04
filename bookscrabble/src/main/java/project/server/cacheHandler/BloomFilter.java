@@ -13,28 +13,28 @@ public class BloomFilter {
 
     BloomFilter(int size, String...hash)
     {
-        MessageDigest md;
         this.size = size;
-        bitArray = new BitSet();
+        bitArray = new BitSet(size);
         hashArr = new ArrayList<>();
-        for (int i = 0; i < hash.length; i++) //add all hash functions to hashArr
-        {
+        
+        for (String hashFunction : hash) {
             try {
-                md = MessageDigest.getInstance(hash[i]);
+                MessageDigest md = MessageDigest.getInstance(hashFunction);
+                hashArr.add(md);
             } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException("Hash["+i+"] -> No such hash function exists!");
+                throw new IllegalArgumentException("No such hash function exists: " + hashFunction);
             }
-            hashArr.add(md);
-        } 
+        }
     }
 
     void add(String word) //Run all hash functions on word
     {
         for (MessageDigest md : hashArr) 
         {
-            BigInteger bi = new BigInteger(1,md.digest(word.getBytes()));
-            int hashV = Math.abs(bi.abs().intValue() % size);
-            bitArray.set(hashV,true);
+            byte[] hash = md.digest(word.getBytes());
+            BigInteger bi = new BigInteger(1,hash);
+            int index = bi.mod(BigInteger.valueOf(size)).intValue();
+            bitArray.set(index, true);
         }
     }
 
@@ -42,10 +42,12 @@ public class BloomFilter {
     {
         for (MessageDigest md : hashArr)
         {
-            BigInteger bi = new BigInteger(1,md.digest(word.getBytes()));
-            int hashV = Math.abs(bi.abs().intValue() % size);
-            if(!bitArray.get(hashV)) //bit is set to 0 --> the word is not in the bf
+            byte[] hash = md.digest(word.getBytes());
+            BigInteger bi = new BigInteger(1, hash);
+            int index = bi.mod(BigInteger.valueOf(size)).intValue();
+            if (!bitArray.get(index)) {
                 return false;
+            }
         }
         return true; //passed all hash checks
     }
