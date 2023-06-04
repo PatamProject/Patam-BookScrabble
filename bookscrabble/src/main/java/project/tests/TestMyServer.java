@@ -17,9 +17,10 @@ public class TestMyServer {
         server.start();
         try {
             Socket socket = new Socket("localhost", port);
+            socket.setSoTimeout(60000);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
-            Scanner in = new Scanner(socket.getInputStream());
-            File file = new File("bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "project" + File.separator + "TestMyServer" + File.separator + "wordsToTest.txt");
+            Scanner in = new Scanner(socket.getInputStream()); //Patam-BookScrabble\bookscrabble\resources\project\TestMyServer\wordsToTest.txt
+            File file = new File("Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "resources" + File.separator + "project" + File.separator + "TestMyServer" + File.separator + "wordsToTest.txt");
             Scanner fileScanner = new Scanner(file);
             while(fileScanner.hasNextLine())
             {
@@ -27,7 +28,7 @@ public class TestMyServer {
                 line = line.trim();
                 String[] words = line.split(" ");
                 for (String w : words) {
-                    if(testQuery(out, in, w))
+                    if(!testQuery(out, in, w))
                         testChallenge(out, in, w);
                 }
             }
@@ -50,7 +51,8 @@ public class TestMyServer {
         String res = "";
         out.println("Q," + word);
         out.flush();
-        res = in.nextLine();
+        while(in.hasNextLine())
+            res = in.nextLine();
 
         if(Boolean.parseBoolean(res))
             queryCount++;
@@ -61,8 +63,10 @@ public class TestMyServer {
         String res = "";
         out.println("C," + word);
         out.flush();
-        res = in.nextLine();
-        
+
+        while(in.hasNextLine())
+            res = in.nextLine();
+
         if(Boolean.parseBoolean(res))
             challengeCount++;
     }
