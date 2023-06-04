@@ -10,10 +10,9 @@ public class DictionaryManager {
 
     private DictionaryManager()
     {
-        mapOfDictionaries = new HashMap<>(){{
-            for (int i = 0; i < BookScrabbleHandler.dictionaries.length; i++)
-                put(BookScrabbleHandler.dictionaries[i], new Dictionary(BookScrabbleHandler.dictionaries[i]));         
-        }};
+        mapOfDictionaries = new HashMap<>();
+        for (int i = 0; i < BookScrabbleHandler.dictionaries.length; i++)
+            mapOfDictionaries.put(BookScrabbleHandler.dictionaries[i], new Dictionary(BookScrabbleHandler.dictionaries[i])); 
     }
 
     public static DictionaryManager get()

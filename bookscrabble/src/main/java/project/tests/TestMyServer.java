@@ -11,10 +11,10 @@ import project.server.serverHandler.MyServer;
 
 public class TestMyServer {
     static int port = 5555;
+    static int queryCount = 0, challengeCount = 0;
     public static void main(String[] args) {
         MyServer server = new MyServer(port, new BookScrabbleHandler());
         server.start();
-        int queryCount = 0, challengeCount = 0;
         try {
             Socket socket = new Socket("localhost", port);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
@@ -28,11 +28,7 @@ public class TestMyServer {
                 String[] words = line.split(" ");
                 for (String w : words) {
                     if(testQuery(out, in, w))
-                    {
-                        queryCount++;
-                        if(testChallenge(out, in, w))
-                            challengeCount++;
-                    }
+                        testChallenge(out, in, w);
                 }
             }
 
@@ -55,14 +51,19 @@ public class TestMyServer {
         out.println("Q," + word);
         out.flush();
         res = in.nextLine();
-        return Boolean.parseBoolean(res);
+
+        if(Boolean.parseBoolean(res))
+            queryCount++;
+        return Boolean.parseBoolean(res);    
     }
 
-    private static boolean testChallenge(PrintWriter out, Scanner in, String word) {
+    private static void testChallenge(PrintWriter out, Scanner in, String word) {
         String res = "";
         out.println("C," + word);
         out.flush();
         res = in.nextLine();
-        return Boolean.parseBoolean(res);
+        
+        if(Boolean.parseBoolean(res))
+            challengeCount++;
     }
 }
