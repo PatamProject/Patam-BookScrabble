@@ -2,6 +2,7 @@ package project.client.model;
 
 import project.client.Error_Codes;
 import project.client.MyLogger;
+import project.client.RunClient;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -110,6 +111,7 @@ public class ClientSideHandler implements RequestHandler{
                 }
                 game.addPlayers(players); //Add players to the game
                 isGameRunning = true;
+                RunClient.exitUponGameStartOrGameClosed = true; //Close the manu to allow the user to play the game
                 //Game started in ClientCommunication
             });
 

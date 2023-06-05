@@ -167,7 +167,7 @@ public class ClientCommunications{
                                 allowedInput = true;
                             }
                         }               
-                    } while(!allowedInput);
+                    } while(allowedInput);
                     
                     String message = word + "," + row + "," + col + "," + isVertical;
                     sendAMessage(requestHandler.getId(), message); 
