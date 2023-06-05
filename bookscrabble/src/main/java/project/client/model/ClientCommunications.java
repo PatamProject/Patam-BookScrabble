@@ -168,8 +168,8 @@ public class ClientCommunications{
                             }
                         }               
                     } while(!allowedInput);
-                    
-                    String message = word + "," + row + "," + col + "," + isVertical;
+
+                    String message = ClientModel.getName() + "&Q:" + word + "," + row + "," + col + "," + isVertical;
                     sendAMessage(requestHandler.getId(), message); 
                     //Wait for the host to reply   
                 }

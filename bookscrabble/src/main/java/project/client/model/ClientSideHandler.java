@@ -111,7 +111,7 @@ public class ClientSideHandler implements RequestHandler{
                 }
                 game.addPlayers(players); //Add players to the game
                 isGameRunning = true;
-                RunClient.exitUponGameStartOrGameClosed = true; //Close the manu to allow the user to play the game
+                RunClient.exit = true; //Close the manu to allow the user to play the game
                 //Game started in ClientCommunication
             });
 
