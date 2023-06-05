@@ -173,8 +173,8 @@ public class ClientCommunications{
                     sendAMessage(requestHandler.getId(), message); 
                     lock.wait(); //Wait for the host to reply   
                 }
-                else //Not my turn
-                    lock.wait(); //Wait for my turn
+                // else //Not my turn
+                //     lock.wait(); //Wait for my turn
             }
         } catch (Exception e) {
             MyLogger.logError("Error in gameStarted: " + e.getMessage());

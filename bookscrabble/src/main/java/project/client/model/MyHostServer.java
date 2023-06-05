@@ -48,7 +48,7 @@ public class MyHostServer{
         if(!msgToBSServer("S,hello")) //Check connection to BS server
         {
             MyLogger.logError("Unable to connect to BookScrabble server!");
-            MyLogger.println("Host did not start! \nUse 'start' to try again or change BookScrabble server IP and port using 'setBSIP' and 'setBSPort'");
+            MyLogger.println("Host did not start! \nUse '!start' to try again or change BookScrabble server IP and port using 'setBSIP' and 'setBSPort'");
             return;
         }
         //Connected to BS server    
@@ -71,7 +71,7 @@ public class MyHostServer{
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 if(in.hasNextLine()){
                     String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
-                    MyLogger.println("Host received: " + request);
+                    MyLogger.println("Host received a request from a new client: " + request);
                     String[] user_body_split = request.split("&");
                     if(user_body_split.length != 2){ //Must contain a sender name and a body
                         throwError(Error_Codes.UNKNOWN_CMD, out);
@@ -140,6 +140,7 @@ public class MyHostServer{
                 if (in.hasNextLine()) 
                 {
                     String request = in.nextLine(); // "'id':'sender'&'commandName':'args1','args2',...'"
+                    MyLogger.println("Host received: " + request + " from " + clientName);
                     String id_sender = request.split("&")[0];
                     String[] command_args = request.split("&")[1].split(":");
                     if(id_sender == null || command_args == null || !id_sender.split(":")[0].equals(id) 

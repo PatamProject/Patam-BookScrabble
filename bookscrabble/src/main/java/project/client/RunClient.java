@@ -137,7 +137,7 @@ public class RunClient{
         System.out.println("Type '!exit' to close the game.");
         
         do {
-            if(scanner.hasNextLine()) {
+            if(!exitUponGameStartOrGameClosed && scanner.hasNextLine()) {
                 String input = scanner.nextLine();
                 if (input.equals("exit")) {
                     System.out.println("Exiting...");
@@ -148,5 +148,6 @@ public class RunClient{
                 }
             }
         } while (!exitUponGameStartOrGameClosed);
+        MyLogger.println("Client out of manu.");
     }
 }
