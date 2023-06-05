@@ -57,7 +57,7 @@ public class ClientCommunications{
                                         MyLogger.logError("Unable to unlock!");
                                     }
                                 }
-                                gameStarted();
+                                new Thread(()-> gameStarted()).start();
                             }
                             continue;
                         }
