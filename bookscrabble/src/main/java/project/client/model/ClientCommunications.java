@@ -112,46 +112,61 @@ public class ClientCommunications{
                 {
                     MyLogger.println("It's your turn to play! Enter a word to place: ");
                     boolean allowedInput;
-                    String word;
-                    int row, col; 
+                    String word = null;
+                    int row = 0, col = 0; 
                     boolean isVertical = false;
                     do
                     {
-                        allowedInput = true;
-                        word = scanner.nextLine();
-                        if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
+                        allowedInput = false;
+                        if(scanner.hasNextLine())
                         {
-                            MyLogger.println("Illegal word!");
-                            allowedInput = false;
+                            word = scanner.nextLine();
+                            if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
+                            {
+                                MyLogger.println("Illegal word!");
+                                allowedInput = false;
+                            }
+                            else
+                                allowedInput = true;
                         }
-                    } while(!allowedInput);
+                    } while(allowedInput);
 
                     do
                     {
-                        allowedInput = true;
+                        allowedInput = false;
                         MyLogger.println("Enter row and col of starting character:");
-                        row = scanner.nextInt();
-                        col = scanner.nextInt();
-                        if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
+                        if(scanner.hasNextLine())
                         {
-                            MyLogger.println("Illegal row or col!");
-                            allowedInput = false;
+                            row = scanner.nextInt();
+                            col = scanner.nextInt();
+                            if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
+                            {
+                                MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
+                                allowedInput = false;
+                            }
+                            else
+                                allowedInput = true;
                         }
-                    } while(!allowedInput);
+                    } while(allowedInput);
 
                     do
                     {
-                        allowedInput = true;
-                        MyLogger.println("Enter 1 for vertical, 0 for horizontal:");
-                        int vertical = scanner.nextInt();
-                        if(vertical != 0 && vertical != 1)
+                        allowedInput = false;
+                        MyLogger.println("How is the word placed?\nEnter 1 for vertical, 0 for horizontal:");
+                        if(scanner.hasNextLine())
                         {
-                            MyLogger.println("Illegal input!");
-                            allowedInput = false;
-                        }
-                        else
-                            isVertical = (vertical == 1);
-                        
+                            int vertical = scanner.nextInt();
+                            if(vertical != 0 && vertical != 1)
+                            {
+                                MyLogger.println("Illegal input! Try again");
+                                allowedInput = false;
+                            }
+                            else
+                            {
+                                isVertical = (vertical == 1);
+                                allowedInput = true;
+                            }
+                        }               
                     } while(!allowedInput);
                     
                     String message = word + "," + row + "," + col + "," + isVertical;
