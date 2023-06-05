@@ -120,7 +120,7 @@ public class MyLogger {
         if(score == 0)
             println("Invalid word placement! Try again.");
         else // score == -1
-            println("Illegal word! Try again.");
+            println("Illegal word! Try again.");    
     }
 
     public static void gameEnded(String player)

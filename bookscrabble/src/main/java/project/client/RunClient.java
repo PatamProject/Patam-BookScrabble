@@ -9,7 +9,7 @@ public class RunClient{
     static ClientModel myClient;
     static Scanner scanner = MyLogger.getScanner();
 
-    public RunClient() 
+    public RunClient() // always running
     {
         String name = getPlayerName();
         boolean isHost = chooseIfHost();
@@ -29,6 +29,9 @@ public class RunClient{
             } while (!checkConnectionToHost()); 
             guestStartMenu();
         }
+        //TODO - always run until game ends
+        
+
     } 
     
     private String getPlayerName()
@@ -106,7 +109,7 @@ public class RunClient{
     private void hostStartMenu()
     {
         System.out.println("Created game lobby successfully! Waiting for other players to join...");
-        System.out.println("Type 'start' to begin the game, 'exit' to close or 'who' to see who's connected.");
+        System.out.println("Type '!start' to begin the game, '!exit' to close or '!who' to see who's connected.");
         System.out.println("Remember, a game is played with 2-4 players.");
         boolean exit = false;
         
@@ -114,13 +117,13 @@ public class RunClient{
             if(scanner.hasNextLine()) {
                 String input = scanner.nextLine();
 
-                if (input.equals("start"))
+                if (input.equals("!start"))
                     exit = MyHostServer.getHostServer().startGame();
-                else if (input.equals("exit")) {
+                else if (input.equals("!exit")) {
                     System.out.println("Exiting...");
                     myClient.close();
                     exit = true;
-                } else if(input.equals("who")){
+                } else if(input.equals("!who")){
                     String[] players = MyHostServer.getHostServer().getConnectedClients();
                     for(int i = 0; i < players.length; i++)
                         MyLogger.println((players[i])+ " is connected.");
@@ -134,7 +137,7 @@ public class RunClient{
     private void guestStartMenu()
     {
         System.out.println("Joined game successfully! Waiting for host to start the game...");
-        System.out.println("Type 'exit' to close the game.");
+        System.out.println("Type '!exit' to close the game.");
         boolean exit = false;
         do {
             if(scanner.hasNextLine()) {
