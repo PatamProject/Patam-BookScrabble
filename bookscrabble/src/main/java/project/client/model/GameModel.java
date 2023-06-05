@@ -75,7 +75,7 @@ public class GameModel {
     {
         boolean res = playersOrder.peek().equals(ClientModel.getName());
         if(res)
-            ClientCommunications.lock.notifyAll();
+            ClientCommunications.unlock();
         return res; 
     }
 }

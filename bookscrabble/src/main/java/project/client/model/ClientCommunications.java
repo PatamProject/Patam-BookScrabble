@@ -12,7 +12,7 @@ public class ClientCommunications{
     private static Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
     private static PrintWriter outToHost;
-    public static Object lock = new Object();
+    private static Object lock = new Object();
 
     public ClientCommunications(String hostIP, int hostPort) throws IOException, InterruptedException { // Ctor
         toHostSocket = new Socket(hostIP, hostPort);
@@ -171,15 +171,31 @@ public class ClientCommunications{
                     
                     String message = word + "," + row + "," + col + "," + isVertical;
                     sendAMessage(requestHandler.getId(), message); 
-                    lock.wait(); //Wait for the host to reply   
+                    //Wait for the host to reply   
                 }
-                // else //Not my turn
-                //     lock.wait(); //Wait for my turn
+
+                waitForTurn(); //Wait for my turn
             }
         } catch (Exception e) {
             MyLogger.logError("Error in gameStarted: " + e.getMessage());
             e.printStackTrace();
         }
         MyLogger.println("Game closed!");
+    }
+
+    public static void waitForTurn() {
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException e) {
+                MyLogger.logError("Unable to unlock!");
+            }
+        }
+    }
+
+    public static void unlock() {
+        synchronized (lock) {
+            lock.notifyAll();
+        }
     }
 }

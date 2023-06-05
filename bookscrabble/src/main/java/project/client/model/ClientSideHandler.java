@@ -66,7 +66,7 @@ public class ClientSideHandler implements RequestHandler{
                 {
                     numOfChallenges++;
                     MyLogger.failedWordPlacement(score);
-                    ClientCommunications.lock.notifyAll();
+                    ClientCommunications.unlock();
                 } 
                 else //Word was placed successfully
                 {
