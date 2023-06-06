@@ -88,104 +88,103 @@ public class MyHostServer{
     {
         Scanner in = null;
         PrintWriter out = null;
-        try {
-            while (clientSocket.isConnected())
-            {
+        while (clientSocket.isConnected())
+        {
+            try {
                 in = new Scanner(clientSocket.getInputStream());
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
-                if(in.hasNextLine())
-                {
-                    String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
-                    MyLogger.println("Host received a new request: " + request);
-                    String[] user_body_split = request.split("&");
-                    if(user_body_split.length != 2){ //Must contain a sender name and a body
-                        throwError(Error_Codes.UNKNOWN_CMD, out);
-                        continue;  
-                    }
-                    String[] id_sender = user_body_split[0].split(":");
-                    if(id_sender.length != 2){ //Must contain a sender name and a body
-                        throwError(Error_Codes.UNKNOWN_CMD, out);
-                        continue;  
-                    }
-                    String id = id_sender[0]; //Sender's ID
-                    String sender = id_sender[1]; //Sender's name
+                
+                //Client is connected and sent a request
+                String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
+                MyLogger.println("Host received a new request: " + request);
+                String[] user_body_split = request.split("&");
+                if(user_body_split.length != 2){ //Must contain a sender name and a body
+                    throwError(Error_Codes.UNKNOWN_CMD, out);
+                    continue;  
+                }
+                String[] id_sender = user_body_split[0].split(":");
+                if(id_sender.length != 2){ //Must contain a sender name and a body
+                    throwError(Error_Codes.UNKNOWN_CMD, out);
+                    continue;  
+                }
+                String id = id_sender[0]; //Sender's ID
+                String sender = id_sender[1]; //Sender's name
 
-                    //Now we check the client to see if he's new or not and if allowed to join
-                    if(connectedClients.get(sender) == null && id.equals("0") && connectedClients.size() < MAX_CLIENTS && !isGameRunning){ 
-                        //Add new client to the HashMap and to the game
-                        connectedClients.put(sender, clientSocket);
-                        playerCount++; //Increment player count
-                        ArrayList<String> args = new ArrayList<>(){{add(sender); add(playerCount.toString());}}; //Add sender and ID
-                        args.addAll(connectedClients.keySet()); //Add all players in game to the arguments
-                        requestHandler.handleClient(sender, "join", args.toArray(new String[args.size()]), clientSocket.getOutputStream());
-                        continue; //Add new player and continue
-                    } else if(connectedClients.get(sender) == null && id.equals("0") && (connectedClients.size() >= MAX_CLIENTS || isGameRunning)) { //Server is full / game has started
-                        if(isGameRunning)
-                        {
-                            throwError(Error_Codes.GAME_STARTED, out);
-                            closeConnection(clientSocket, out, in);
-                        }
-                        else //Server full
-                        {
-                            throwError(Error_Codes.SERVER_FULL, out);
-                            closeConnection(clientSocket, out, in);
-                        }
-                        continue; 
-                    } else if(connectedClients.get(sender) != null && id.equals("0")){ //Name taken
-                        throwError(Error_Codes.NAME_TAKEN, out);
+                //Now we check the client to see if he's new or not and if allowed to join
+                if(connectedClients.get(sender) == null && id.equals("0") && connectedClients.size() < MAX_CLIENTS && !isGameRunning){ 
+                    //Add new client to the HashMap and to the game
+                    connectedClients.put(sender, clientSocket);
+                    playerCount++; //Increment player count
+                    ArrayList<String> args = new ArrayList<>(){{add(sender); add(playerCount.toString());}}; //Add sender and ID
+                    args.addAll(connectedClients.keySet()); //Add all players in game to the arguments
+                    requestHandler.handleClient(sender, "join", args.toArray(new String[args.size()]), clientSocket.getOutputStream());
+                    continue; //Add new player and continue
+                } else if(connectedClients.get(sender) == null && id.equals("0") && (connectedClients.size() >= MAX_CLIENTS || isGameRunning)) { //Server is full / game has started
+                    if(isGameRunning)
+                    {
+                        throwError(Error_Codes.GAME_STARTED, out);
                         closeConnection(clientSocket, out, in);
                     }
-                    //Now we have a known client.
-                    String[] command_args = user_body_split[1].split(":");
-                    String commandName = command_args[0];
-                    String[] tmp, args;
-                    if(command_args.length == 1) //No arguments (startGame, endGame, join, leave, skipTurn)
+                    else //Server full
                     {
-                        args = new String[1];
-                        args[0] = sender;
-                    } 
-                    else //Arguments exist
-                    {
-                        tmp = command_args[1].split(","); //Split the arguments 
-                        args = new String[tmp.length + 1]; //Add the sender name to the arguments
-                        args[0] = sender;
-                        for (int i = 1; i < args.length; i++)
-                            args[i] = tmp[i-1];  
+                        throwError(Error_Codes.SERVER_FULL, out);
+                        closeConnection(clientSocket, out, in);
                     }
-                    //Check request
-                    ArrayList<String> acceptableCommands = new ArrayList<>(){{
-                        add("startGame");
-                        add("endGame");
-                        add("join");
-                        add("leave");
-                        add("skipTurn");
-                        add("C"); //challenge
-                        add("Q"); //query
-                    }};
+                    continue; 
+                } else if(connectedClients.get(sender) != null && id.equals("0")){ //Name taken
+                    throwError(Error_Codes.NAME_TAKEN, out);
+                    closeConnection(clientSocket, out, in);
+                }
+                //Now we have a known client.
+                String[] command_args = user_body_split[1].split(":");
+                String commandName = command_args[0];
+                String[] tmp, args;
+                if(command_args.length == 1) //No arguments (startGame, endGame, join, leave, skipTurn)
+                {
+                    args = new String[1];
+                    args[0] = sender;
+                } 
+                else //Arguments exist
+                {
+                    tmp = command_args[1].split(","); //Split the arguments 
+                    args = new String[tmp.length + 1]; //Add the sender name to the arguments
+                    args[0] = sender;
+                    for (int i = 1; i < args.length; i++)
+                        args[i] = tmp[i-1];  
+                }
+                //Check request
+                ArrayList<String> acceptableCommands = new ArrayList<>(){{
+                    add("startGame");
+                    add("endGame");
+                    add("join");
+                    add("leave");
+                    add("skipTurn");
+                    add("C"); //challenge
+                    add("Q"); //query
+                }};
 
 
-                    if(!sender.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
-                    { //Host only commands
-                        throwError(Error_Codes.ACCESS_DENIED, out);
-                        continue;  
-                    } else if (commandName.equals("startGame") && connectedClients.size() < 2) 
-                    {
-                        throwError(Error_Codes.NOT_ENOUGH_PLAYERS, out);
-                    } else if(commandName.equals("leave")){
-                        requestHandler.handleClient(sender, commandName, args ,clientSocket.getOutputStream());
-                        break;
-                    } else if(acceptableCommands.contains(commandName)) //Known command
-                        requestHandler.handleClient(sender, commandName, args ,connectedClients.get(sender).getOutputStream());
-                    else //Unknown command
-                        throwError(Error_Codes.UNKNOWN_CMD, out);
-                } //End of if statement
-            } //End of while loop
-            //Client disconnected
-            closeConnection(clientSocket, out, in); //Remove client from the HashMap
-        } catch (IOException e) {
-            MyLogger.println("Error in MyHostServer with client " + clientSocket.getInetAddress() + ": " + e.getMessage());
-            e.printStackTrace();
-        }
+                if(!sender.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
+                { //Host only commands
+                    throwError(Error_Codes.ACCESS_DENIED, out);
+                    continue;  
+                } else if (commandName.equals("startGame") && connectedClients.size() < 2) 
+                {
+                    throwError(Error_Codes.NOT_ENOUGH_PLAYERS, out);
+                } else if(commandName.equals("leave")){
+                    requestHandler.handleClient(sender, commandName, args ,clientSocket.getOutputStream());
+                    break;
+                } else if(acceptableCommands.contains(commandName)) //Known command
+                    requestHandler.handleClient(sender, commandName, args ,connectedClients.get(sender).getOutputStream());
+                else //Unknown command
+                    throwError(Error_Codes.UNKNOWN_CMD, out);
+                
+            } catch (Exception e) { //Client disconnected
+                closeConnection(clientSocket, out, in); //Remove client from the HashMap
+                return;
+            }
+        } //End of while loop
+        closeConnection(clientSocket, out, in); //Remove client from the HashMap
     }
     
     private void closeConnection(Socket clientSocket, PrintWriter out, Scanner in) {
