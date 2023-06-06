@@ -57,11 +57,11 @@ public class GameModel {
 
     public boolean nextTurn()
     {
-        String currentPlayer = playersOrder.poll();
-        if(currentPlayer == null)
+        String prevPlayer = playersOrder.poll();
+        if(prevPlayer == null)
             return false;
-        playersOrder.add(currentPlayer);
-        MyLogger.nextPlayer(currentPlayer);
+        playersOrder.add(prevPlayer);
+        MyLogger.nextPlayer(playersOrder.peek());
         return isItMyTurn();
     }
 
