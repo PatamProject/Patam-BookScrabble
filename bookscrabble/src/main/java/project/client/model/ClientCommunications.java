@@ -168,7 +168,8 @@ public class ClientCommunications{
                             }
                         }               
                     } while(!allowedInput);
-
+                    scanner.nextLine(); //Clear the buffer
+                    
                     String message = ClientModel.getName() + "&Q:" + word + "," + row + "," + col + "," + isVertical;
                     sendAMessage(requestHandler.getId(), message); 
                     //Wait for the host to reply   
