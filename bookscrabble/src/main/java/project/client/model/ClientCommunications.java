@@ -115,13 +115,20 @@ public class ClientCommunications{
                     String word = null;
                     int row = 0, col = 0; 
                     boolean isVertical = false;
+                    boolean skipTurn = false;
                     do
                     {
                         allowedInput = false;
                         if(scanner.hasNextLine())
                         {
                             word = scanner.nextLine();
-                            if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
+                            if(word.equals("!skip") || word.equals("!skipTurn") || word.equals("!skipturn") || word.equals("!skip turn"))
+                            {
+                                sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
+                                skipTurn = true;
+                                continue;
+                            }
+                            else if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                             {
                                 MyLogger.println("Illegal word!");
                                 allowedInput = false;
@@ -130,6 +137,9 @@ public class ClientCommunications{
                                 allowedInput = true;
                         }
                     } while(!allowedInput);
+
+                    if(skipTurn) //If the player chose to skip his turn
+                        continue;
 
                     do
                     {
@@ -169,7 +179,7 @@ public class ClientCommunications{
                         }               
                     } while(!allowedInput);
                     scanner.nextLine(); //Clear the buffer
-                    
+
                     String message = ClientModel.getName() + "&Q:" + word + "," + row + "," + col + "," + isVertical;
                     sendAMessage(requestHandler.getId(), message); 
                     //Wait for the host to reply   
