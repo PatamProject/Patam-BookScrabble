@@ -17,7 +17,7 @@ public class ClientSideHandler implements RequestHandler{
     private Map<String, Consumer<String[]>> commandHandler;
     private Map<String, Consumer<String[]>> responseHandler;
     private Map<String, Consumer<String[]>> errorHandler;
-    private int id = 0;
+    private static int id = 0;
     private int numOfChallenges = 0;
     boolean isGameRunning = false;
 
@@ -217,7 +217,7 @@ public class ClientSideHandler implements RequestHandler{
         game.nextTurn(); //Next turn
     }
 
-    public int getId(){return id;}
+    public static int getId(){return id;}
 
     @Override
     public void close() {

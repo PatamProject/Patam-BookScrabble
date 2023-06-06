@@ -66,6 +66,7 @@ public class MyHostServer{
         MyLogger.println("Host is listening on port " + hostPort);
         while (!stopServer) {
             try {
+                MyLogger.println("Host waiting for requests...");
                 Socket clientSocket = hostSocket.accept();
                 Scanner in = new Scanner(clientSocket.getInputStream());
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -137,6 +138,7 @@ public class MyHostServer{
             // Handle client requests
             while (clientSocket.isConnected()) 
             {
+                MyLogger.println("Host waiting for requests from " + clientName + "...");
                 if (in.hasNextLine()) 
                 {
                     String request = in.nextLine(); // "'id':'sender'&'commandName':'args1','args2',...'"
