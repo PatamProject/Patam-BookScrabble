@@ -136,7 +136,7 @@ public class MyHostServer{
                         closeConnection(clientSocket, out, in);
                     }
                     //Now we have a known client.
-                    String[] command_args = user_body_split[0].split(":");
+                    String[] command_args = user_body_split[1].split(":");
                     String commandName = command_args[0];
                     String[] tmp, args;
                     if(command_args.length == 1) //No arguments (startGame, endGame, join, leave, skipTurn)
