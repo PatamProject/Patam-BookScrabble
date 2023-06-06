@@ -9,42 +9,42 @@ import project.client.MyLogger;
 public class GameModel {
     //PlayerModel myPlayer;
     String myTiles;
-    HashMap<String,Integer> players; //Name of player and their score
+    HashMap<String,Integer> playersAndScores; //Name of player and their score
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board;
 
     public GameModel() {
         //myPlayer = new PlayerModel(ClientModel.getName());
         playersOrder = new LinkedList<>(); //Will be updated by startGame
-        this.players = new HashMap<>();
+        this.playersAndScores = new HashMap<>();
     }
 
     public void setBoard(String board) {
         this.board = board;
     }
 
-    public String[] getPlayers() {
-        return players.keySet().toArray(new String[players.size()]);
+    public String[] getPlayersAndScores() {
+        return playersAndScores.keySet().toArray(new String[playersAndScores.size()]);
     }
 
     public void addPlayers(String... players) {
         for (String player : players)
         {
-            this.players.put(player, 0); //Each player starts with score 0
+            this.playersAndScores.put(player, 0); //Each player starts with score 0
         }
     }
 
     public void removePlayer(String player)
     {
-        players.remove(player);
+        playersAndScores.remove(player);
         playersOrder.remove(player);
     }
 
     public void updateScore(String player, int score)
     {
-        int oldScore = players.get(player);
-        players.remove(player);
-        players.put(player, oldScore + score);
+        int oldScore = playersAndScores.get(player);
+        playersAndScores.remove(player);
+        playersAndScores.put(player, oldScore + score);
     }
 
     public boolean isStringLegal(char[] word) //We check for allowed chars only

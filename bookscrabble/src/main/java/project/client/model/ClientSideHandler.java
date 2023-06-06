@@ -212,7 +212,7 @@ public class ClientSideHandler implements RequestHandler{
 
     public void handleWordPlacement(String[] args, String commandName) //Adds score to the player placing the word
     { //args[0] = player, args[1] = score
-        game.players.put(args[0], game.players.getOrDefault(args[0], 0) + Integer.parseInt(args[1]));
+        game.playersAndScores.put(args[0], game.playersAndScores.getOrDefault(args[0], 0) + Integer.parseInt(args[1]));
         MyLogger.playerPlacedWord(args[0], Integer.parseInt(args[1]), commandName);
         game.nextTurn(); //Next turn
     }

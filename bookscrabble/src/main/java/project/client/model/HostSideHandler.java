@@ -137,7 +137,7 @@ public class HostSideHandler implements RequestHandler{
                     game.nextTurn(); //next player's turn
                     out.println(commandName+":"+score + "," + currentTiles); //Send score and tiles to client
                     MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score, args[0]); //Send score to all players
-                    MyHostServer.updateAll("!board:", game.getBoard().toString()); //Send board to all players
+                    MyHostServer.updateAll("!board:" + game.getBoard().toString(), null); //Send board to all players
                 } catch (Exception e) {
                     String winner = game.getWinner(); //Game ended, bag is empty
                     MyHostServer.updateAll("!endGame:" + winner, null);
