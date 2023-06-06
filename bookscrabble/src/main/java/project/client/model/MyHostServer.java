@@ -67,11 +67,36 @@ public class MyHostServer{
         while (!stopServer) {
             try {
                 Socket clientSocket = hostSocket.accept();
-                Scanner in = new Scanner(clientSocket.getInputStream());
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                if(in.hasNextLine()){
+                MyLogger.println("A new client has connected: " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort());
+                threadPool.execute(() -> handleClientConnection(clientSocket)); //Handle client in a separate thread
+            } catch (SocketTimeoutException e) {
+                MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
+                //Host is still listening
+            }
+        }
+
+        // Close all client connections
+        for (Socket clientSocket : connectedClients.values()) {
+            closeConnection(clientSocket, new PrintWriter(clientSocket.getOutputStream()), new Scanner(clientSocket.getInputStream()));
+        }
+
+        connectedClients.clear();
+        hostSocket.close();
+    }
+
+    private void handleClientConnection(Socket clientSocket) //Runs in a separate thread
+    {
+        Scanner in = null;
+        PrintWriter out = null;
+        try {
+            while (clientSocket.isConnected())
+            {
+                in = new Scanner(clientSocket.getInputStream());
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                if(in.hasNextLine())
+                {
                     String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
-                    MyLogger.println("Host received a request from a new client: " + request);
+                    MyLogger.println("Host received a new request: " + request);
                     String[] user_body_split = request.split("&");
                     if(user_body_split.length != 2){ //Must contain a sender name and a body
                         throwError(Error_Codes.UNKNOWN_CMD, out);
@@ -110,62 +135,23 @@ public class MyHostServer{
                         throwError(Error_Codes.NAME_TAKEN, out);
                         closeConnection(clientSocket, out, in);
                     }
-                    //Now we have a known client and will process all future requests in a separate thread
-                    threadPool.execute(() -> handleClientConnection(clientSocket,sender,id));
-                }
-            } catch (SocketTimeoutException e) {
-                MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
-                //Host is still listening
-            }
-        }
-
-        // Close all client connections
-        for (Socket clientSocket : connectedClients.values()) {
-            closeConnection(clientSocket, new PrintWriter(clientSocket.getOutputStream()), new Scanner(clientSocket.getInputStream()));
-        }
-
-        connectedClients.clear();
-        hostSocket.close();
-    }
-
-    private void handleClientConnection(Socket clientSocket, String clientName, String id) //Runs in a separate thread
-    {
-        try 
-        {
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
-            Scanner in = new Scanner(clientSocket.getInputStream());  
-            // Handle client requests
-            while (clientSocket.isConnected()) 
-            {
-                MyLogger.println("Host waiting for requests from " + clientName + "...");
-                if (in.hasNextLine()) 
-                {
-                    String request = in.nextLine(); // "'id':'sender'&'commandName':'args1','args2',...'"
-                    MyLogger.println("Host received: " + request + " from " + clientName);
-                    String id_sender = request.split("&")[0];
-                    String[] command_args = request.split("&")[1].split(":");
-                    if(id_sender == null || command_args == null || !id_sender.split(":")[0].equals(id) 
-                    || !id_sender.split(":")[1].equals(clientName)) //Check if the request is valid
-                    {
-                        throwError(Error_Codes.SERVER_ERR, out);
-                        continue;
-                    }
+                    //Now we have a known client.
+                    String[] command_args = user_body_split[0].split(":");
                     String commandName = command_args[0];
                     String[] tmp, args;
-                    if(command_args.length == 1) //No arguments (startGame, endGame)
+                    if(command_args.length == 1) //No arguments (startGame, endGame, join, leave, skipTurn)
                     {
                         args = new String[1];
-                        args[0] = clientName;
+                        args[0] = sender;
                     } 
                     else //Arguments exist
                     {
                         tmp = command_args[1].split(","); //Split the arguments 
                         args = new String[tmp.length + 1]; //Add the sender name to the arguments
-                        args[0] = clientName;
+                        args[0] = sender;
                         for (int i = 1; i < args.length; i++)
                             args[i] = tmp[i-1];  
                     }
-
                     //Check request
                     ArrayList<String> acceptableCommands = new ArrayList<>(){{
                         add("startGame");
@@ -177,7 +163,8 @@ public class MyHostServer{
                         add("Q"); //query
                     }};
 
-                    if(!clientName.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
+
+                    if(!sender.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
                     { //Host only commands
                         throwError(Error_Codes.ACCESS_DENIED, out);
                         continue;  
@@ -185,18 +172,18 @@ public class MyHostServer{
                     {
                         throwError(Error_Codes.NOT_ENOUGH_PLAYERS, out);
                     } else if(commandName.equals("leave")){
-                        requestHandler.handleClient(clientName, commandName, args ,clientSocket.getOutputStream());
+                        requestHandler.handleClient(sender, commandName, args ,clientSocket.getOutputStream());
                         break;
                     } else if(acceptableCommands.contains(commandName)) //Known command
-                        requestHandler.handleClient(clientName, commandName, args ,connectedClients.get(clientName).getOutputStream());
+                        requestHandler.handleClient(sender, commandName, args ,connectedClients.get(sender).getOutputStream());
                     else //Unknown command
                         throwError(Error_Codes.UNKNOWN_CMD, out);
                 } //End of if statement
             } //End of while loop
-
-           closeConnection(clientSocket, out, in); //Remove client from the HashMap
+            //Client disconnected
+            closeConnection(clientSocket, out, in); //Remove client from the HashMap
         } catch (IOException e) {
-            MyLogger.println("Error in MyHostServer with client " + clientName + ": " + e.getMessage());
+            MyLogger.println("Error in MyHostServer with client " + clientSocket.getInetAddress() + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -208,8 +195,10 @@ public class MyHostServer{
                 if(connectedClients.get(client).equals(clientSocket))
                 {
                     name = client;
-                    out.close();
-                    in.close();
+                    if(out != null)
+                        out.close();
+                    if(in != null)
+                        in.close();
                     clientSocket.close();
                     break;
                 }
