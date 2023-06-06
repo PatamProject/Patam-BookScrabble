@@ -42,15 +42,15 @@ public class ClientSideHandler implements RequestHandler{
     
             //Tried to place a word on the board
             put("Q", (String[] args) -> 
-            { //Successful word placement, args[0] = score, args[1]... = players
-                Integer score = Integer.parseInt(args[1]);
+            { //Successful word placement, args[0] = score, args[1] = tiles
+                Integer score = Integer.parseInt(args[0]);
                 if(score == 0 || score == -1) //Not boardLegal
                     MyLogger.failedWordPlacement(score);
                 
                 else //Word was placed successfully
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
-                    game.myTiles = args[2]; //Updated the tiles
+                    game.myTiles = args[1]; //Updated the tiles
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "Q");
                     MyLogger.printTiles(game.myTiles); //Print my tiles
@@ -59,8 +59,8 @@ public class ClientSideHandler implements RequestHandler{
     
             //Tried to challenge a failed word placement
             put("C", (String[] args) -> 
-            { //Successful join, args[0] = id, args[1]... = players
-                Integer score = Integer.parseInt(args[1]);
+            { //Successful word placement, args[0] = score, args[1] = tiles
+                Integer score = Integer.parseInt(args[0]);
                 MyLogger.println("Challenging dictonary...");
                 if(score == 0 || score == -1) //Not boardLegal
                 {
@@ -71,7 +71,7 @@ public class ClientSideHandler implements RequestHandler{
                 else //Word was placed successfully
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
-                    game.myTiles = args[2]; //Updated the tiles
+                    game.myTiles = args[1]; //Updated the tiles
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(ClientModel.getName(), score, "C");
                     MyLogger.printTiles(game.myTiles); //Print my tiles
