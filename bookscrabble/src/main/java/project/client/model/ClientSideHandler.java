@@ -45,8 +45,10 @@ public class ClientSideHandler implements RequestHandler{
             { //Successful word placement, args[0] = score, args[1] = tiles
                 Integer score = Integer.parseInt(args[0]);
                 if(score == 0 || score == -1) //Not boardLegal
+                {
                     MyLogger.failedWordPlacement(score);
-                
+                    ClientCommunications.unlock();
+                }
                 else //Word was placed successfully
                 {
                     game.updateScore(ClientModel.getName(), score); //Update score
@@ -125,6 +127,7 @@ public class ClientSideHandler implements RequestHandler{
             { 
                 game.setBoard(args[0]);
                 MyLogger.printBoard(game.getBoard());
+                MyLogger.printTiles(game.myTiles);
             });
 
             put("!skipTurn", (String[] args) -> 
