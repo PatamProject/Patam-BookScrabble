@@ -7,8 +7,8 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import project.client.Error_Codes;
 import project.client.MyLogger;
@@ -16,13 +16,13 @@ import project.client.MyLogger;
 public class MyHostServer{
     private static MyHostServer myHostServer = null; //singelton
     private HostSideHandler requestHandler;
+    HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
+    ExecutorService threadPool;
     private int hostPort, bookScrabblePort; // Ports
     private String BookScrabbleServerIP; // IP
-    HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopServer = false;
     public volatile boolean isGameRunning = false;
-    BlockingQueue<String[]> myTasks;
     private final int MAX_CLIENTS = 4;
  
     public static MyHostServer getHostServer() //singleton design
@@ -35,7 +35,7 @@ public class MyHostServer{
 
     private MyHostServer() { // Ctor
         requestHandler = new HostSideHandler();
-        myTasks = new LinkedBlockingQueue<>();
+        threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
         connectedClients = new HashMap<>();
         stopServer = false;
         isGameRunning = false;
@@ -48,7 +48,7 @@ public class MyHostServer{
         if(!msgToBSServer("S,hello")) //Check connection to BS server
         {
             MyLogger.logError("Unable to connect to BookScrabble server!");
-            MyLogger.println("Host did not start! \nUse '!start' to try again or change BookScrabble server IP and port using 'setBSIP' and 'setBSPort'");
+            MyLogger.println("Host did not start! \nUse '!start' to try again or change BookScrabble server IP and or port.");
             return;
         }
         //Connected to BS server    
@@ -66,7 +66,6 @@ public class MyHostServer{
         MyLogger.println("Host is listening on port " + hostPort);
         while (!stopServer) {
             try {
-                MyLogger.println("Host waiting for requests...");
                 Socket clientSocket = hostSocket.accept();
                 Scanner in = new Scanner(clientSocket.getInputStream());
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -112,7 +111,7 @@ public class MyHostServer{
                         closeConnection(clientSocket, out, in);
                     }
                     //Now we have a known client and will process all future requests in a separate thread
-                    new Thread(() -> handleClientConnection(clientSocket,sender,id)).start();
+                    threadPool.execute(() -> handleClientConnection(clientSocket,sender,id));
                 }
             } catch (SocketTimeoutException e) {
                 MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
@@ -313,10 +312,6 @@ public class MyHostServer{
     {
         return connectedClients.keySet().toArray(new String[connectedClients.size()]);
     }
-
-    public void setBSIP(String ip) { BookScrabbleServerIP = ip;}
-
-    public void setBSPort(int port) { bookScrabblePort = port; }
 
     public void close() // A method to close the hostServer
     {
