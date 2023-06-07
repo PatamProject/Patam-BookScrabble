@@ -63,7 +63,7 @@ public class ClientSideHandler implements RequestHandler{
             put("C", (String[] args) -> 
             { //Successful word placement, args[0] = score, args[1] = tiles
                 Integer score = Integer.parseInt(args[0]);
-                MyLogger.println("Challenging dictonary...");
+                MyLogger.println("Challenging dictionary...");
                 if(score == 0 || score == -1) //Not boardLegal
                 {
                     numOfChallenges++;
@@ -82,7 +82,7 @@ public class ClientSideHandler implements RequestHandler{
 
             put("hello", (String[] args) -> 
             { //Used for testing
-                MyLogger.println("Hello recieved");
+                MyLogger.println("Hello received");
             });
         }};
 
@@ -97,7 +97,7 @@ public class ClientSideHandler implements RequestHandler{
             //A player left the game
             put("!leave", (String[] args) -> 
             { //args[0] = leaving player
-                MyLogger.playertLeft(args[0]); //This function is for notification only
+                MyLogger.playerLeft(args[0]); //This function is for notification only
             });
 
             //Game started, tiles are sent to each player individually
@@ -132,8 +132,11 @@ public class ClientSideHandler implements RequestHandler{
 
             put("!skipTurn", (String[] args) -> 
             { 
+                if (!game.isItMyTurn())
+                    MyLogger.println(game.playersOrder.getFirst() + " skipped turn!");
+                else
+                    MyLogger.println("You skipped your turn!");
                 game.nextTurn();
-                MyLogger.println("It's " + args[0] + "'s turn!");
             });
     
             //A player placed a word on the board
@@ -168,7 +171,7 @@ public class ClientSideHandler implements RequestHandler{
     
             put(Error_Codes.ACCESS_DENIED, (String[] args) -> 
             { 
-                MyLogger.println("Access denied, you are not premitted to use this command");
+                MyLogger.println("Access denied, you are not permitted to use this command");
             });
     
             put(Error_Codes.SERVER_FULL, (String[] args) -> 
@@ -182,7 +185,8 @@ public class ClientSideHandler implements RequestHandler{
             });
     
             put(Error_Codes.NAME_TAKEN, (String[] args) -> 
-            { 
+            {
+                game.playersAndScores.clear();
                 MyLogger.println("Name is already taken, try another name");
             });
      
@@ -209,8 +213,9 @@ public class ClientSideHandler implements RequestHandler{
             responseHandler.get(commandName).accept(args);
         else if(sender.charAt(0) == '!') //Game update from host
             commandHandler.get(commandName).accept(args);
-        else //Error from host
-            errorHandler.get(commandName).accept(args);    
+        else { //Error from host
+            errorHandler.get(commandName).accept(args);
+        }
     }
 
     public void handleWordPlacement(String[] args, String commandName) //Adds score to the player placing the word

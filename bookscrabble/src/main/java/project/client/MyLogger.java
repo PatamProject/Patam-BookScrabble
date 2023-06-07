@@ -72,7 +72,7 @@ public class MyLogger {
         println("Player " + name + " has joined the game!");
     }
 
-    public static void playertLeft(String name)
+    public static void playerLeft(String name)
     {
         println("Player " + name + " has left the game!");
     }
@@ -82,8 +82,8 @@ public class MyLogger {
         println("Game started!");
         println("Player " + players[0] + " is playing first!");
         HashMap<String, Integer> startingScores = new HashMap<>();
-        for (int i = 0; i < players.length; i++)
-            startingScores.put(players[i], 0);
+        for (String player : players)
+            startingScores.put(player, 0);
             
         printPlayerAndScore(startingScores);
         printBoard(null); //Print empty board
@@ -96,10 +96,7 @@ public class MyLogger {
             println(name + " has " + players.get(name) + " points!");
     }
 
-    public static void nextPlayer(String nextPlayer)
-    {
-        println("Player " + nextPlayer + " is playing now!");
-    }
+    public static void nextPlayer(String nextPlayer) {println("Player " + nextPlayer + " is playing now!");}
 
     public static void playerPlacedWord(String player, int score, String commandName)
     {
@@ -127,10 +124,14 @@ public class MyLogger {
     {
         println("Player " + player + " won the game!");
     }
-
     public static void disconnectedFromHost()
     {
         logError("Connection to host is lost!");
+    }
+    public static Scanner getScanner() {return myScanner;}
+    public static void close()
+    {
+        myScanner.close();
     }
 
     // public void useless() {
@@ -140,7 +141,7 @@ public class MyLogger {
     //     log("Maximum amount of players achieved.");
 
     //     // Game logic and progress updates
-    //     log("Its your turn to play!");
+    //     log("It's your turn to play!");
     //     log("Its dickFace turn to play."); // change
     //     log("You won the game!");
     //     log("Player dickFace won the game!"); // change
@@ -164,15 +165,4 @@ public class MyLogger {
     //     log("Closing Connections to guests...");
     //     log("Connections to guests are closed.");
     // }
-
-    public static Scanner getScanner()
-    {
-        return myScanner;
-    }
-
-    public static void close()
-    {
-        myScanner.close();
-    }
-    
 }

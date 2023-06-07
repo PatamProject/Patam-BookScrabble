@@ -30,7 +30,9 @@ public class ClientCommunications{
                     MyLogger.println("Client received: " + request);
                     if(request.charAt(0) == '#') //If the host sent an error
                     {
-                        requestHandler.handleClient("#", request.substring(1), null, null); //Error
+                        requestHandler.handleClient("#", request, null, null); //Error
+                        if(request.equals("#NAME_TAKEN"))
+                            toHostSocket.close();
                         continue;
                     }
                         
@@ -57,7 +59,7 @@ public class ClientCommunications{
                                         MyLogger.logError("Unable to unlock!");
                                     }
                                 }
-                                new Thread(()-> gameStarted()).start();
+                                new Thread(this::gameStarted).start();
                             }
                             continue;
                         }
@@ -110,7 +112,7 @@ public class ClientCommunications{
             {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    MyLogger.println("It's your turn to play! Enter a word to place: ");
+                    MyLogger.println("It's your turn to play! Enter a word to place:\nWrite '!skip' to give up your turn.");
                     boolean allowedInput;
                     String word = null;
                     int row = 0, col = 0; 
@@ -122,16 +124,14 @@ public class ClientCommunications{
                         if(scanner.hasNextLine())
                         {
                             word = scanner.nextLine();
-                            if(word.equals("!skip") || word.equals("!skipTurn") || word.equals("!skipturn") || word.equals("!skip turn"))
+                            if(word.equals("!skip"))
                             {
                                 sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
                                 skipTurn = true;
-                                continue;
                             }
                             else if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
                             {
                                 MyLogger.println("Illegal word!");
-                                allowedInput = false;
                             }
                             else
                                 allowedInput = true;
@@ -152,7 +152,6 @@ public class ClientCommunications{
                             if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                             {
                                 MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
-                                allowedInput = false;
                             }
                             else
                                 allowedInput = true;
@@ -169,7 +168,6 @@ public class ClientCommunications{
                             if(vertical != 0 && vertical != 1)
                             {
                                 MyLogger.println("Illegal input! Try again");
-                                allowedInput = false;
                             }
                             else
                             {
@@ -209,4 +207,6 @@ public class ClientCommunications{
             lock.notifyAll();
         }
     }
+
+    public static Socket getToHostSocket() {return toHostSocket;}
 }

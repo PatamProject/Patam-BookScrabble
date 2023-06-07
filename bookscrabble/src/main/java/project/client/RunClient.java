@@ -1,5 +1,6 @@
 package project.client;
 
+import project.client.model.ClientCommunications;
 import project.client.model.ClientModel;
 import project.client.model.MyHostServer;
 
@@ -12,25 +13,34 @@ public class RunClient{
 
     public RunClient() // always running
     {
-        String name = getPlayerName();
-        boolean isHost = chooseIfHost();
+        do {
+            String name = getPlayerName();
+            boolean isHost = chooseIfHost();
 
-        if(isHost)
-        {
-            do
+            if(isHost)
             {
-                hostGame(name); 
-            } while (!checkConnectionToHost()); 
-            hostStartMenu();
-        }
-        else
-        {
-            do {
-                joinGame(name);
-            } while (!checkConnectionToHost()); 
-            guestStartMenu();
-        }     
-    } 
+                do
+                {
+                    hostGame(name);
+                } while (!checkConnectionToHost());
+                hostStartMenu();
+            }
+            else
+            {
+                do {
+                    joinGame(name);
+                } while (!checkConnectionToHost());
+                guestStartMenu();
+
+                while(myClient.isConnectedToHost) {
+                    if (ClientCommunications.getToHostSocket().isClosed()) {
+                        myClient.isConnectedToHost = false;
+                        myClient.close();
+                    }
+                }
+            }
+        } while (!checkConnectionToHost());
+    }
     
     private String getPlayerName()
     {
