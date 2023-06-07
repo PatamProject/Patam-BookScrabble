@@ -62,7 +62,7 @@ public class MyHostServer{
     }
 
     public void run() throws Exception {
-        ServerSocket hostSocket = new ServerSocket(hostPort);
+        ServerSocket hostSocket = new ServerSocket(hostPort,MAX_CLIENTS);
         MyLogger.println("Host is listening on port " + hostPort);
         while (!stopServer) {
             try {

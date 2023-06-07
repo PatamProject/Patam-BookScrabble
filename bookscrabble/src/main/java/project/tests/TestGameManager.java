@@ -21,21 +21,21 @@ public class TestGameManager {
         gameManager.getPlayer("player1").getRack().takeTiles("IS");
         gameManager.getPlayer("player2").getRack().takeTiles("ANT");
 
-        Word w1 = gameManager.createWordFromClientInput("player1","IS",7,7,true);
+        Word w1 = gameManager.fromStringToWord("player1","IS",7,7,true);
         if (!w1.toString().equals("IS"))
             System.out.println("Problem with createWordFromClientInput method");
 
-        String[] arrWords = gameManager.getWordsFromClientInput(w1);
+        String[] arrWords = gameManager.getStringsToSendToBS(w1);
         if (!arrWords[0].equals(w1.toString()))
             System.out.println("Problem with getWordsFromClientInput method");
 
-        int score1 = gameManager.getScoreFromWord("player1",w1);
-        Word w2 = gameManager.createWordFromClientInput("player2","ANTS",8,4,false);
-        String[] newWords = gameManager.getWordsFromClientInput(w2);
+        int score1 = gameManager.tryPlaceWord("player1",w1);
+        Word w2 = gameManager.fromStringToWord("player2","ANTS",8,4,false);
+        String[] newWords = gameManager.getStringsToSendToBS(w2);
         if (!newWords[0].equals("ANTS"))
             System.out.println("Problem with getWordsFromClientInput method");
 
-        int score2 = gameManager.getScoreFromWord("player2",w2);
+        int score2 = gameManager.tryPlaceWord("player2",w2);
         if(score1 != 4 || score2 != 5)
             System.out.println("Problem with getScoreFromWord method");
     }

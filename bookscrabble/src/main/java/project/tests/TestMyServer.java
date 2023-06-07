@@ -19,7 +19,7 @@ public class TestMyServer {
         try {
             File file = new File("Patam-BookScrabble" + File.separator + "bookscrabble" + File.separator + "resources" + File.separator + "project" + File.separator + "TestMyServer" + File.separator + "wordsToTest.txt");
             Scanner fileScanner = new Scanner(file);
-            String[] moreWordsToTest ={"duzzzzzer","Bilibobo","speeding","","queue","boy!"};
+            String[] moreWordsToTest ={"gbud","Bilibobo","speeding","","queue","boy!"};
             try {
                 for (String w : moreWordsToTest) {
                     if(!testQuery(w))

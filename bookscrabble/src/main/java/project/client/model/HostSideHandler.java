@@ -107,13 +107,13 @@ public class HostSideHandler implements RequestHandler{
     
     private void handleBSRequest(String commandName , String[] args)
     {
-        Word w = game.createWordFromClientInput(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
+        Word w = game.fromStringToWord(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
         if(w == null) //No word was created from the client input (Not boardLegal)
         {
             out.println(commandName+":0"); //Score = 0, word not placed due to boardLegal
             return;
         }
-        String[] words = game.getWordsFromClientInput(w); //Get all words created from the client input
+        String[] words = game.getStringsToSendToBS(w); //Get all words created from the client input
         if(words == null || words.length == 0) //No words were created from the client input (Not boardLegal)
         {
             out.println(commandName+":0"); //Score = 0, word not placed due to boardLegal
@@ -128,7 +128,7 @@ public class HostSideHandler implements RequestHandler{
             out.println(commandName+":-1"); //Score = -1
         else
         {
-            Integer score = game.getScoreFromWord(args[0], w);
+            Integer score = game.tryPlaceWord(args[0], w);
             if(score != 0)
             {
                 try { //Take tiles from bag

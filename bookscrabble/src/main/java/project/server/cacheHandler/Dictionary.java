@@ -26,7 +26,7 @@ public class Dictionary
         lfuCache = new CacheManager(100, new LFU()); //Used for unreal words
         int size;
         if(isRealDictionary)
-            size = (int)(Math.pow(2, 19));
+            size = (int)(Math.pow(2, 20));
         else
             size = (int)(Math.pow(2, 17));
         bf = new BloomFilter(size, "MD5","SHA1","SHA256","SHA384","MD2","SHA512");

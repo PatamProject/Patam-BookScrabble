@@ -129,7 +129,8 @@ public class ClientCommunications{
                                 skipTurn = true;
                                 continue;
                             }
-                            else if(!requestHandler.game.isStringLegal(word.toUpperCase().toCharArray()))
+                            word = word.toUpperCase();
+                            if(!requestHandler.game.isStringLegal(word.toCharArray()))
                             {
                                 MyLogger.println("Illegal word!");
                                 allowedInput = false;
