@@ -211,9 +211,11 @@ public class ClientCommunications{
                                         isTryingAgain = true;
                                         break;
                                     case 2:
+                                        isTryingAgain = false;
                                         sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
                                         break;
                                     case 3:
+                                        isTryingAgain = false;
                                         String challengeMsg = ClientModel.getName() + "&C:" + word + "," + row + "," + col + "," + isVertical;
                                         sendAMessage(requestHandler.getId(), challengeMsg); 
                                         break;
@@ -224,6 +226,8 @@ public class ClientCommunications{
                             scanner.nextLine(); //Clear the buffer  
                         } while(!allowedInput);    
                     } //End of if(word was not placed)
+                    else //word was placed
+                        isTryingAgain = false;
                 } //End of if(my turn)
 
                 if(!isTryingAgain) //Player needs to wait for a reply and not tryingAgain
