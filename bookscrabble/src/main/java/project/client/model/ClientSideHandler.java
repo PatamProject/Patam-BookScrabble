@@ -126,6 +126,7 @@ public class ClientSideHandler implements RequestHandler{
             put("!board", (String[] args) -> 
             { 
                 game.setBoard(args[0]);
+                MyLogger.printPlayerAndScore(game.getPlayersAndScores());
                 MyLogger.printBoard(game.getBoard());
                 MyLogger.printTiles(game.myTiles);
             });

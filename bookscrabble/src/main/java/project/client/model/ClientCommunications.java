@@ -111,6 +111,7 @@ public class ClientCommunications{
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
+                boolean shouldPlayerWait = false;
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
                     MyLogger.println("It's your turn to play! Enter a word to place or use !skip to skip your turn: ");
@@ -119,7 +120,7 @@ public class ClientCommunications{
                     int row = 0, col = 0; 
                     boolean isVertical = false;
                     boolean skipTurn = false;
-                    boolean shouldPlayerWait = false;
+                    shouldPlayerWait = false;
                     do
                     {
                         allowedInput = false;
@@ -231,11 +232,10 @@ public class ClientCommunications{
                     } //End of if(word was not placed)
                     else //word was placed
                         shouldPlayerWait = true;
-
-                    if(shouldPlayerWait)
-                        waitForTurn(); //Wait for my turn 
-
                 } // End of if(myTurn)
+
+                if(shouldPlayerWait)
+                        waitForTurn(); //Wait for my turn 
             } //End of while
         } catch (Exception e) {
             MyLogger.logError("Error in gameStarted(): " + e.getMessage());
