@@ -111,7 +111,7 @@ public class ClientCommunications{
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
-                boolean shouldPlayerWait = false;
+                boolean shouldPlayerWait = true;
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
                     MyLogger.println("It's your turn to play! Enter a word to place or use !skip to skip your turn: ");
@@ -197,38 +197,33 @@ public class ClientCommunications{
                         do
                         {
                             allowedInput = false;
-                            if(scanner.hasNextLine())
+                            int decision = scanner.nextInt();
+                            if(decision != 1 && decision != 2 && decision != 3)
                             {
-                                int decision = scanner.nextInt();
-                                if(decision != 1 && decision != 2 && decision != 3)
-                                {
-                                    MyLogger.println("Illegal input! Try again");
-                                    allowedInput = false;
+                                MyLogger.println("Illegal input! Try again");
+                                allowedInput = false;
+                            }
+                            else
+                            {
+                                allowedInput = true;
+                                switch (decision) {
+                                    case 1: //Trying again
+                                        break;
+                                    case 2:
+                                        sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
+                                        shouldPlayerWait = true;
+                                        break;
+                                    case 3:
+                                        String challengeMsg = ClientModel.getName() + "&C:" + word + "," + row + "," + col + "," + isVertical;
+                                        sendAMessage(requestHandler.getId(), challengeMsg); 
+                                        shouldPlayerWait = true;
+                                        break;
+                                    default:
+                                        allowedInput = false;
                                 }
-                                else
-                                {
-                                    allowedInput = true;
-                                    switch (decision) {
-                                        case 1: //Trying again
-                                            break;
-                                        case 2:
-                                            sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
-                                            shouldPlayerWait = true;
-                                            break;
-                                        case 3:
-                                            String challengeMsg = ClientModel.getName() + "&C:" + word + "," + row + "," + col + "," + isVertical;
-                                            sendAMessage(requestHandler.getId(), challengeMsg); 
-                                            shouldPlayerWait = true;
-                                            break;
-                                        default:
-                                            allowedInput = false;
-                                            break;
-                                    }
-                                }
-                            }               
-                        } while(!allowedInput);
-                        scanner.nextLine(); //Clear the buffer    
-
+                            }            
+                            scanner.nextLine(); //Clear the buffer  
+                        } while(!allowedInput);    
                     } //End of if(word was not placed)
                     else //word was placed
                         shouldPlayerWait = true;
