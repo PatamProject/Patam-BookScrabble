@@ -125,11 +125,14 @@ public class GameManager{
                 tilesArr.add(null); //Word on board, do not take
                 //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
             }
-            tile = p.getRack().takeTileFromRack(tiles.charAt(i)); 
-            if(tilesOnBoard[tmpRow][tmpCol] == null && tile != null) //Tile is on the rack
-                tilesArr.add(tile);
-            else //Can't find tile / tile placed on another tile
-                return null; 
+            else
+            {
+                tile = p.getRack().takeTileFromRack(tiles.charAt(i)); 
+                if(tilesOnBoard[tmpRow][tmpCol] == null && tile != null) //Tile is on the rack
+                    tilesArr.add(tile);
+                else //Can't find tile / tile placed on another tile
+                    return null; 
+            }
                 
             //Adjust tmpRow and tmpCol according to vertical
             if(vertical)
