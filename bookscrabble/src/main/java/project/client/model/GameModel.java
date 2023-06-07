@@ -70,11 +70,13 @@ public class GameModel {
         return playersAndScores;
     }
 
-    public boolean isItMyTurn()
+    public synchronized boolean isItMyTurn()
     {
         boolean res = playersOrder.peek().equals(ClientModel.getName());
         if(res)
             ClientCommunications.unlock();
+        else
+            ClientCommunications.waitForTurn();  
         return res; 
     }
 }
