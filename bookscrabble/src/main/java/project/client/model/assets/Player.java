@@ -1,11 +1,11 @@
 package project.client.model.assets;
 
-public class PlayerModel{
+public class Player{
     private String name;
     private Integer score = 0;
     private Rack rack;
     
-    public PlayerModel(String name){
+    public Player(String name){
        this.name = name; 
        rack = new Rack();
     }

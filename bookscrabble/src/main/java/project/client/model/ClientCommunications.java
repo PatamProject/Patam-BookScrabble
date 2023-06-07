@@ -2,6 +2,7 @@ package project.client.model;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -9,7 +10,7 @@ import project.client.MyLogger;
 
 public class ClientCommunications{
     private ClientSideHandler requestHandler;
-    private static Socket toHostSocket; // A socket to the host
+    private Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
     private static PrintWriter outToHost;
     private static Object lock = new Object();
@@ -21,52 +22,50 @@ public class ClientCommunications{
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
     
-    public void run() { // A method that consistently receives messages from the host
+    public void run() throws ConnectException { // A method that consistently receives messages from the host
         sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
-                if(inFromHost.hasNextLine()) {
-                    String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
-                    MyLogger.println("Client received: " + request);
-                    if(request.charAt(0) == '#') //If the host sent an error
+                String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
+                MyLogger.println("Client received: " + request);
+                if(request.charAt(0) == '#') //If the host sent an error
+                {
+                    requestHandler.handleClient("#", request.substring(1), null, null); //Error
+                    throw new ConnectException(request.substring(1));
+                }
+                    
+                String[] tmp = request.split(":");
+                String commandName = tmp[0];
+                String[] args = tmp[1].split(",");
+                String sender;
+                if(request.charAt(0) == '!') //Game update!
+                {
+                    sender = "!"; //To allow the handler to know that this is a game update from the host
+                    if(commandName.equals("!startGame"))
                     {
-                        requestHandler.handleClient("#", request.substring(1), null, null); //Error
+                        synchronized (lock) {
+                            requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
+                            lock.notifyAll();
+                        }
+
+                        synchronized (lock) {
+                            if(!requestHandler.isGameRunning)
+                            {
+                                try {
+                                    lock.wait();
+                                } catch (InterruptedException e) {
+                                    MyLogger.logError("Unable to unlock!");
+                                }
+                            }
+                            new Thread(()-> gameStarted()).start();
+                        }
                         continue;
                     }
-                        
-                    String[] tmp = request.split(":");
-                    String commandName = tmp[0];
-                    String[] args = tmp[1].split(",");
-                    String sender;
-                    if(request.charAt(0) == '!') //Game update!
-                    {
-                        sender = "!"; //To allow the handler to know that this is a game update from the host
-                        if(commandName.equals("!startGame"))
-                        {
-                            synchronized (lock) {
-                                requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
-                                lock.notifyAll();
-                            }
-
-                            synchronized (lock) {
-                                if(!requestHandler.isGameRunning)
-                                {
-                                    try {
-                                        lock.wait();
-                                    } catch (InterruptedException e) {
-                                        MyLogger.logError("Unable to unlock!");
-                                    }
-                                }
-                                new Thread(()-> gameStarted()).start();
-                            }
-                            continue;
-                        }
-                    }
-                    else //A reply from the host
-                        sender = ClientModel.getName();
-                    
-                    requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
                 }
+                else //A reply from the host
+                    sender = ClientModel.getName();
+                
+                requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream()); 
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } 
@@ -80,6 +79,21 @@ public class ClientCommunications{
         outToHost.flush();
     }
 
+    public void start() throws ConnectException{
+        new Thread(()-> {
+            try {
+                run();
+            } catch (Exception e) {
+                if(e instanceof ConnectException)
+                    try {
+                        throw new ConnectException(e.getMessage());
+                    } catch (ConnectException e2) {}
+                else
+                    throw new RuntimeException(e);
+            }
+        }).start();
+    }
+    
     public void close() { // Closing the connection to the host
         try {
             inFromHost.close();
@@ -87,16 +101,6 @@ public class ClientCommunications{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void start() {
-        new Thread(()-> {
-            try {
-                run();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
     }
 
     public void gameStarted()

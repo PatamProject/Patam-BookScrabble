@@ -9,7 +9,7 @@ import project.client.model.MyHostServer;
 
 public class GameManager{
     Board board;
-    HashMap<String,PlayerModel> players; //Maps between player's name to player's object
+    HashMap<String,Player> players; //Maps between player's name to player's object
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     public final int MAX_PLAYERS = 4;
 
@@ -47,7 +47,7 @@ public class GameManager{
     // Getters
     public Board getBoard() {return board;}
     public String getCurrentPlayersName() {return playersOrder.peek();}
-    public PlayerModel getPlayer(String pName) {return players.get(pName) != null ? players.get(pName) : null;}
+    public Player getPlayer(String pName) {return players.get(pName) != null ? players.get(pName) : null;}
     public ArrayList<String> getPlayersOrder() {return new ArrayList<>(playersOrder);}
     public int getPlayersAmount() {return players.size();}
 
@@ -66,7 +66,7 @@ public class GameManager{
     public boolean addNewPlayer(String pName) { // Adds a new player to the game if possible
         if(players.size() < MAX_PLAYERS && pName != null)
         {
-            players.put(pName, new PlayerModel(pName));
+            players.put(pName, new Player(pName));
             playersOrder.add(pName);
             return true;
         }
@@ -96,8 +96,8 @@ public class GameManager{
     }
 
     public String getWinner() { //The winner is the player with the highest score
-        PlayerModel winner = players.values().iterator().next();
-        for(PlayerModel p : players.values()) {
+        Player winner = players.values().iterator().next();
+        for(Player p : players.values()) {
             if(p.getScore() > winner.getScore())
                 winner = p;
             else if(p.getScore().equals(winner.getScore()))
@@ -110,7 +110,7 @@ public class GameManager{
 
     public int getScoreFromWord(String pName, Word w)
     { //Returns the score of the word. Must check boardLegal and dictionaryLegal before using!!!
-        PlayerModel p = players.get(pName);
+        Player p = players.get(pName);
         ArrayList<Tile> tilesFromRack = new ArrayList<>();
         for (int i = 0; i < w.length; i++) //Now we know what tiles are taken from the player
             if(w.tiles[i] != null)
@@ -125,7 +125,7 @@ public class GameManager{
 
     public Word createWordFromClientInput(String pName, final String tiles, final int row,final int col,final boolean vertical)
     { //A word is created from the tiles taken from the player and from the board respectively 
-        PlayerModel p = players.get(pName);
+        Player p = players.get(pName);
         if(p == null)
             return null;
 

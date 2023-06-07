@@ -52,10 +52,10 @@ public class MyLogger {
             board = input.split("&");
         }
             
-        for (String s : board) 
-        {
-            for (int i = 0; i < s.length(); i++)
-                print(s.charAt(i) + " ");
+        for (int i = 0; i < board.length; i++) {
+            print(i + " ");
+            for(int j = 0; j < board.length; j++)
+                print(board[i].charAt(j) + " ");
             println("");
         }
     }
@@ -132,38 +132,6 @@ public class MyLogger {
     {
         logError("Connection to host is lost!");
     }
-
-    // public void useless() {
-
-    //     // Host logging game progress
-    //     log("Waiting for other players to join...");
-    //     log("Maximum amount of players achieved.");
-
-    //     // Game logic and progress updates
-    //     log("Its your turn to play!");
-    //     log("Its dickFace turn to play."); // change
-    //     log("You won the game!");
-    //     log("Player dickFace won the game!"); // change
-
-    //     // Client logging game errors
-    //     logError("Host connection Failed.");
-    //     logError("Connection lost.");
-    //     logError("Connection to player dickFace Failed.");
-    //     logError("Invalid input. Please try again.");
-
-    //     // Host logging game errors
-    //     logError("No players in sight."); // If no one connects the host
-    //     logError("Not enough players to start."); // If the host wants to play alone
-
-    //     // Client game cleanup and exit
-    //     log("Closing connection to the host...");
-    //     log("Connection to host is closed.");
-    //     log("Game ended. Thanks for playing!");
-
-    //     // Host game cleanup and exit
-    //     log("Closing Connections to guests...");
-    //     log("Connections to guests are closed.");
-    // }
 
     public static Scanner getScanner()
     {

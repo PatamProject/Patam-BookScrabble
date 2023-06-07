@@ -134,6 +134,10 @@ public class RunClient{
     private void guestStartMenu()
     {
         System.out.println("Joined game successfully! Waiting for host to start the game...");
+        //TODO: add commands for user
+        //TODO: allow startGame call to close this function using exeptions!
+
+
         //System.out.println("Type '!exit' to close the game.");
         
         // do {

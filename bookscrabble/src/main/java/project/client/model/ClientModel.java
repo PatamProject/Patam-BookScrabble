@@ -25,18 +25,10 @@ public class ClientModel {
             myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
         } catch (Exception e) {
-            MyLogger.logError("Unable to connect to host!");
+            MyLogger.logError("Unable to connect to host! " + e.getMessage());
             return false;
         }  
         return true;
-    }
-
-    public ClientCommunications getMyClientCommunications() {
-        return myConnectionToHost;
-    }
-
-    public MyHostServer getMyHostServer() {
-        return MyHostServer.getHostServer();
     }
 
     public void close()

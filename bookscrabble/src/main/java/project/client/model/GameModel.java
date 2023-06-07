@@ -7,14 +7,12 @@ import project.client.MyLogger;
 
 
 public class GameModel {
-    //PlayerModel myPlayer;
-    String myTiles;
+    String myTiles; //The tiles I have
     HashMap<String,Integer> playersAndScores; //Name of player and their score
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board;
 
     public GameModel() {
-        //myPlayer = new PlayerModel(ClientModel.getName());
         playersOrder = new LinkedList<>(); //Will be updated by startGame
         this.playersAndScores = new HashMap<>();
     }

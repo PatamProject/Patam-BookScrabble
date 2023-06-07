@@ -100,12 +100,12 @@ public class HostSideHandler implements RequestHandler{
             });
     
             //Place a word on the board and query the words created (args[0] = name, args[1] = word, args[2] = row, args[3] = col, args[4] = isVertical) 
-            put("Q", (String[] args) -> handlerBSRequests("Q", args));
-            put("C", (String[] args) -> handlerBSRequests("C",args));
+            put("Q", (String[] args) -> handleBSRequest("Q", args));
+            put("C", (String[] args) -> handleBSRequest("C",args));
         }};
     }
     
-    private void handlerBSRequests(String commandName , String[] args)
+    private void handleBSRequest(String commandName , String[] args)
     {
         Word w = game.createWordFromClientInput(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
         if(w == null) //No word was created from the client input (Not boardLegal)
