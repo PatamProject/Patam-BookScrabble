@@ -84,12 +84,9 @@ public class ClientCommunications{
             try {
                 run();
             } catch (Exception e) {
-                if(e instanceof ConnectException)
-                    try {
-                        throw new ConnectException(e.getMessage());
-                    } catch (ConnectException e2) {}
-                else
-                    throw new RuntimeException(e);
+                try {
+                    throw new ConnectException(e.getMessage());
+                } catch (Exception e1) {}
             }
         }).start();
     }

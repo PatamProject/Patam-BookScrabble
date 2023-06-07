@@ -51,9 +51,12 @@ public class MyLogger {
         } else {
             board = input.split("&");
         }
-            
+        println("   0 1 2 3 4 5 6 7 8 9 1011121314");    
         for (int i = 0; i < board.length; i++) {
-            print(i + " ");
+            if(i < 10)
+                print(i + "  ");
+            else
+                print(i + " ");
             for(int j = 0; j < board.length; j++)
                 print(board[i].charAt(j) + " ");
             println("");
