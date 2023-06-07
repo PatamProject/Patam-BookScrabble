@@ -111,8 +111,8 @@ public class ClientCommunications{
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
-                boolean shouldPlayerWait;
-                if(shouldPlayerWait = requestHandler.game.isItMyTurn()) //My turn and I can now place a word
+                boolean isTryingAgain = false;
+                if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
                     MyLogger.println("It's your turn to play! Enter a word to place or use !skip to skip your turn: ");
                     boolean allowedInput;
@@ -120,7 +120,6 @@ public class ClientCommunications{
                     int row = 0, col = 0; 
                     boolean isVertical = false;
                     boolean skipTurn = false;
-                    shouldPlayerWait = false;
                     do
                     {
                         allowedInput = false;
@@ -208,15 +207,14 @@ public class ClientCommunications{
                                 allowedInput = true;
                                 switch (decision) {
                                     case 1: //Trying again
+                                        isTryingAgain = true;
                                         break;
                                     case 2:
                                         sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
-                                        shouldPlayerWait = true;
                                         break;
                                     case 3:
                                         String challengeMsg = ClientModel.getName() + "&C:" + word + "," + row + "," + col + "," + isVertical;
                                         sendAMessage(requestHandler.getId(), challengeMsg); 
-                                        shouldPlayerWait = true;
                                         break;
                                     default:
                                         allowedInput = false;
@@ -225,12 +223,10 @@ public class ClientCommunications{
                             scanner.nextLine(); //Clear the buffer  
                         } while(!allowedInput);    
                     } //End of if(word was not placed)
-                    else //word was placed
-                        shouldPlayerWait = true;
-                } // End of if(myTurn)
+                } //End of if(my turn)
 
-                if(shouldPlayerWait)
-                        waitForTurn(); //Wait for my turn 
+                if(!isTryingAgain) //Player needs to wait for a reply and not tryingAgain
+                    waitForTurn(); //Wait for my turn 
             } //End of while
         } catch (Exception e) {
             MyLogger.logError("Error in gameStarted(): " + e.getMessage());
