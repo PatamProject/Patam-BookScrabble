@@ -111,8 +111,8 @@ public class ClientCommunications{
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
-                boolean shouldPlayerWait = true;
-                if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
+                boolean shouldPlayerWait;
+                if(shouldPlayerWait = requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
                     MyLogger.println("It's your turn to play! Enter a word to place or use !skip to skip your turn: ");
                     boolean allowedInput;
