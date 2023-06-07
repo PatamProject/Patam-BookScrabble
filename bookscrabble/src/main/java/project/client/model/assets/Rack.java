@@ -47,6 +47,8 @@ public class Rack {
             
             tiles.put(tile, tiles.getOrDefault(tile, 0) + 1);
             sb.append(tile.letter);
+            if(size() == START_SIZE) //if rack is full
+                break;
         }
         return new StringBuilder().toString();
     }

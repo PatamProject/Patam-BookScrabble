@@ -21,10 +21,6 @@ public class GameModel {
         this.board = board;
     }
 
-    public String[] getPlayersAndScores() {
-        return playersAndScores.keySet().toArray(new String[playersAndScores.size()]);
-    }
-
     public void addPlayers(String... players) {
         for (String player : players)
         {
@@ -67,6 +63,11 @@ public class GameModel {
 
     public String getBoard() {
         return board;
+    }
+
+    public HashMap<String,Integer> getPlayersAndScores()
+    {
+        return playersAndScores;
     }
 
     public boolean isItMyTurn()

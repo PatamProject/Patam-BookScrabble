@@ -121,9 +121,10 @@ public class MyLogger {
     public static void failedWordPlacement(int score)
     {
         if(score == 0)
-            println("Invalid word placement! Try again.");
+            println("Invalid word placement!");
         else // score == -1
-            println("Illegal word! Try again.");    
+            println("Illegal word!");    
+        println("You can either try again or skip your turn or challenge the dictionary!");
     }
 
     public static void gameEnded(String player)

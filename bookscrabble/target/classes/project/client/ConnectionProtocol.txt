@@ -13,7 +13,7 @@ Types of commands and their arguments if exist:
 "'id':'name'&leave'" - Player wants to leave the game
 "'id':'name'&'skipTurn'" - Player wants to skip his turn without placing a word
 "'id':'name'&'Q':'word,row,col,isVertical'" - Player wants to place a word
-"'id':'name'&'C'" - Player wants to challenge a failed word placement 
+"'id':'name'&'C':'word,row,col,isVertical'" - Player wants to challenge a failed word placement (args are identical to Q)
 "'id':'name'&'startGame'" - Host wants to start the game
 
 Host to client protocol: The host can either reply to a specific client or send a game update ("!") to all clients 

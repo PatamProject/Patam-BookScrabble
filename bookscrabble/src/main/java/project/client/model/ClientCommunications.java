@@ -66,7 +66,9 @@ public class ClientCommunications{
                     sender = ClientModel.getName();
                 
                 requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream()); 
-            } catch (IOException e) {
+            } catch (RuntimeException | IOException e) {
+                if(e instanceof RuntimeException)
+                    throw new ConnectException("Host disconnected! " + e.getMessage());
                 throw new RuntimeException(e);
             } 
         }
@@ -106,17 +108,18 @@ public class ClientCommunications{
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.myTiles, requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
-            
+            //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    MyLogger.println("It's your turn to play! Enter a word to place: ");
+                    MyLogger.println("It's your turn to play! Enter a word to place or use !skip to skip your turn: ");
                     boolean allowedInput;
                     String word = null;
                     int row = 0, col = 0; 
                     boolean isVertical = false;
                     boolean skipTurn = false;
+                    boolean shouldPlayerWait = false;
                     do
                     {
                         allowedInput = false;
@@ -182,21 +185,66 @@ public class ClientCommunications{
                     } while(!allowedInput);
                     scanner.nextLine(); //Clear the buffer
 
+                    int currentScore = requestHandler.game.getPlayersAndScores().get(ClientModel.getName());
                     String message = ClientModel.getName() + "&Q:" + word + "," + row + "," + col + "," + isVertical;
                     sendAMessage(requestHandler.getId(), message); 
-                    //Wait for the host to reply   
-                }
+                    waitForTurn(); //Wait for my turn  
+                    //When a reply is received, we check if the score changed
+                    if(requestHandler.game.getPlayersAndScores().get(ClientModel.getName()).equals(currentScore)) //word was not placed
+                    { 
+                        MyLogger.println("Choose one of the following:\nEnter 1 to try again.\nEnter 2 to skip your turn\nEnter 3 to challange the dictionary");
+                        do
+                        {
+                            allowedInput = false;
+                            if(scanner.hasNextLine())
+                            {
+                                int decision = scanner.nextInt();
+                                if(decision != 1 && decision != 2 && decision != 3)
+                                {
+                                    MyLogger.println("Illegal input! Try again");
+                                    allowedInput = false;
+                                }
+                                else
+                                {
+                                    allowedInput = true;
+                                    switch (decision) {
+                                        case 1: //Trying again
+                                            break;
+                                        case 2:
+                                            sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
+                                            shouldPlayerWait = true;
+                                            break;
+                                        case 3:
+                                            String challengeMsg = ClientModel.getName() + "&C:" + word + "," + row + "," + col + "," + isVertical;
+                                            sendAMessage(requestHandler.getId(), challengeMsg); 
+                                            shouldPlayerWait = true;
+                                            break;
+                                        default:
+                                            allowedInput = false;
+                                            break;
+                                    }
+                                }
+                            }               
+                        } while(!allowedInput);
+                        scanner.nextLine(); //Clear the buffer    
 
-                waitForTurn(); //Wait for my turn
-            }
+                    } //End of if(word was not placed)
+                    else //word was placed
+                        shouldPlayerWait = true;
+
+                    if(shouldPlayerWait)
+                        waitForTurn(); //Wait for my turn 
+
+                } // End of if(myTurn)
+            } //End of while
         } catch (Exception e) {
-            MyLogger.logError("Error in gameStarted: " + e.getMessage());
+            MyLogger.logError("Error in gameStarted(): " + e.getMessage());
             e.printStackTrace();
         }
         MyLogger.println("Game closed!");
     }
 
-    public static void waitForTurn() {
+    public static void waitForTurn() { // A method that waits for the player's turn
         synchronized (lock) {
             try {
                 lock.wait();
@@ -206,7 +254,7 @@ public class ClientCommunications{
         }
     }
 
-    public static void unlock() {
+    public static void unlock() { //Releases the lock and allows the player to play
         synchronized (lock) {
             lock.notifyAll();
         }
