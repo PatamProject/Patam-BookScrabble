@@ -30,7 +30,7 @@ public class ClientCommunications{
                 MyLogger.println("Client received: " + request);
                 if(request.charAt(0) == '#') //If the host sent an error
                 {
-                    //requestHandler.handleClient("#", request.substring(1), null, null); //Error
+                    //requestHandler.handleClient("#", request, null, null); //Error
                     //TODO
                     toHostSocket.close();
                     throw new ConnectException(request.substring(1));

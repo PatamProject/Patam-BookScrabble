@@ -78,29 +78,81 @@ public class RunClient{
 
     private void hostGame(String name) //First we create MyHostServer, and then we create the client itself
     {
-        System.out.println("Enter the port number you want to host the game on: ");
-        String hostPort = scanner.nextLine();
+        boolean invalidInput;
+        int hostPort, bs_port;
+        String bs_IP;
+        do {
+            invalidInput = false;
+            System.out.println("Enter the port number you want to host the game on: ");
+            String input = scanner.nextLine();
+            hostPort = Integer.parseInt(input);
+            if(hostPort <= 0 || hostPort > 65535)
+            {
+                System.out.println("Invalid port number. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
 
-        System.out.println("You need to connect to the BookScrabble server.");
-        System.out.println("Please enter the BookScrabble Server IP: ");
-        String bs_IP = scanner.nextLine();
+        do {
+            invalidInput = false;
+            System.out.println("You need to connect to the BookScrabble server.");
+            System.out.println("Please enter the BookScrabble Server IP: ");
+            bs_IP = scanner.nextLine();
+            if(bs_IP.length() == 0)
+            {
+                System.out.println("Invalid IP. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
 
-        System.out.println("Please enter the correct port: ");
-        String bs_port = scanner.nextLine();
+        do {
+            invalidInput = false;
+            System.out.println("Please enter the server's port: ");
+            String input = scanner.nextLine();
+            bs_port = Integer.parseInt(input);
+            if(bs_port <= 0 || bs_port > 65535)
+            {
+                System.out.println("Invalid port number. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
 
-        MyHostServer.getHostServer().start(Integer.parseInt(hostPort), Integer.parseInt(bs_port), bs_IP);
+        MyHostServer.getHostServer().start(hostPort, bs_port, bs_IP);
         //Now we create the host itself
-        myClient = new ClientModel(true, "localhost", Integer.parseInt(hostPort), name); 
+        myClient = new ClientModel(true, "localhost", hostPort, name); 
     }
 
     private void joinGame(String name)
     {
-        System.out.println("Enter the host's IP address:");
-        String ip = scanner.nextLine();
-        System.out.println("Enter the host's port number:");
-        String port = scanner.nextLine();
+        String host_ip;
+        int host_port;
+        boolean invalidInput;
+
+        do {
+            invalidInput = false;
+            System.out.println("Enter the host's IP address:");
+            host_ip = scanner.nextLine();
+            if(host_ip.length() == 0)
+            {
+                System.out.println("Invalid IP. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+
+        do {
+            invalidInput = false;
+            System.out.println("Enter the host's port number:");
+            String input = scanner.nextLine();
+            host_port = Integer.parseInt(input);
+            if(host_port <= 0 || host_port > 65535)
+            {
+                System.out.println("Invalid port number. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+
         System.out.println("Connecting to host...");
-        myClient = new ClientModel(false, ip, Integer.parseInt(port) , name); //Guest client
+        myClient = new ClientModel(false, host_ip, host_port , name); //Guest client
     }
 
     private boolean checkConnectionToHost() //Returns true if connected to host
