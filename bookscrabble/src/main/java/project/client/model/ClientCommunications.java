@@ -229,7 +229,6 @@ public class ClientCommunications{
                                         allowedInput = false;
                                 }
                             }            
-                            scanner.nextLine(); //Clear the buffer  
                         } while(!allowedInput);    
                     }
 
