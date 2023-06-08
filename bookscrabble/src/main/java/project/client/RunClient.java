@@ -75,7 +75,7 @@ public class RunClient{
         return false;
     }
 
-    private void hostGame(String name) //First we create MyHostServer and then we create the client itself
+    private void hostGame(String name) //First we create MyHostServer, and then we create the client itself
     {
         System.out.println("Enter the port number you want to host the game on: ");
         String hostPort = scanner.nextLine();
@@ -124,19 +124,24 @@ public class RunClient{
             if(scanner.hasNextLine()) {
                 String input = scanner.nextLine();
 
-                if (input.equals("!start"))
-                exit = MyHostServer.getHostServer().startGame();
-                else if (input.equals("!exit")) {
-                    System.out.println("Exiting...");
-                    myClient.close();
-                    exit = true;
-                } else if(input.equals("!who")){
-                    String[] players = MyHostServer.getHostServer().getConnectedClients();
-                    for(int i = 0; i < players.length; i++)
-                        MyLogger.println((players[i])+ " is connected.");
+                switch (input) {
+                    case "!start":
+                        exit = MyHostServer.getHostServer().startGame();
+                        break;
+                    case "!exit":
+                        System.out.println("Exiting...");
+                        myClient.close();
+                        exit = true;
+                        break;
+                    case "!who":
+                        String[] players = MyHostServer.getHostServer().getConnectedClients();
+                        for (String player : players)
+                            MyLogger.println(player + " is connected.");
+                        break;
+                    default:
+                        System.out.println("Invalid input. Please try again.");
+                        break;
                 }
-                else
-                    System.out.println("Invalid input. Please try again.");   
             }
         } while (!exit); 
     }
