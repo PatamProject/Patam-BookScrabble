@@ -118,13 +118,17 @@ public class MyLogger {
             println("Player " + player + " placed a word and got " + score + " points!");
     }
 
-    public static void failedWordPlacement(int score)
+    public static void failedWordPlacement(int score, boolean isChallenge)
     {
         if(score == 0)
             println("Invalid word placement!");
         else // score == -1
             println("Illegal word!");    
-        println("You can either try again or skip your turn or challenge the dictionary!");
+
+        if(isChallenge)    
+            println("Your challenge has failed! Choose another word!");
+        else
+            println("You can either try again or skip your turn or challenge the dictionary!");
     }
 
     public static void gameEnded(String player)

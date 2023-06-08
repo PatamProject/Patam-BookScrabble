@@ -46,7 +46,7 @@ public class ClientSideHandler implements RequestHandler{
                 Integer score = Integer.parseInt(args[0]);
                 if(score == 0 || score == -1) //Not boardLegal
                 {
-                    MyLogger.failedWordPlacement(score);
+                    MyLogger.failedWordPlacement(score, false);
                     ClientCommunications.unlock();
                 }
                 else //Word was placed successfully
@@ -67,7 +67,7 @@ public class ClientSideHandler implements RequestHandler{
                 if(score == 0 || score == -1) //Not boardLegal
                 {
                     numOfChallenges++;
-                    MyLogger.failedWordPlacement(score);
+                    MyLogger.failedWordPlacement(score, true);
                     ClientCommunications.unlock();
                 } 
                 else //Word was placed successfully

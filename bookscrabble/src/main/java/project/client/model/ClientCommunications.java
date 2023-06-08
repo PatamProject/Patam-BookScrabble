@@ -116,7 +116,7 @@ public class ClientCommunications{
             {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    MyLogger.println("It's your turn to play! Enter a word to place or use !skip to skip your turn: ");
+                    MyLogger.println("Enter a word to place or use !skip to skip your turn: ");
                     boolean skipTurn = false;
                     waitingForReply = false;
                     do
