@@ -33,12 +33,12 @@ public class RunClient{
                 } while (!checkConnectionToHost());
                 guestStartMenu();
 
-                // while(myClient.isConnectedToHost) {
-                //     if (ClientCommunications.getToHostSocket().isClosed()) {
-                //         myClient.isConnectedToHost = false;
-                //         myClient.close();
-                //     }
-                // }
+                 while(myClient.isConnectedToHost) {
+                     if (myClient.getMyConnectionToHost().getToHostSocket().isClosed()) {
+                         myClient.isConnectedToHost = false;
+                         myClient.close();
+                     }
+                 }
             }
         } while (!checkConnectionToHost());
     }
