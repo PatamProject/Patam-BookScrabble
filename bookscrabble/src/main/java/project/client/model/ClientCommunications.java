@@ -89,7 +89,7 @@ public class ClientCommunications{
             try {
                 run();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                MyLogger.logError("Disconnected from host!");
             }
         }).start();
     }

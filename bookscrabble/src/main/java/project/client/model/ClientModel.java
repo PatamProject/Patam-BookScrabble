@@ -26,7 +26,7 @@ public class ClientModel {
             myConnectionToHost.start();
             Thread.sleep(1000);
         } catch (Exception e) {
-            MyLogger.logError("Disconnected from host.");
+            MyLogger.logError("Disconnected from host!");
             close();
             return false;
         }  
