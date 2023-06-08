@@ -3,6 +3,7 @@ package project.client.model;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -10,19 +11,20 @@ import project.client.MyLogger;
 
 public class ClientCommunications{
     private ClientSideHandler requestHandler;
-    private static Socket toHostSocket; // A socket to the host
+    private Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
     private static PrintWriter outToHost;
     private static Object lock = new Object();
 
     public ClientCommunications(String hostIP, int hostPort) throws IOException, InterruptedException { // Ctor
-        toHostSocket = new Socket(hostIP, hostPort);
+        toHostSocket = new Socket();
+        toHostSocket.connect(new InetSocketAddress(hostIP, hostPort), 5000);
         outToHost = new PrintWriter(toHostSocket.getOutputStream());
         requestHandler = new ClientSideHandler(outToHost);
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
     
-    public void run() throws ConnectException { // A method that consistently receives messages from the host
+    public void run() throws RuntimeException { // A method that consistently receives messages from the host
         sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
@@ -30,8 +32,8 @@ public class ClientCommunications{
                 MyLogger.println("Client received: " + request);
                 if(request.charAt(0) == '#') //If the host sent an error
                 {
-                    //requestHandler.handleClient("#", request, null, null); //Error
-                    //TODO
+                    requestHandler.handleClient("#", request, null, null); //Error
+                    
                     toHostSocket.close();
                     throw new ConnectException(request.substring(1));
                 }
@@ -57,6 +59,7 @@ public class ClientCommunications{
                                     lock.wait();
                                 } catch (InterruptedException e) {
                                     MyLogger.logError("Unable to unlock!");
+                                    throw new RuntimeException(e);
                                 }
                             }
                             new Thread(this::gameStarted).start();
@@ -69,8 +72,6 @@ public class ClientCommunications{
                 
                 requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream()); 
             } catch (RuntimeException | IOException e) {
-                if(e instanceof RuntimeException)
-                    throw new ConnectException(e.getMessage());
                 throw new RuntimeException(e);
             } 
         }
@@ -83,14 +84,12 @@ public class ClientCommunications{
         outToHost.flush();
     }
 
-    public void start() throws ConnectException{
+    public void start() throws RuntimeException{
         new Thread(()-> {
             try {
                 run();
             } catch (Exception e) {
-                try {
-                    throw new ConnectException(e.getMessage());
-                } catch (Exception e1) {}
+                throw new RuntimeException(e);
             }
         }).start();
     }
@@ -260,9 +259,5 @@ public class ClientCommunications{
         synchronized (lock) {
             lock.notifyAll();
         }
-    }
-
-    public static Socket getToHostSocket() {
-        return toHostSocket;
     }
 }

@@ -26,7 +26,8 @@ public class ClientModel {
             myConnectionToHost.start();
             Thread.sleep(1000);
         } catch (Exception e) {
-            MyLogger.logError("Unable to connect to host!\n" + e.getMessage());
+            MyLogger.logError("Disconnected from host.");
+            close();
             return false;
         }  
         return true;
@@ -36,7 +37,8 @@ public class ClientModel {
     {
         if(myHostServer != null)
             myHostServer.close();
-        myConnectionToHost.close();
+        if(myConnectionToHost != null)    
+            myConnectionToHost.close();
     }
     
     public static String getName(){return myName;}
