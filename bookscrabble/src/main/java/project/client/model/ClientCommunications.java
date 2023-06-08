@@ -10,7 +10,7 @@ import project.client.MyLogger;
 
 public class ClientCommunications{
     private ClientSideHandler requestHandler;
-    private Socket toHostSocket; // A socket to the host
+    private static Socket toHostSocket; // A socket to the host
     private Scanner inFromHost;
     private static PrintWriter outToHost;
     private static Object lock = new Object();
@@ -30,7 +30,9 @@ public class ClientCommunications{
                 MyLogger.println("Client received: " + request);
                 if(request.charAt(0) == '#') //If the host sent an error
                 {
-                    requestHandler.handleClient("#", request.substring(1), null, null); //Error
+                    //requestHandler.handleClient("#", request.substring(1), null, null); //Error
+                    //TODO
+                    toHostSocket.close();
                     throw new ConnectException(request.substring(1));
                 }
                     
@@ -57,7 +59,7 @@ public class ClientCommunications{
                                     MyLogger.logError("Unable to unlock!");
                                 }
                             }
-                            new Thread(()-> gameStarted()).start();
+                            new Thread(this::gameStarted).start();
                         }
                         continue;
                     }
@@ -68,7 +70,7 @@ public class ClientCommunications{
                 requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream()); 
             } catch (RuntimeException | IOException e) {
                 if(e instanceof RuntimeException)
-                    throw new ConnectException("Host disconnected! " + e.getMessage());
+                    throw new ConnectException(e.getMessage());
                 throw new RuntimeException(e);
             } 
         }
@@ -125,7 +127,7 @@ public class ClientCommunications{
                         if(scanner.hasNextLine())
                         {
                             word = scanner.nextLine();
-                            if(word.equals("!skip") || word.equals("!skipTurn") || word.equals("!skipturn") || word.equals("!skip turn"))
+                            if(word.equals("!skip"))
                             {
                                 sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
                                 skipTurn = true;
@@ -190,7 +192,7 @@ public class ClientCommunications{
                     waitingForReply = true;
                 } //End of if(myTurn)
 
-                waitForTurn(); //Wait for my turn / Wait for a reply
+                waitForReply(); //Wait for my turn / Wait for a reply
 
                 if(waitingForReply)
                 {
@@ -233,7 +235,7 @@ public class ClientCommunications{
                     }
 
                     if(shouldPlayerWaitAgain)
-                        waitForTurn(); //Wait for my turn / Wait for a reply
+                        waitForReply(); //Wait for my turn / Wait for a reply
                 }
 
             } //End of while
@@ -244,7 +246,7 @@ public class ClientCommunications{
         MyLogger.println("Game closed!");
     }
 
-    public static void waitForTurn() { // A method that waits for the player's turn
+    public static void waitForReply() { // A method that waits for the player's turn
         synchronized (lock) {
             try {
                 lock.wait();
@@ -258,5 +260,9 @@ public class ClientCommunications{
         synchronized (lock) {
             lock.notifyAll();
         }
+    }
+
+    public static Socket getToHostSocket() {
+        return toHostSocket;
     }
 }

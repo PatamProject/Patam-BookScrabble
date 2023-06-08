@@ -1,9 +1,11 @@
 package project.client;
 
+import project.client.model.ClientCommunications;
 import project.client.model.ClientModel;
 import project.client.model.MyHostServer;
 
 import java.util.Scanner;
+
 
 public class RunClient{
     static ClientModel myClient;
@@ -12,25 +14,34 @@ public class RunClient{
 
     public RunClient() // always running
     {
-        String name = getPlayerName();
-        boolean isHost = chooseIfHost();
+        do {
+            String name = getPlayerName();
+            boolean isHost = chooseIfHost();
 
-        if(isHost)
-        {
-            do
+            if(isHost)
             {
-                hostGame(name); 
-            } while (!checkConnectionToHost()); 
-            hostStartMenu();
-        }
-        else
-        {
-            do {
-                joinGame(name);
-            } while (!checkConnectionToHost()); 
-            guestStartMenu();
-        }     
-    } 
+                do
+                {
+                    hostGame(name);
+                } while (!checkConnectionToHost());
+                hostStartMenu();
+            }
+            else
+            {
+                do {
+                    joinGame(name);
+                } while (!checkConnectionToHost());
+                guestStartMenu();
+
+                while(myClient.isConnectedToHost) {
+                    if (ClientCommunications.getToHostSocket().isClosed()) {
+                        myClient.isConnectedToHost = false;
+                        myClient.close();
+                    }
+                }
+            }
+        } while (!checkConnectionToHost());
+    }
     
     private String getPlayerName()
     {
@@ -65,7 +76,7 @@ public class RunClient{
         return false;
     }
 
-    private void hostGame(String name) //First we create MyHostServer and then we create the client itself
+    private void hostGame(String name) //First we create MyHostServer, and then we create the client itself
     {
         System.out.println("Enter the port number you want to host the game on: ");
         String hostPort = scanner.nextLine();
@@ -109,24 +120,27 @@ public class RunClient{
         System.out.println("Created game lobby successfully! Waiting for other players to join...");
         System.out.println("Type '!start' to begin the game, '!exit' to close or '!who' to see who's connected.");
         System.out.println("Remember, a game is played with 2-4 players.");
-        
-        do {
-            if(scanner.hasNextLine()) {
-                String input = scanner.nextLine();
 
-                if (input.equals("!start"))
-                exit = MyHostServer.getHostServer().startGame();
-                else if (input.equals("!exit")) {
+        do {
+            String input = scanner.nextLine();
+            switch (input) {
+                case "!start":
+                    exit = MyHostServer.getHostServer().startGame();
+                    break;
+                case "!exit":
                     System.out.println("Exiting...");
                     myClient.close();
+                    MyLogger.close();
                     exit = true;
-                } else if(input.equals("!who")){
+                    break;
+                case "!who":
                     String[] players = MyHostServer.getHostServer().getConnectedClients();
-                    for(int i = 0; i < players.length; i++)
-                        MyLogger.println((players[i])+ " is connected.");
-                }
-                else
-                    System.out.println("Invalid input. Please try again.");   
+                    for (String player : players)
+                        MyLogger.println(player + " is connected.");
+                    break;
+                default:
+                    System.out.println("Invalid input. Please try again.");
+                    break;
             }
         } while (!exit); 
     }

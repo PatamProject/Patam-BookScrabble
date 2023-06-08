@@ -14,7 +14,7 @@ import project.client.Error_Codes;
 import project.client.MyLogger;
 
 public class MyHostServer{
-    private static MyHostServer myHostServer = null; //singelton
+    private static MyHostServer myHostServer = null; //singleton
     private HostSideHandler requestHandler;
     HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
     ExecutorService threadPool;
@@ -29,7 +29,7 @@ public class MyHostServer{
     {
         if(myHostServer != null)
             return myHostServer;
-            myHostServer = new MyHostServer();    
+        myHostServer = new MyHostServer();    
         return myHostServer;
     }
 
@@ -164,14 +164,11 @@ public class MyHostServer{
                 }};
 
 
-                if(!sender.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) 
-                { //Host only commands
+                if(!sender.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) //Host only commands
                     throwError(Error_Codes.ACCESS_DENIED, out);
-                    continue;  
-                } else if (commandName.equals("startGame") && connectedClients.size() < 2) 
-                {
-                    throwError(Error_Codes.NOT_ENOUGH_PLAYERS, out);
-                } else if(commandName.equals("leave")){
+                else if (commandName.equals("startGame") && connectedClients.size() < 2) 
+                    throwError(Error_Codes.NOT_ENOUGH_PLAYERS, out);  
+                else if(commandName.equals("leave")){ //Player wants to leave
                     requestHandler.handleClient(sender, commandName, args ,clientSocket.getOutputStream());
                     break;
                 } else if(acceptableCommands.contains(commandName)) //Known command
@@ -296,10 +293,7 @@ public class MyHostServer{
         }
     }
 
-    public String[] getConnectedClients()
-    {
-        return connectedClients.keySet().toArray(new String[connectedClients.size()]);
-    }
+    public String[] getConnectedClients(){return connectedClients.keySet().toArray(new String[connectedClients.size()]);}
 
     public void close() // A method to close the hostServer
     {

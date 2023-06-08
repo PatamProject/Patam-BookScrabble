@@ -70,23 +70,17 @@ public class MyLogger {
         println("");    
     }
 
-    public static void playerJoined(String name)
-    {
-        println("Player " + name + " has joined the game!");
-    }
+    public static void playerJoined(String name){println("Player " + name + " has joined the game!");}
 
-    public static void playertLeft(String name)
-    {
-        println("Player " + name + " has left the game!");
-    }
+    public static void playerLeft(String name) {println("Player " + name + " has left the game!");}
 
     public static void gameStarted(String tiles, String... players) //First player to play is the first in the list
     {
         println("Game started!");
         println("Player " + players[0] + " is playing first!");
         HashMap<String, Integer> startingScores = new HashMap<>();
-        for (int i = 0; i < players.length; i++)
-            startingScores.put(players[i], 0);
+        for (String player : players)
+            startingScores.put(player, 0);
             
         printPlayerAndScore(startingScores);
         printBoard(null); //Print empty board
@@ -99,10 +93,7 @@ public class MyLogger {
             println(name + " has " + players.get(name) + " points!");
     }
 
-    public static void nextPlayer(String nextPlayer)
-    {
-        println("Player " + nextPlayer + " is playing now!");
-    }
+    public static void nextPlayer(String nextPlayer){ println("Player " + nextPlayer + " is playing now!");}
 
     public static void playerPlacedWord(String player, int score, String commandName)
     {
@@ -131,24 +122,11 @@ public class MyLogger {
             println("You can either try again or skip your turn or challenge the dictionary!");
     }
 
-    public static void gameEnded(String player)
-    {
-        println("Player " + player + " won the game!");
-    }
+    public static void gameEnded(String player) {println("Player " + player + " won the game!");}
 
-    public static void disconnectedFromHost()
-    {
-        logError("Connection to host is lost!");
-    }
+    public static void disconnectedFromHost() {logError("Connection to host is lost!");}
 
-    public static Scanner getScanner()
-    {
-        return myScanner;
-    }
+    public static Scanner getScanner() { return myScanner;}
 
-    public static void close()
-    {
-        myScanner.close();
-    }
-    
+    public static void close() {myScanner.close();}  
 }
