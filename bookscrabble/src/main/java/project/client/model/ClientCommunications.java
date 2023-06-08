@@ -105,22 +105,20 @@ public class ClientCommunications{
     public void gameStarted()
     {
         int BOARD_SIZE = 15;
+        boolean waitingForReply = false, allowedInput, isVertical = false;
+        int currentScore = 0, row = 0, col = 0;
+        String word = null;
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.myTiles, requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
-                boolean isTryingAgain = true;
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
                     MyLogger.println("It's your turn to play! Enter a word to place or use !skip to skip your turn: ");
-                    boolean allowedInput;
-                    String word = null;
-                    int row = 0, col = 0; 
-                    boolean isVertical = false;
                     boolean skipTurn = false;
-                    isTryingAgain = false;
+                    waitingForReply = false;
                     do
                     {
                         allowedInput = false;
@@ -186,19 +184,27 @@ public class ClientCommunications{
                     } while(!allowedInput);
                     scanner.nextLine(); //Clear the buffer
 
-                    int currentScore = requestHandler.game.getPlayersAndScores().get(ClientModel.getName());
+                    currentScore = requestHandler.game.getPlayersAndScores().get(ClientModel.getName()); //We save the current score to check if it changed after trying to place the word
                     String message = ClientModel.getName() + "&Q:" + word + "," + row + "," + col + "," + isVertical;
                     sendAMessage(requestHandler.getId(), message); 
-                    waitForTurn(); //Wait for my turn  
-                    //When a reply is received, we check if the score changed
-                    if(requestHandler.game.getPlayersAndScores().get(ClientModel.getName()).equals(currentScore)) //word was not placed
-                    { 
+                    waitingForReply = true;
+                } //End of if(myTurn)
+
+                waitForTurn(); //Wait for my turn / Wait for a reply
+
+                if(waitingForReply)
+                {
+                    boolean shouldPlayerWaitAgain = false;
+                    int updatedScore = requestHandler.game.getPlayersAndScores().get(ClientModel.getName());
+                    if(currentScore == updatedScore) //word was not placed since the score did not change
+                    {
                         MyLogger.println("Choose one of the following:\nEnter 1 to try again.\nEnter 2 to skip your turn\nEnter 3 to challange the dictionary");
                         do
                         {
                             allowedInput = false;
-                            int decision = scanner.nextInt();
-                            if(decision != 1 && decision != 2 && decision != 3)
+                            String decision = scanner.nextLine();
+                            int res = Integer.parseInt(decision);
+                            if(res != 1 && res != 2 && res != 3)
                             {
                                 MyLogger.println("Illegal input! Try again");
                                 allowedInput = false;
@@ -206,18 +212,18 @@ public class ClientCommunications{
                             else
                             {
                                 allowedInput = true;
-                                switch (decision) {
+                                switch (res) {
                                     case 1: //Trying again
-                                        isTryingAgain = true;
+                                        shouldPlayerWaitAgain = false; //Player should not wait since he wants to try again
                                         break;
-                                    case 2:
-                                        isTryingAgain = false;
+                                    case 2: //Skipping turn
                                         sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
+                                        shouldPlayerWaitAgain = true;
                                         break;
-                                    case 3:
-                                        isTryingAgain = false;
+                                    case 3: //Challenging the dictionary
                                         String challengeMsg = ClientModel.getName() + "&C:" + word + "," + row + "," + col + "," + isVertical;
                                         sendAMessage(requestHandler.getId(), challengeMsg); 
+                                        shouldPlayerWaitAgain = true;
                                         break;
                                     default:
                                         allowedInput = false;
@@ -225,13 +231,12 @@ public class ClientCommunications{
                             }            
                             scanner.nextLine(); //Clear the buffer  
                         } while(!allowedInput);    
-                    } //End of if(word was not placed)
-                    else //word was placed
-                        isTryingAgain = false;
-                } //End of if(my turn)
+                    }
 
-                if(!isTryingAgain) //Player needs to wait for a reply and not tryingAgain
-                    waitForTurn(); //Wait for my turn 
+                    if(shouldPlayerWaitAgain)
+                        waitForTurn(); //Wait for my turn / Wait for a reply
+                }
+
             } //End of while
         } catch (Exception e) {
             MyLogger.logError("Error in gameStarted(): " + e.getMessage());
