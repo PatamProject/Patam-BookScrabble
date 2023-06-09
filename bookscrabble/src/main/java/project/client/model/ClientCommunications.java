@@ -30,7 +30,8 @@ public class ClientCommunications{
             try {
                 run();
             } catch (Exception e) {
-                throw new RuntimeException(e); //Disconnected from host
+                MyLogger.logError("Disconnected from host!");
+                close();
             }
         }).start();
     }
