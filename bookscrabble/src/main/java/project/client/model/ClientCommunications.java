@@ -23,7 +23,13 @@ public class ClientCommunications{
         requestHandler = new ClientSideHandler(outToHost);
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
-    
+
+    public void start() throws RuntimeException{
+        new Thread(()-> {
+            run();
+        }).start();
+    }
+
     public void run() throws RuntimeException { // A method that consistently receives messages from the host
         sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
@@ -84,12 +90,6 @@ public class ClientCommunications{
         outToHost.flush();
     }
 
-    public void start() throws RuntimeException{
-        new Thread(()-> {
-            run();
-        }).start();
-    }
-    
     public void close() { // Closing the connection to the host
         try {
             inFromHost.close();
@@ -103,8 +103,8 @@ public class ClientCommunications{
     {
         int BOARD_SIZE = 15;
         boolean waitingForReply = false, allowedInput, isVertical = false;
-        int currentScore = 0, row = 0, col = 0;
-        String word = null;
+        int currentScore = 0, row = 0, col = 0, myID = requestHandler.getId();
+        String word = null, myName = ClientModel.getName();
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.myTiles, requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
@@ -113,7 +113,12 @@ public class ClientCommunications{
             {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    MyLogger.println("Enter a word to place or use !skip to skip your turn: ");
+                    if (myID == 1)
+                        MyLogger.println("Write '!exit' to finish the game.");
+                    else
+                        MyLogger.println("Write '!exit' to quit the game.");
+
+                    MyLogger.println("Enter a word to place or write '!skip' to skip your turn: ");
                     boolean skipTurn = false;
                     waitingForReply = false;
                     do
@@ -124,10 +129,16 @@ public class ClientCommunications{
                             word = scanner.nextLine();
                             if(word.equals("!skip"))
                             {
-                                sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
+                                sendAMessage(myID, myName + "&skipTurn");
                                 skipTurn = true;
                                 continue;
                             }
+//                            if(word.equals("!exit")) {
+//                                sendAMessage(myID, myID == 1 ? myName + "&endGame" : myName + "&leave");
+//                                //requestHandler.isGameRunning = false;
+//                                toHostSocket.close();
+//                                continue;
+//                            }
                             word = word.toUpperCase();
                             if(!requestHandler.game.isStringLegal(word.toCharArray()))
                             {
@@ -181,9 +192,9 @@ public class ClientCommunications{
                     } while(!allowedInput);
                     scanner.nextLine(); //Clear the buffer
 
-                    currentScore = requestHandler.game.getPlayersAndScores().get(ClientModel.getName()); //We save the current score to check if it changed after trying to place the word
-                    String message = ClientModel.getName() + "&Q:" + word + "," + row + "," + col + "," + isVertical;
-                    sendAMessage(requestHandler.getId(), message); 
+                    currentScore = requestHandler.game.getPlayersAndScores().get(myName); //We save the current score to check if it changed after trying to place the word
+                    String message = myName + "&Q:" + word + "," + row + "," + col + "," + isVertical;
+                    sendAMessage(myID, message);
                     waitingForReply = true;
                 } //End of if(myTurn)
 
@@ -192,10 +203,10 @@ public class ClientCommunications{
                 if(waitingForReply)
                 {
                     boolean shouldPlayerWaitAgain = false;
-                    int updatedScore = requestHandler.game.getPlayersAndScores().get(ClientModel.getName());
+                    int updatedScore = requestHandler.game.getPlayersAndScores().get(myName);
                     if(currentScore == updatedScore) //word was not placed since the score did not change
                     {
-                        MyLogger.println("Choose one of the following:\nEnter 1 to try again.\nEnter 2 to skip your turn\nEnter 3 to challange the dictionary");
+                        MyLogger.println("Choose one of the following:\nEnter 1 to try again.\nEnter 2 to skip your turn\nEnter 3 to challenge the dictionary");
                         do
                         {
                             allowedInput = false;
@@ -214,12 +225,12 @@ public class ClientCommunications{
                                         shouldPlayerWaitAgain = false; //Player should not wait since he wants to try again
                                         break;
                                     case 2: //Skipping turn
-                                        sendAMessage(requestHandler.getId(), ClientModel.getName() +"&skipTurn");
+                                        sendAMessage(myID, myName +"&skipTurn");
                                         shouldPlayerWaitAgain = true;
                                         break;
                                     case 3: //Challenging the dictionary
-                                        String challengeMsg = ClientModel.getName() + "&C:" + word + "," + row + "," + col + "," + isVertical;
-                                        sendAMessage(requestHandler.getId(), challengeMsg); 
+                                        String challengeMsg = myName + "&C:" + word + "," + row + "," + col + "," + isVertical;
+                                        sendAMessage(myID, challengeMsg);
                                         shouldPlayerWaitAgain = true;
                                         break;
                                     default:
@@ -256,4 +267,6 @@ public class ClientCommunications{
             lock.notifyAll();
         }
     }
+
+    public Socket getToHostSocket() { return toHostSocket;}
 }

@@ -42,4 +42,5 @@ public class ClientModel {
     }
     
     public static String getName(){return myName;}
+    public ClientCommunications getMyConnectionToHost() {return myConnectionToHost;}
 }
