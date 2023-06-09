@@ -126,7 +126,12 @@ public class MyLogger {
 
     public static void disconnectedFromHost() {logError("Connection to host is lost!");}
 
-    public static Scanner getScanner() { return myScanner;}
+    public static Scanner getScanner()
+    { 
+        if(myScanner == null)
+            myScanner = new Scanner(System.in);
+        return myScanner;
+    }
 
     public static void close() {myScanner.close();}  
 }

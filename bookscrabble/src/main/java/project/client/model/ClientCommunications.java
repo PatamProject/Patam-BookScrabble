@@ -31,7 +31,6 @@ public class ClientCommunications{
             try {
                 run();
             } catch (Exception e) {
-                close();
                 RunClient.disconnectedFromHost();
             }
         }).start();

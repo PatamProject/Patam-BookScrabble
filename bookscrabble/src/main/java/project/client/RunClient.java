@@ -221,6 +221,8 @@ public class RunClient{
             exit = false;
             myClient.close();
             myClient = null;
+            MyLogger.close();
+            scanner = MyLogger.getScanner();
             String input = scanner.nextLine();
             if (input.equals("1")) {
                 MyLogger.println("Restarting game...");
