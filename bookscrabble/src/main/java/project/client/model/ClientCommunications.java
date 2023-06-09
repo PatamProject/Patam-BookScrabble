@@ -77,8 +77,8 @@ public class ClientCommunications{
                     sender = ClientModel.getName();
                 
                 requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream()); 
-            } catch (RuntimeException | IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
             } 
         }
         MyLogger.disconnectedFromHost();
