@@ -86,11 +86,7 @@ public class ClientCommunications{
 
     public void start() throws RuntimeException{
         new Thread(()-> {
-            try {
-                run();
-            } catch (Exception e) {
-                MyLogger.logError("Disconnected from host!");
-            }
+            run();
         }).start();
     }
     

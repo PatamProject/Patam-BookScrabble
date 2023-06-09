@@ -1,6 +1,5 @@
 package project.client;
 
-import project.client.model.ClientCommunications;
 import project.client.model.ClientModel;
 import project.client.model.MyHostServer;
 
@@ -32,13 +31,6 @@ public class RunClient{
                     joinGame(name);
                 } while (!checkConnectionToHost());
                 guestStartMenu();
-
-                // while(myClient.isConnectedToHost) {
-                //     if (ClientCommunications.getToHostSocket().isClosed()) {
-                //         myClient.isConnectedToHost = false;
-                //         myClient.close();
-                //     }
-                // }
             }
         } while (!checkConnectionToHost());
     }
