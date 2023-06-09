@@ -196,33 +196,35 @@ public class RunClient{
         //TODO: allow startGame call to close this function using exeptions!
 
 
-        System.out.println("Type '!exit' to close the game.");
+        // System.out.println("Type '!exit' to close the game.");
         
-        do {
-            if(scanner.hasNextLine()) {
-                String input = scanner.nextLine();
-                if (input.equals("exit")) {
-                    System.out.println("Exiting...");
-                    myClient.close();
-                    exit = true;
-                } else {
-                    System.out.println("Invalid input. Please try again.");
-                }
-            }
-        } while (!exit);
-        MyLogger.println("Client out of manu.");
+        // do {
+        //     if(scanner.hasNextLine()) {
+        //         String input = scanner.nextLine();
+        //         if (input.equals("exit")) {
+        //             System.out.println("Exiting...");
+        //             myClient.close();
+        //             exit = true;
+        //         } else {
+        //             System.out.println("Invalid input. Please try again.");
+        //         }
+        //     }
+        // } while (!exit);
+        // MyLogger.println("Client out of manu.");
     }
 
     public static void disconnectedFromHost()
     {
         MyLogger.println("Disconnected from host.");
         MyLogger.println("Choose 1 to play again or 2 to exit the game.");
+
+        myClient.close();
+        myClient = null;
+        scanner = MyLogger.getScanner();
+
+
         do {
             exit = false;
-            myClient.close();
-            myClient = null;
-            MyLogger.close();
-            scanner = MyLogger.getScanner();
             String input = scanner.nextLine();
             if (input.equals("1")) {
                 MyLogger.println("Restarting game...");
