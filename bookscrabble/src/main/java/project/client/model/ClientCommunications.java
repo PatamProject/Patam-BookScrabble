@@ -78,7 +78,9 @@ public class ClientCommunications{
                     sender = ClientModel.getName();
                 
                 requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream()); 
-            } catch (IOException e) {
+            } catch (NoSuchElementException | IOException e) {
+                if(e instanceof NoSuchElementException)
+                    throw new NoSuchElementException(); //Disconnected from host
                 e.printStackTrace();
             } 
         }
