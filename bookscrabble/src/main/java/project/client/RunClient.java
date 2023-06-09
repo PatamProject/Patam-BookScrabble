@@ -219,14 +219,15 @@ public class RunClient{
         MyLogger.println("Choose 1 to play again or 2 to exit the game.");
         do {
             exit = false;
-            String input = scanner.nextLine();
             myClient.close();
             myClient = null;
+            String input = scanner.nextLine();
             if (input.equals("1")) {
                 MyLogger.println("Restarting game...");
                 exit = true;
             } else if (input.equals("2")) {
                 MyLogger.println("Exiting...");
+                MyLogger.close();
                 return; //Exit the game
             } else
                 MyLogger.println("Invalid input. Please try again."); 
