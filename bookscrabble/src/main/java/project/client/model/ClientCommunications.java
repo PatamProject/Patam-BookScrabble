@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import project.client.MyLogger;
@@ -24,13 +25,13 @@ public class ClientCommunications{
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
 
-    public void start() throws RuntimeException{
+    public void start() throws RuntimeException, NoSuchElementException{
         new Thread(()-> {
             run();
         }).start();
     }
 
-    public void run() throws RuntimeException { // A method that consistently receives messages from the host
+    public void run() throws RuntimeException , NoSuchElementException { // A method that consistently receives messages from the host
         sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             try {
