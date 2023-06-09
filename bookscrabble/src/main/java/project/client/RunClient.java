@@ -37,7 +37,7 @@ public class RunClient{
     
     private String getPlayerName()
     {
-        System.out.println("Welcome to the game!");
+        System.out.println("Welcome to BookScrabble!");
         System.out.println("Please enter your name: ");
         String name;
         do {
@@ -211,5 +211,26 @@ public class RunClient{
         //     }
         // } while (!exitUponGameStartOrGameClosed);
         // MyLogger.println("Client out of manu.");
+    }
+
+    public static void disconnectedFromHost()
+    {
+        MyLogger.println("Disconnected from host.");
+        MyLogger.println("Choose 1 to play again or 2 to exit the game.");
+        do {
+            exit = false;
+            String input = scanner.nextLine();
+            myClient.close();
+            myClient = null;
+            if (input.equals("1")) {
+                MyLogger.println("Restarting game...");
+                exit = true;
+            } else if (input.equals("2")) {
+                MyLogger.println("Exiting...");
+                return; //Exit the game
+            } else
+                MyLogger.println("Invalid input. Please try again."); 
+        } while (exit);
+        new RunClient(); //Restart the game
     }
 }

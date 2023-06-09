@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import project.client.MyLogger;
+import project.client.RunClient;
 
 public class ClientCommunications{
     private ClientSideHandler requestHandler;
@@ -30,8 +31,8 @@ public class ClientCommunications{
             try {
                 run();
             } catch (Exception e) {
-                MyLogger.logError("Disconnected from host!");
                 close();
+                RunClient.disconnectedFromHost();
             }
         }).start();
     }
