@@ -11,6 +11,7 @@ format = ('id':'senderName'&'commandName':'arg1','arg2','arg3'...)
 Types of commands and their arguments if exist: 
 "'id':'name'&join'" - Player wants to join the game
 "'id':'name'&leave'" - Player wants to leave the game
+"'id':'name'&'endGame'" - Host wants to end the game (Host only command)
 "'id':'name'&'skipTurn'" - Player wants to skip his turn without placing a word
 "'id':'name'&'Q':'word,row,col,isVertical'" - Player wants to place a word
 "'id':'name'&'C':'word,row,col,isVertical'" - Player wants to challenge a failed word placement (args are identical to Q)
@@ -32,6 +33,7 @@ Types of commands and their return values: (Errors are also handled by the clien
 "!skipTurn:'nextPlayer'" - Player skipped his turn
 "!board:'board'" - The board was updated (board = String[])
 "!startGame:'tiles','player1,player2..." - The game started and each player got 'tiles' tiles (This is sent to each player individually) and the order of the players
+"!endGame:'winner'" - The game ended and the winner is 'winner'
 
 Error codes:
 200 - Unknown command

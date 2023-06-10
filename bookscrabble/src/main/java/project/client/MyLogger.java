@@ -70,6 +70,8 @@ public class MyLogger {
         println("");    
     }
 
+    public static void joinedGame() {println("Joined game successfully!\nWaiting for the host to start the game!");}
+
     public static void playerJoined(String name){println("Player " + name + " has joined the game!");}
 
     public static void playerLeft(String name) {println("Player " + name + " has left the game!");}
@@ -77,6 +79,7 @@ public class MyLogger {
     public static void gameStarted(String tiles, String... players) //First player to play is the first in the list
     {
         println("Game started!");
+        println("Use !help to see all available commands!");
         println("Player " + players[0] + " is playing first!");
         HashMap<String, Integer> startingScores = new HashMap<>();
         for (String player : players)

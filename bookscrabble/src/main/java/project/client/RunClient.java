@@ -161,7 +161,7 @@ public class RunClient{
 
     private void hostStartMenu()
     {
-        System.out.println("Created game lobby successfully! Waiting for other players to join...");
+        System.out.println("You have created a game lobby! Waiting for other players to join...");
         System.out.println("Type '!start' to begin the game, '!exit' to close or '!who' to see who's connected.");
         System.out.println("Remember, a game is played with 2-4 players.");
 
@@ -221,7 +221,6 @@ public class RunClient{
         myClient.close();
         myClient = null;
         scanner = MyLogger.getScanner();
-
 
         do {
             exit = false;

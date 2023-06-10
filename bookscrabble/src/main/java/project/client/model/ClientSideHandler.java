@@ -13,15 +13,17 @@ import java.util.function.Consumer;
 // This class is used to handle the host's responses
 public class ClientSideHandler implements RequestHandler{
     GameModel game;
-    public PrintWriter out;
+    PrintWriter out;
     private Map<String, Consumer<String[]>> commandHandler;
     private Map<String, Consumer<String[]>> responseHandler;
     private Map<String, Consumer<String[]>> errorHandler;
+    private String myName;
     private int id = 0;
     private int numOfChallenges = 0;
     boolean isGameRunning = false;
 
     public ClientSideHandler(PrintWriter out) {
+        myName = ClientModel.getName();
         game = new GameModel();
         this.out = out;
 
@@ -34,10 +36,13 @@ public class ClientSideHandler implements RequestHandler{
                 String[] connectedPlayers = new String[args.length - 1];
                 System.arraycopy(args, 1, connectedPlayers, 0, args.length - 1);
                 
-                game.addPlayers(ClientModel.getName()); //Add myself to the game
+                game.addPlayers(myName); //Add myself to the game
                 game.addPlayers(connectedPlayers); //Add the rest of existing players
                 for (String p : connectedPlayers)
                     MyLogger.playerJoined(p);
+
+                if(id != 1) //Not the host
+                    MyLogger.joinedGame();         
             });
     
             //Tried to place a word on the board
@@ -51,10 +56,10 @@ public class ClientSideHandler implements RequestHandler{
                 }
                 else //Word was placed successfully
                 {
-                    game.updateScore(ClientModel.getName(), score); //Update score
+                    game.updateScore(myName, score); //Update score
                     game.myTiles = args[1]; //Updated the tiles
                     game.nextTurn(); //Next turn
-                    MyLogger.playerPlacedWord(ClientModel.getName(), score, "Q");
+                    MyLogger.playerPlacedWord(myName, score, "Q");
                     MyLogger.printTiles(game.myTiles); //Print my tiles
                 }
             });
@@ -72,10 +77,10 @@ public class ClientSideHandler implements RequestHandler{
                 } 
                 else //Word was placed successfully
                 {
-                    game.updateScore(ClientModel.getName(), score); //Update score
+                    game.updateScore(myName, score); //Update score
                     game.myTiles = args[1]; //Updated the tiles
                     game.nextTurn(); //Next turn
-                    MyLogger.playerPlacedWord(ClientModel.getName(), score, "C");
+                    MyLogger.playerPlacedWord(myName, score, "C");
                     MyLogger.printTiles(game.myTiles); //Print my tiles
                 }
             }); 
@@ -134,7 +139,6 @@ public class ClientSideHandler implements RequestHandler{
             put("!skipTurn", (String[] args) -> 
             { 
                 game.nextTurn();
-                MyLogger.println("It's " + args[0] + "'s turn!");
             });
     
             //A player placed a word on the board
@@ -206,7 +210,7 @@ public class ClientSideHandler implements RequestHandler{
 
     @Override
     public void handleClient(String sender, String commandName, String[] args, OutputStream outToClient) {
-        if(sender.equals(ClientModel.getName())) //A response to a command sent by this client
+        if(sender.equals(myName)) //A response to a command sent by this client
             responseHandler.get(commandName).accept(args);
         else if(sender.charAt(0) == '!') //Game update from host
             commandHandler.get(commandName).accept(args);
@@ -225,6 +229,7 @@ public class ClientSideHandler implements RequestHandler{
 
     @Override
     public void close() {
+        game.close();
         out.close();
     }
 }

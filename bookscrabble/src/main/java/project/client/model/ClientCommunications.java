@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import project.client.MyLogger;
@@ -92,33 +91,24 @@ public class ClientCommunications{
         outToHost.flush();
     }
 
-    public void close() { // Closing the connection to the host
-        try {
-            inFromHost.close();
-            toHostSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void gameStarted()
     {
         int BOARD_SIZE = 15;
-        boolean waitingForReply = false, allowedInput, isVertical = false;
+        boolean waitingForReply = false, allowedInput, isVertical = false, exit = false;
         int currentScore = 0, row = 0, col = 0, myID = requestHandler.getId();
         String word = null, myName = ClientModel.getName();
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.myTiles, requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
+            if (myID == 1)
+                MyLogger.println("Write '!exit' to finish the game.");
+            else
+                MyLogger.println("Write '!exit' to quit the game.");
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-                    if (myID == 1)
-                        MyLogger.println("Write '!exit' to finish the game.");
-                    else
-                        MyLogger.println("Write '!exit' to quit the game.");
 
                     MyLogger.println("Enter a word to place or write '!skip' to skip your turn: ");
                     boolean skipTurn = false;
@@ -135,12 +125,11 @@ public class ClientCommunications{
                                 skipTurn = true;
                                 continue;
                             }
-//                            if(word.equals("!exit")) {
-//                                sendAMessage(myID, myID == 1 ? myName + "&endGame" : myName + "&leave");
-//                                //requestHandler.isGameRunning = false;
-//                                toHostSocket.close();
-//                                continue;
-//                            }
+                            else if(word.equals("!exit")) {
+                                sendAMessage(myID, myID == 1 ? myName + "&endGame" : myName + "&leave");
+                                exit = true;
+                                allowedInput = true;
+                            }
                             word = word.toUpperCase();
                             if(!requestHandler.game.isStringLegal(word.toCharArray()))
                             {
@@ -154,6 +143,9 @@ public class ClientCommunications{
 
                     if(skipTurn) //If the player chose to skip his turn
                         continue;
+
+                    if(exit)
+                        break;    
 
                     do
                     {
@@ -251,7 +243,18 @@ public class ClientCommunications{
             MyLogger.logError("Error in gameStarted(): " + e.getMessage());
             e.printStackTrace();
         }
+
         MyLogger.println("Game closed!");
+        close();
+    }
+
+    public void close() { // Closing the connection to the host
+        try {
+            inFromHost.close();
+            toHostSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void waitForReply() { // A method that waits for the player's turn

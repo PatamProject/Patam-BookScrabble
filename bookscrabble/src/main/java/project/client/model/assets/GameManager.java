@@ -105,7 +105,7 @@ public class GameManager{
                     winner = p;
         }
         MyHostServer.getHostServer().isGameRunning = false;
-        return "E,".concat(winner.getName());
+        return winner.getName();
     }
     
     public Word fromStringToWord(String pName, final String tiles, final int row,final int col,final boolean vertical)

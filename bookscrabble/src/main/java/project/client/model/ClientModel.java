@@ -1,7 +1,5 @@
 package project.client.model;
 
-import project.client.MyLogger;
-
 public class ClientModel {
     ClientCommunications myConnectionToHost;
     MyHostServer myHostServer;
@@ -26,7 +24,6 @@ public class ClientModel {
             myConnectionToHost.start();
             Thread.sleep(1000);
         } catch (Exception e) {
-            MyLogger.logError("Disconnected from host!");
             close();
             return false;
         }  

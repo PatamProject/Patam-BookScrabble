@@ -32,24 +32,26 @@ public class HostSideHandler implements RequestHandler{
                     sendPlayers.append(p).append(",");
                 sendPlayers = new StringBuilder(sendPlayers.substring(0, sendPlayers.length() - 1)); //Trim last comma
 
-                game.addNewPlayer(args[0]); //Add to gameModel
+                game.addNewPlayer(args[0]); //Add to gameManager
                 out.println("join:"+args[1] + "," + sendPlayers); //Send ID and players to the client
                 MyHostServer.updateAll("!join:" + args[0], args[0]);
             });
-            //Remove a player from the game
+
+            //Remove a player from the game (Not the host)
             put("leave", (String[] args) -> 
             {
-                //Return tiles to back? Delete playerModel completely from view?
-                game.removePlayer(args[0]); //Remove from gameModel
-                try { //Close the socket
-                    MyHostServer.getHostServer().connectedClients.get(args[0]).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } 
-                MyHostServer.getHostServer().connectedClients.remove(args[0]); //Remove from connectedClients
-                MyHostServer.updateAll("!leave:" + args[0], args[0]);
-                if (game.getPlayersAmount() < 2)
-                    get("endGame");
+                if(!game.removePlayer(args[0])) //Remove from gameManager (false -> endGame)
+                    commandHandler.get("endGame").accept(args);
+                else //Update everyone that the player left
+                {
+                    try { //Close the socket
+                        MyHostServer.getHostServer().connectedClients.get(args[0]).close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } 
+                    MyHostServer.getHostServer().connectedClients.remove(args[0]); //Remove from connectedClients
+                    MyHostServer.updateAll("!leave:" + args[0], args[0]);
+                }    
             });
     
             put("skipTurn", (String[] args) -> 
@@ -57,10 +59,8 @@ public class HostSideHandler implements RequestHandler{
                 game.nextTurn(); // Switch to next player and update ALL players that the game continues
                 if (!game.isGameEnded())
                     MyHostServer.updateAll("!skipTurn: " + game.getCurrentPlayersName(), null);
-                else {
-                    String winner = game.getWinner();
-                    MyHostServer.updateAll("!endGame:" + winner, null);
-                }
+                else
+                    commandHandler.get("endGame").accept(args);
             });
     
             //Start the game (Host only)
@@ -93,7 +93,7 @@ public class HostSideHandler implements RequestHandler{
                 if(args[0].equals(ClientModel.getName()) || game.getPlayersAmount() < 2) //Is the host
                 {
                     String winner = game.getWinner();
-                    MyHostServer.updateAll("!endGame:" + winner + ",Host ended game.", null);
+                    MyHostServer.updateAll("!endGame:" + winner, null);
                 }
                 else //Not the host
                     out.println(Error_Codes.ACCESS_DENIED); //unauthorized

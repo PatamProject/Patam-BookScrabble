@@ -76,10 +76,13 @@ public class MyHostServer{
         }
 
         // Close all client connections
-        for (Socket clientSocket : connectedClients.values()) {
-            closeConnection(clientSocket, new PrintWriter(clientSocket.getOutputStream()), new Scanner(clientSocket.getInputStream()));
+        String myName = ClientModel.getName();
+        for (int i = 0; i < connectedClients.keySet().size(); i++) {
+            Socket client = connectedClients.get(connectedClients.keySet().toArray()[i]);
+            if(!connectedClients.keySet().toArray()[i].equals(myName))
+                closeConnection(client, new PrintWriter(client.getOutputStream()), new Scanner(client.getInputStream()));
         }
-
+        connectedClients.get(myName).close();
         connectedClients.clear();
         hostSocket.close();
     }

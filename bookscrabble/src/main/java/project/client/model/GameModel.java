@@ -77,4 +77,11 @@ public class GameModel {
             ClientCommunications.unlock();
         return res; 
     }
+
+    public void close()
+    {
+        playersAndScores.clear();
+        playersOrder.clear();
+        board = "";
+    }
 }
