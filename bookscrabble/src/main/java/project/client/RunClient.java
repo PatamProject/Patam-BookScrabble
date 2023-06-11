@@ -32,7 +32,6 @@ public class RunClient{
                 do {
                     joinGame(name);
                 } while (!checkConnectionToHost());
-                guestStartMenu();
             }
         } while (!checkConnectionToHost());
     }
@@ -197,30 +196,6 @@ public class RunClient{
                     break;
             }
         } while (!exit); 
-    }
-
-    private void guestStartMenu()
-    {
-        //System.out.println("Joined game successfully! Waiting for host to start the game...");
-        //TODO: add commands for user
-        //TODO: allow startGame call to close this function using exeptions!
-
-
-        // System.out.println("Type '!exit' to close the game.");
-        
-        // do {
-        //     if(scanner.hasNextLine()) {
-        //         String input = scanner.nextLine();
-        //         if (input.equals("exit")) {
-        //             System.out.println("Exiting...");
-        //             myClient.close();
-        //             exit = true;
-        //         } else {
-        //             System.out.println("Invalid input. Please try again.");
-        //         }
-        //     }
-        // } while (!exit);
-        // MyLogger.println("Client out of manu.");
     }
 
     public static void disconnectedFromHost()
