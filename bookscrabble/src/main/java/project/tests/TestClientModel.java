@@ -42,6 +42,7 @@ public class TestClientModel
         ClientModel player1 = new ClientModel(false,"localhost",8002,"player1");
         TestMsgToBS();
         myServer.close();
-
+        host.close();
+        player1.close();
     }
 }

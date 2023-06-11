@@ -170,7 +170,7 @@ public class ClientCommunications{
                         {
                             if(word.equals("!skip"))
                             {
-                                allowedInput = commands.get(word).apply(null);
+                                skipTurn = commands.get(word).apply(null);
                                 break;
                             }
                             else if(word.equals("!exit"))   
