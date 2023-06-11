@@ -78,6 +78,7 @@ public class RunClient{
             invalidInput = false;
             System.out.println("Enter the port number you want to host the game on: ");
             String input = scanner.nextLine();
+            input = fixUserInput(input);
             hostPort = Integer.parseInt(input);
             if(hostPort <= 0 || hostPort > 65535)
             {
@@ -102,6 +103,7 @@ public class RunClient{
             invalidInput = false;
             System.out.println("Please enter the server's port: ");
             String input = scanner.nextLine();
+            input = fixUserInput(input);
             bs_port = Integer.parseInt(input);
             if(bs_port <= 0 || bs_port > 65535)
             {
@@ -136,6 +138,7 @@ public class RunClient{
             invalidInput = false;
             System.out.println("Enter the host's port number:");
             String input = scanner.nextLine();
+            input = fixUserInput(input);
             host_port = Integer.parseInt(input);
             if(host_port <= 0 || host_port > 65535)
             {
@@ -200,16 +203,16 @@ public class RunClient{
 
     public static void disconnectedFromHost()
     {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {}
-        MyLogger.println("Disconnected from host.");
-        MyLogger.println("Choose 1 to play again or 2 to exit the game.");
-
         if(myClient != null)
             myClient.close();
         myClient = null;
         scanner = MyLogger.getScanner();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {}
+        MyLogger.println("Disconnected from game lobby.");
+        MyLogger.println("Choose 1 to play again or 2 to exit the game.");
 
         do {
             exit = false;
@@ -225,5 +228,14 @@ public class RunClient{
                 MyLogger.println("Invalid input. Please try again."); 
         } while (!exit);
         new RunClient(); //Restart the game
+    }
+
+    private String fixUserInput(String input)
+    {
+        input = input.toLowerCase();
+        input = input.replaceAll("[^0-9]", "");
+        if(input.length() == 0)
+            input = "0";
+        return input;
     }
 }

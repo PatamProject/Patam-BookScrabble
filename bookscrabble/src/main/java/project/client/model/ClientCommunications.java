@@ -79,6 +79,12 @@ public class ClientCommunications{
                     }
                     continue;
                 }
+                else if(commandName.equals("!endGame"))
+                {
+                    requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
+                    Thread.sleep(1000);
+                    throw new ConnectException("Game ended by host!"); 
+                }
             }
             else //A reply from the host
                 sender = ClientModel.getName();
@@ -114,7 +120,8 @@ public class ClientCommunications{
             put("!help", (args) -> {
                 MyLogger.println("Available commands:");
                 for(String command : userCommands)
-                    MyLogger.println(command);
+                    MyLogger.print(command + " , ");
+                MyLogger.println("");    
                 return false;
             });
             put("!exit", (args) -> {
@@ -156,7 +163,6 @@ public class ClientCommunications{
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
-                
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
                     MyLogger.println("Enter a word to place or write '!help' to see available commands: ");
@@ -171,11 +177,13 @@ public class ClientCommunications{
                             if(word.equals("!skip"))
                             {
                                 skipTurn = commands.get(word).apply(null);
+                                allowedInput = true;
                                 break;
                             }
                             else if(word.equals("!exit"))   
                             {
                                 exit = commands.get(word).apply(null);
+                                allowedInput = true;
                                 break;
                             }
                             else
@@ -194,59 +202,58 @@ public class ClientCommunications{
                         }
                     } while(!allowedInput);
 
-                    if(skipTurn) //If the player chose to skip his turn
-                        continue;
-
-                    if(exit)
+                    if(skipTurn);
+                    else if(exit)
                     {
                         requestHandler.isGameRunning = false;
                         break;    
                     }
-
-                    do
+                    else
                     {
-                        allowedInput = false;
-                        MyLogger.println("Enter row and col of starting character:");
-                        String input = scanner.nextLine();
-                        row = Integer.parseInt(input);
-                        input = scanner.nextLine();
-                        col = Integer.parseInt(input);
-                        if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
+                        do
                         {
-                            MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
                             allowedInput = false;
-                        }
-                        else
-                            allowedInput = true;
-                        
-                    } while(!allowedInput);
-
-                    do
-                    {
-                        allowedInput = false;
-                        MyLogger.println("How is the word placed?\nEnter 1 for vertical, 0 for horizontal:");
-                        if(scanner.hasNextLine())
-                        {
-                            int vertical = scanner.nextInt();
-                            if(vertical != 0 && vertical != 1)
+                            MyLogger.println("Enter row and col of starting character:");
+                            row = scanner.nextInt();
+                            col = scanner.nextInt();
+                            scanner.nextLine();
+                            if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                             {
-                                MyLogger.println("Illegal input! Try again");
+                                MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
                                 allowedInput = false;
                             }
                             else
-                            {
-                                isVertical = (vertical == 1);
                                 allowedInput = true;
-                            }
-                        }               
-                    } while(!allowedInput);
-                    scanner.nextLine(); //Clear the buffer
-
-                    currentScore = requestHandler.game.getPlayersAndScores().get(myName); //We save the current score to check if it changed after trying to place the word
-                    String message = myName + "&Q:" + word + "," + row + "," + col + "," + isVertical;
-                    sendAMessage(myID, message);
-                    waitingForReply = true;
-                } //End of if(myTurn)
+                            
+                        } while(!allowedInput);
+    
+                        do
+                        {
+                            allowedInput = false;
+                            MyLogger.println("How is the word placed?\nEnter 1 for vertical, 0 for horizontal:");
+                            if(scanner.hasNextLine())
+                            {
+                                int vertical = scanner.nextInt();
+                                if(vertical != 0 && vertical != 1)
+                                {
+                                    MyLogger.println("Illegal input! Try again");
+                                    allowedInput = false;
+                                }
+                                else
+                                {
+                                    isVertical = (vertical == 1);
+                                    allowedInput = true;
+                                }
+                            }               
+                        } while(!allowedInput);
+                        scanner.nextLine(); //Clear the buffer
+    
+                        currentScore = requestHandler.game.getPlayersAndScores().get(myName); //We save the current score to check if it changed after trying to place the word
+                        String message = myName + "&Q:" + word + "," + row + "," + col + "," + isVertical;
+                        sendAMessage(myID, message);
+                        waitingForReply = true;
+                    } //End of if(myTurn)
+                }
 
                 waitForReply(); //Wait for my turn / Wait for a reply
 
