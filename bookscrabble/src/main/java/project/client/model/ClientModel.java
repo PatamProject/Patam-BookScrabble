@@ -37,6 +37,17 @@ public class ClientModel {
         if(myConnectionToHost != null)    
             myConnectionToHost.close();
     }
+
+    public MyHostServer getMyHostServer() {
+        return MyHostServer.getHostServer();
+    }
+
+    public void close()
+    {
+        if(myHostServer != null)
+            myHostServer.close();
+        myConnectionToHost.close();
+    }
     
     public static String getName(){return myName;}
     public ClientCommunications getMyConnectionToHost() {return myConnectionToHost;}
