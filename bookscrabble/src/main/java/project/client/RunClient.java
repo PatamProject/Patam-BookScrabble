@@ -3,37 +3,42 @@ package project.client;
 import project.client.model.ClientModel;
 import project.client.model.MyHostServer;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Scanner;
+
 
 public class RunClient{
     static ClientModel myClient;
     static Scanner scanner = MyLogger.getScanner();
+    public static boolean exit = false;
 
-    public RunClient() 
+    public RunClient() // always running
     {
-        String name = getPlayerName();
-        boolean isHost = chooseIfHost();
+        do {
+            String name = getPlayerName();
+            boolean isHost = chooseIfHost();
 
-        if(isHost)
-        {
-            do
+            if(isHost)
             {
-                hostGame(name); 
-            } while (!checkConnectionToHost()); 
-            hostStartMenu();
-        }
-        else
-        {
-            do {
-                joinGame(name);
-            } while (!checkConnectionToHost()); 
-            guestStartMenu();
-        }
-    } 
+                do
+                {
+                    hostGame(name);
+                } while (!checkConnectionToHost());
+                hostStartMenu();
+            }
+            else
+            {
+                do {
+                    joinGame(name);
+                } while (!checkConnectionToHost());
+            }
+        } while (!checkConnectionToHost());
+    }
     
     private String getPlayerName()
     {
-        System.out.println("Welcome to the game!");
+        System.out.println("Welcome to BookScrabble!");
         System.out.println("Please enter your name: ");
         String name;
         do {
@@ -64,31 +69,86 @@ public class RunClient{
         return false;
     }
 
-    private void hostGame(String name) //First we create MyHostServer and then we create the client itself
+    private void hostGame(String name) //First we create MyHostServer, and then we create the client itself
     {
-        System.out.println("Enter the port number you want to host the game on: ");
-        String hostPort = scanner.nextLine();
+        boolean invalidInput;
+        int hostPort, bs_port;
+        String bs_IP;
+        do {
+            invalidInput = false;
+            System.out.println("Enter the port number you want to host the game on: ");
+            String input = scanner.nextLine();
+            input = fixUserInput(input);
+            hostPort = Integer.parseInt(input);
+            if(hostPort <= 0 || hostPort > 65535)
+            {
+                System.out.println("Invalid port number. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
 
-        System.out.println("You need to connect to the BookScrabble server.");
-        System.out.println("Please enter the BookScrabble Server IP: ");
-        String bs_IP = scanner.nextLine();
+        do {
+            invalidInput = false;
+            System.out.println("You need to connect to the BookScrabble server.");
+            System.out.println("Please enter the BookScrabble Server IP: ");
+            bs_IP = scanner.nextLine();
+            if(bs_IP.length() == 0)
+            {
+                System.out.println("Invalid IP. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
 
-        System.out.println("Please enter the correct port: ");
-        String bs_port = scanner.nextLine();
+        do {
+            invalidInput = false;
+            System.out.println("Please enter the server's port: ");
+            String input = scanner.nextLine();
+            input = fixUserInput(input);
+            bs_port = Integer.parseInt(input);
+            if(bs_port <= 0 || bs_port > 65535)
+            {
+                System.out.println("Invalid port number. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
 
-        MyHostServer.getHostServer().start(Integer.parseInt(hostPort), Integer.parseInt(bs_port), bs_IP);
+        MyHostServer.getHostServer().start(hostPort, bs_port, bs_IP);
         //Now we create the host itself
-        myClient = new ClientModel(true, "localhost", Integer.parseInt(hostPort), name); 
+        myClient = new ClientModel(true, "localhost", hostPort, name); 
     }
 
     private void joinGame(String name)
     {
-        System.out.println("Enter the host's IP address:");
-        String ip = scanner.nextLine();
-        System.out.println("Enter the host's port number:");
-        String port = scanner.nextLine();
+        String host_ip;
+        int host_port;
+        boolean invalidInput;
+
+        do {
+            invalidInput = false;
+            System.out.println("Enter the host's IP address:");
+            host_ip = scanner.nextLine();
+            if(host_ip.length() == 0)
+            {
+                System.out.println("Invalid IP. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+
+        do {
+            invalidInput = false;
+            System.out.println("Enter the host's port number:");
+            String input = scanner.nextLine();
+            input = fixUserInput(input);
+            host_port = Integer.parseInt(input);
+            if(host_port <= 0 || host_port > 65535)
+            {
+                System.out.println("Invalid port number. Please try again.");
+                invalidInput = true;
+            }
+        } while (invalidInput);
+
         System.out.println("Connecting to host...");
-        myClient = new ClientModel(false, ip, Integer.parseInt(port) , name); //Guest client
+        myClient = new ClientModel(false, host_ip, host_port , name); //Guest client
     }
 
     private boolean checkConnectionToHost() //Returns true if connected to host
@@ -105,48 +165,77 @@ public class RunClient{
 
     private void hostStartMenu()
     {
-        System.out.println("Created game lobby successfully! Waiting for other players to join...");
-        System.out.println("Type 'start' to begin the game, 'exit' to close or 'who' to see who's connected.");
-        System.out.println("Remember, a game is played with 2-4 players.");
-        boolean exit = false;
-        
-        do {
-            if(scanner.hasNextLine()) {
-                String input = scanner.nextLine();
+        InetAddress ipAddress = null;
+        try {
+            ipAddress = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
 
-                if (input.equals("start"))
+        System.out.println("You have created a game lobby! Waiting for other players to join...");
+        System.out.println("Your IP is: " + ipAddress.getHostAddress() + " you can give this to your friends to join your game.");
+        System.out.println("Type '!start' to begin the game, '!exit' to close or '!who' to see who's connected.");
+        System.out.println("Remember, a game is played with 2-4 players.");
+
+        do {
+            String input = scanner.nextLine();
+            switch (input) {
+                case "!start":
                     exit = MyHostServer.getHostServer().startGame();
-                else if (input.equals("exit")) {
+                    break;
+                case "!exit":
                     System.out.println("Exiting...");
                     myClient.close();
+                    MyLogger.close();
                     exit = true;
-                } else if(input.equals("who")){
+                    break;
+                case "!who":
                     String[] players = MyHostServer.getHostServer().getConnectedClients();
-                    for(int i = 0; i < players.length; i++)
-                        MyLogger.println((players[i])+ " is connected.");
-                }
-                else
-                    System.out.println("Invalid input. Please try again.");   
+                    for (String player : players)
+                        MyLogger.println(player + " is connected.");
+                    break;
+                default:
+                    System.out.println("Invalid input. Please try again.");
+                    break;
             }
         } while (!exit); 
     }
 
-    private void guestStartMenu()
+    public static void disconnectedFromHost()
     {
-        System.out.println("Joined game successfully! Waiting for host to start the game...");
-        System.out.println("Type 'exit' to close the game.");
-        boolean exit = false;
+        if(myClient != null)
+            myClient.close();
+        myClient = null;
+        scanner = MyLogger.getScanner();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {}
+        MyLogger.println("Disconnected from game lobby.");
+        MyLogger.println("Choose 1 to play again or 2 to exit the game.");
+
         do {
-            if(scanner.hasNextLine()) {
-                String input = scanner.nextLine();
-                if (input.equals("exit")) {
-                    System.out.println("Exiting...");
-                    myClient.close();
-                    exit = true;
-                } else {
-                    System.out.println("Invalid input. Please try again.");
-                }
-            }
+            exit = false;
+            String input = scanner.nextLine();
+            if (input.equals("1")) {
+                MyLogger.println("Restarting game...");
+                exit = true;
+            } else if (input.equals("2")) {
+                MyLogger.println("Exiting...");
+                MyLogger.close();
+                return; //Exit the game
+            } else
+                MyLogger.println("Invalid input. Please try again."); 
         } while (!exit);
+        new RunClient(); //Restart the game
+    }
+
+    private String fixUserInput(String input)
+    {
+        input = input.toLowerCase();
+        input = input.replaceAll("[^0-9]", "");
+        if(input.length() == 0)
+            input = "0";
+        return input;
     }
 }

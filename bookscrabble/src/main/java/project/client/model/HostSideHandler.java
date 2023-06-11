@@ -32,35 +32,35 @@ public class HostSideHandler implements RequestHandler{
                     sendPlayers.append(p).append(",");
                 sendPlayers = new StringBuilder(sendPlayers.substring(0, sendPlayers.length() - 1)); //Trim last comma
 
-                game.addNewPlayer(args[0]); //Add to gameModel
+                game.addNewPlayer(args[0]); //Add to gameManager
                 out.println("join:"+args[1] + "," + sendPlayers); //Send ID and players to the client
                 MyHostServer.updateAll("!join:" + args[0], args[0]);
             });
-            //Remove a player from the game
+
+            //Remove a player from the game (Not the host)
             put("leave", (String[] args) -> 
             {
-                //Return tiles to back? Delete playerModel completely from view?
-                game.removePlayer(args[0]); //Remove from gameModel
-                try { //Close the socket
-                    MyHostServer.getHostServer().connectedClients.get(args[0]).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } 
-                MyHostServer.getHostServer().connectedClients.remove(args[0]); //Remove from connectedClients
-                MyHostServer.updateAll("!leave:" + args[0], args[0]);
-                if (game.getPlayersAmount() < 2)
-                    get("endGame");
+                if(!game.removePlayer(args[0])) //Remove from gameManager (false -> endGame)
+                    commandHandler.get("endGame").accept(args);
+                else //Update everyone that the player left
+                {
+                    try { //Close the socket
+                        MyHostServer.getHostServer().connectedClients.get(args[0]).close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } 
+                    MyHostServer.getHostServer().connectedClients.remove(args[0]); //Remove from connectedClients
+                    MyHostServer.updateAll("!leave:" + args[0], args[0]);
+                }    
             });
     
             put("skipTurn", (String[] args) -> 
             {
-                game.nextTurn(); // Switch to next player and update ALL players if game continues
+                game.nextTurn(); // Switch to next player and update ALL players that the game continues
                 if (!game.isGameEnded())
-                    MyHostServer.updateAll("!skipTurn:" + game.getCurrentPlayersName(), null);
-                else {
-                    String winner = game.getWinner();
-                    MyHostServer.updateAll("!endGame:" + winner, null);
-                }
+                    MyHostServer.updateAll("!skipTurn: " + game.getCurrentPlayersName(), null);
+                else
+                    commandHandler.get("endGame").accept(args);
             });
     
             //Start the game (Host only)
@@ -93,27 +93,27 @@ public class HostSideHandler implements RequestHandler{
                 if(args[0].equals(ClientModel.getName()) || game.getPlayersAmount() < 2) //Is the host
                 {
                     String winner = game.getWinner();
-                    MyHostServer.updateAll("!endGame:" + winner + ",Host ended game.", null);
+                    MyHostServer.updateAll("!endGame:" + winner, null);
                 }
                 else //Not the host
                     out.println(Error_Codes.ACCESS_DENIED); //unauthorized
             });
     
             //Place a word on the board and query the words created (args[0] = name, args[1] = word, args[2] = row, args[3] = col, args[4] = isVertical) 
-            put("Q", (String[] args) -> handlerBSRequests("Q", args));
-            put("C", (String[] args) -> handlerBSRequests("C",args));
+            put("Q", (String[] args) -> handleBSRequest("Q", args));
+            put("C", (String[] args) -> handleBSRequest("C",args));
         }};
     }
     
-    private void handlerBSRequests(String commandName , String[] args)
+    private void handleBSRequest(String commandName , String[] args)
     {
-        Word w = game.createWordFromClientInput(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
+        Word w = game.fromStringToWord(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
         if(w == null) //No word was created from the client input (Not boardLegal)
         {
             out.println(commandName+":0"); //Score = 0, word not placed due to boardLegal
             return;
         }
-        String[] words = game.getWordsFromClientInput(w); //Get all words created from the client input
+        String[] words = game.getStringsToSendToBS(w); //Get all words created from the client input
         if(words == null || words.length == 0) //No words were created from the client input (Not boardLegal)
         {
             out.println(commandName+":0"); //Score = 0, word not placed due to boardLegal
@@ -128,15 +128,16 @@ public class HostSideHandler implements RequestHandler{
             out.println(commandName+":-1"); //Score = -1
         else
         {
-            Integer score = game.getScoreFromWord(args[0], w);
+            Integer score = game.tryPlaceWord(args[0], w);
             if(score != 0)
             {
                 try { //Take tiles from bag
                     game.getPlayer(args[0]).getRack().takeTilesFromBag();
                     String currentTiles = game.getPlayer(args[0]).getRack().toString(); //The current tiles of the player
                     game.nextTurn(); //next player's turn
-                    out.println(commandName+":"+score + "," + currentTiles + "," + game.getCurrentPlayersName()); //Send score and tiles to client
-                    MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score + "," + game.getCurrentPlayersName(), args[0]); //Send score to all players
+                    out.println(commandName+":"+score + "," + currentTiles); //Send score and tiles to client
+                    MyHostServer.updateAll("!"+commandName+":"+ args[0] + "," +score, args[0]); //Send score to all players
+                    MyHostServer.updateAll("!board:" + game.getBoard().toString(), null); //Send board to all players
                 } catch (Exception e) {
                     String winner = game.getWinner(); //Game ended, bag is empty
                     MyHostServer.updateAll("!endGame:" + winner, null);

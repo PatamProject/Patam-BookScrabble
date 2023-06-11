@@ -2,6 +2,7 @@ package project.client.model;
 
 import project.client.Error_Codes;
 import project.client.MyLogger;
+import project.client.RunClient;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -12,15 +13,17 @@ import java.util.function.Consumer;
 // This class is used to handle the host's responses
 public class ClientSideHandler implements RequestHandler{
     GameModel game;
-    public PrintWriter out;
+    PrintWriter out;
     private Map<String, Consumer<String[]>> commandHandler;
     private Map<String, Consumer<String[]>> responseHandler;
     private Map<String, Consumer<String[]>> errorHandler;
+    private String myName;
     private int id = 0;
     private int numOfChallenges = 0;
     boolean isGameRunning = false;
 
     public ClientSideHandler(PrintWriter out) {
+        myName = ClientModel.getName();
         game = new GameModel();
         this.out = out;
 
@@ -33,53 +36,58 @@ public class ClientSideHandler implements RequestHandler{
                 String[] connectedPlayers = new String[args.length - 1];
                 System.arraycopy(args, 1, connectedPlayers, 0, args.length - 1);
                 
-                game.addPlayers(ClientModel.getName()); //Add myself to the game
+                game.addPlayers(myName); //Add myself to the game
                 game.addPlayers(connectedPlayers); //Add the rest of existing players
                 for (String p : connectedPlayers)
                     MyLogger.playerJoined(p);
+
+                if(id != 1) //Not the host
+                    MyLogger.joinedGame();         
             });
     
             //Tried to place a word on the board
             put("Q", (String[] args) -> 
-            { //Successful word placement, args[0] = score, args[1]... = players
-                Integer score = Integer.parseInt(args[1]);
+            { //Successful word placement, args[0] = score, args[1] = tiles
+                Integer score = Integer.parseInt(args[0]);
                 if(score == 0 || score == -1) //Not boardLegal
-                    MyLogger.failedWordPlacement(score);
-                
+                {
+                    MyLogger.failedWordPlacement(score, false);
+                    ClientCommunications.unlock();
+                }
                 else //Word was placed successfully
                 {
-                    game.updateScore(ClientModel.getName(), score); //Update score
-                    game.myTiles = args[2]; //Updated the tiles
-                    //game.myPlayer.getRack().takeTiles(args[2]); //old way TBR
+                    game.updateScore(myName, score); //Update score
+                    game.myTiles = args[1]; //Updated the tiles
                     game.nextTurn(); //Next turn
-                    MyLogger.playerPlacedWord(ClientModel.getName(), score, "Q");
+                    MyLogger.playerPlacedWord(myName, score, "Q");
                     MyLogger.printTiles(game.myTiles); //Print my tiles
                 }
             });
     
             //Tried to challenge a failed word placement
             put("C", (String[] args) -> 
-            { //Successful join, args[0] = id, args[1]... = players
-                Integer score = Integer.parseInt(args[1]);
-                MyLogger.println("Challenging dictonary...");
+            { //Successful word placement, args[0] = score, args[1] = tiles
+                Integer score = Integer.parseInt(args[0]);
+                MyLogger.println("Challenging dictionary...");
                 if(score == 0 || score == -1) //Not boardLegal
                 {
                     numOfChallenges++;
-                    MyLogger.failedWordPlacement(score);
+                    MyLogger.failedWordPlacement(score, true);
+                    ClientCommunications.unlock();
                 } 
                 else //Word was placed successfully
                 {
-                    game.updateScore(ClientModel.getName(), score); //Update score
-                    game.myTiles = args[2]; //Updated the tiles
-                    //game.myPlayer.getRack().takeTiles(args[2]); //old way TBR
+                    game.updateScore(myName, score); //Update score
+                    game.myTiles = args[1]; //Updated the tiles
                     game.nextTurn(); //Next turn
-                    MyLogger.playerPlacedWord(ClientModel.getName(), score, "C");
+                    MyLogger.playerPlacedWord(myName, score, "C");
+                    MyLogger.printTiles(game.myTiles); //Print my tiles
                 }
             }); 
 
             put("hello", (String[] args) -> 
             { //Used for testing
-                MyLogger.println("Hello recieved");
+                MyLogger.println("Hello received");
             });
         }};
 
@@ -94,7 +102,7 @@ public class ClientSideHandler implements RequestHandler{
             //A player left the game
             put("!leave", (String[] args) -> 
             { //args[0] = leaving player
-                MyLogger.playertLeft(args[0]); //This function is for notification only
+                MyLogger.playerLeft(args[0]); //This function is for notification only
             });
 
             //Game started, tiles are sent to each player individually
@@ -110,6 +118,7 @@ public class ClientSideHandler implements RequestHandler{
                 }
                 game.addPlayers(players); //Add players to the game
                 isGameRunning = true;
+                RunClient.exit = true; //Close the manu to allow the user to play the game
                 //Game started in ClientCommunication
             });
 
@@ -122,7 +131,14 @@ public class ClientSideHandler implements RequestHandler{
             put("!board", (String[] args) -> 
             { 
                 game.setBoard(args[0]);
+                MyLogger.printPlayerAndScore(game.getPlayersAndScores());
                 MyLogger.printBoard(game.getBoard());
+                MyLogger.printTiles(game.myTiles);
+            });
+
+            put("!skipTurn", (String[] args) -> 
+            { 
+                game.nextTurn();
             });
     
             //A player placed a word on the board
@@ -157,7 +173,7 @@ public class ClientSideHandler implements RequestHandler{
     
             put(Error_Codes.ACCESS_DENIED, (String[] args) -> 
             { 
-                MyLogger.println("Access denied, you are not premitted to use this command");
+                MyLogger.println("Access denied, you are not permitted to use this command");
             });
     
             put(Error_Codes.SERVER_FULL, (String[] args) -> 
@@ -194,7 +210,7 @@ public class ClientSideHandler implements RequestHandler{
 
     @Override
     public void handleClient(String sender, String commandName, String[] args, OutputStream outToClient) {
-        if(sender.equals(ClientModel.getName())) //A response to a command sent by this client
+        if(sender.equals(myName)) //A response to a command sent by this client
             responseHandler.get(commandName).accept(args);
         else if(sender.charAt(0) == '!') //Game update from host
             commandHandler.get(commandName).accept(args);
@@ -204,14 +220,16 @@ public class ClientSideHandler implements RequestHandler{
 
     public void handleWordPlacement(String[] args, String commandName) //Adds score to the player placing the word
     { //args[0] = player, args[1] = score
-        game.players.put(args[0], game.players.getOrDefault(args[0], 0) + Integer.parseInt(args[1]));
+        game.playersAndScores.put(args[0], game.playersAndScores.getOrDefault(args[0], 0) + Integer.parseInt(args[1]));
         MyLogger.playerPlacedWord(args[0], Integer.parseInt(args[1]), commandName);
+        game.nextTurn(); //Next turn
     }
 
     public int getId(){return id;}
 
     @Override
     public void close() {
+        game.close();
         out.close();
     }
 }

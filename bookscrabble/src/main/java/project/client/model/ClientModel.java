@@ -1,7 +1,5 @@
 package project.client.model;
 
-import project.client.MyLogger;
-
 public class ClientModel {
     ClientCommunications myConnectionToHost;
     MyHostServer myHostServer;
@@ -24,27 +22,26 @@ public class ClientModel {
         try {
             myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
+            Thread.sleep(1000);
         } catch (Exception e) {
-            MyLogger.logError("Unable to connect to host!");
+            close();
             return false;
         }  
         return true;
-    }
-
-    public ClientCommunications getMyClientCommunications() {
-        return myConnectionToHost;
-    }
-
-    public MyHostServer getMyHostServer() {
-        return MyHostServer.getHostServer();
     }
 
     public void close()
     {
         if(myHostServer != null)
             myHostServer.close();
-        myConnectionToHost.close();
+        if(myConnectionToHost != null)    
+            myConnectionToHost.close();
+    }
+
+    public MyHostServer getMyHostServer() {
+        return MyHostServer.getHostServer();
     }
     
     public static String getName(){return myName;}
+    public ClientCommunications getMyConnectionToHost() {return myConnectionToHost;}
 }

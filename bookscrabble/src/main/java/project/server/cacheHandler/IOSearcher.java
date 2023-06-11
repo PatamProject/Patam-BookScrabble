@@ -20,9 +20,13 @@ public class IOSearcher {
             while (line != null) {
                 line = line.trim(); // Remove the spaces from the line
                 line = line.toUpperCase(); // Convert the line to upper case
-                if (line.contains(word)) { // Check if the line contains the given word
-                    reader.close();
-                    return true;
+                String wordsInLine[] = line.split(" "); // Split the line to words
+                for (String wordInLine : wordsInLine) { // Loop through the words in the line
+                    wordInLine = wordInLine.trim(); // Remove the spaces from the word
+                    if (wordInLine.equals(word)) { // Check if the word is equal to the given word
+                        reader.close();
+                        return true;
+                    }
                 }
                 line = reader.readLine();
             }

@@ -25,21 +25,30 @@ public class Rack {
         return tiles.keySet().toArray(new Tile[tiles.size()]);
     }
 
-    public int size(){return tiles.size();}
+    public int size()
+    {
+        int size = 0;
+        for (Tile tile : tiles.keySet()) {
+            int amount = tiles.get(tile);
+            size += amount;
+        }
+        return size;
+    }
     
     //take tile from bag at random
     public String takeTilesFromBag() throws Exception 
     { //returns the letter of the tile taken
         int tilesToTake = START_SIZE - size();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tilesToTake; i++) {
+        for (int i = 0; i < tilesToTake && i < START_SIZE; i++) {
             Tile tile = Bag.getBag().getRand();
             if(tile == null)
-            {
                 throw new Exception("Bag is empty!");
-            }
+            
             tiles.put(tile, tiles.getOrDefault(tile, 0) + 1);
             sb.append(tile.letter);
+            if(size() == START_SIZE) //if rack is full
+                break;
         }
         return new StringBuilder().toString();
     }
@@ -60,8 +69,9 @@ public class Rack {
             if(tile.letter == letter)
             {
                 t = tile;
-                tiles.put(tile, tiles.get(tile) - 1);
-                if(tiles.get(tile) == 0)
+                int currentAmount = tiles.get(tile);
+                tiles.put(tile, currentAmount - 1);
+                if(currentAmount == 0)
                     tiles.remove(tile);
                 break;
             }

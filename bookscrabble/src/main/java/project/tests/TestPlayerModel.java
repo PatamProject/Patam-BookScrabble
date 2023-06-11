@@ -1,16 +1,16 @@
 package project.tests;
-import project.client.model.assets.PlayerModel;
+import project.client.model.assets.Player;
 
 public class TestPlayerModel
 {
-    PlayerModel player1;
-    PlayerModel player2;
-    PlayerModel player3;
-    PlayerModel player4;
+    Player player1;
+    Player player2;
+    Player player3;
+    Player player4;
 
     public TestPlayerModel(){
-        player1 = new PlayerModel("John");
-        player2 = new PlayerModel("Mike");
+        player1 = new Player("John");
+        player2 = new Player("Mike");
     }
 
     public void testGetRack()

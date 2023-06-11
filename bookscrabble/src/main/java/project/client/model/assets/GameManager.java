@@ -9,7 +9,7 @@ import project.client.model.MyHostServer;
 
 public class GameManager{
     Board board;
-    HashMap<String,PlayerModel> players; //Maps between player's name to player's object
+    HashMap<String,Player> players; //Maps between player's name to player's object
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     public final int MAX_PLAYERS = 4;
 
@@ -47,7 +47,7 @@ public class GameManager{
     // Getters
     public Board getBoard() {return board;}
     public String getCurrentPlayersName() {return playersOrder.peek();}
-    public PlayerModel getPlayer(String pName) {return players.get(pName) != null ? players.get(pName) : null;}
+    public Player getPlayer(String pName) {return players.get(pName) != null ? players.get(pName) : null;}
     public ArrayList<String> getPlayersOrder() {return new ArrayList<>(playersOrder);}
     public int getPlayersAmount() {return players.size();}
 
@@ -66,7 +66,7 @@ public class GameManager{
     public boolean addNewPlayer(String pName) { // Adds a new player to the game if possible
         if(players.size() < MAX_PLAYERS && pName != null)
         {
-            players.put(pName, new PlayerModel(pName));
+            players.put(pName, new Player(pName));
             playersOrder.add(pName);
             return true;
         }
@@ -96,8 +96,8 @@ public class GameManager{
     }
 
     public String getWinner() { //The winner is the player with the highest score
-        PlayerModel winner = players.values().iterator().next();
-        for(PlayerModel p : players.values()) {
+        Player winner = players.values().iterator().next();
+        for(Player p : players.values()) {
             if(p.getScore() > winner.getScore())
                 winner = p;
             else if(p.getScore().equals(winner.getScore()))
@@ -105,30 +105,15 @@ public class GameManager{
                     winner = p;
         }
         MyHostServer.getHostServer().isGameRunning = false;
-        return "E,".concat(winner.getName());
+        return winner.getName();
     }
-
-    public int getScoreFromWord(String pName, Word w)
-    { //Returns the score of the word. Must check boardLegal and dictionaryLegal before using!!!
-        PlayerModel p = players.get(pName);
-        ArrayList<Tile> tilesFromRack = new ArrayList<>();
-        for (int i = 0; i < w.length; i++) //Now we know what tiles are taken from the player
-            if(w.tiles[i] != null)
-                tilesFromRack.add(w.tiles[i]);
-        
-        int score = board.tryPlaceWord(w);
-        if(score == 0) //Return tiles back to player.rack
-            p.getRack().returnTilesToRack(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
-        
-        return score;
-    }
-
-    public Word createWordFromClientInput(String pName, final String tiles, final int row,final int col,final boolean vertical)
+    
+    public Word fromStringToWord(String pName, final String tiles, final int row,final int col,final boolean vertical)
     { //A word is created from the tiles taken from the player and from the board respectively 
-        PlayerModel p = players.get(pName);
+        Player p = players.get(pName);
         if(p == null)
-            return null;
-
+        return null;
+        
         int tmpRow = row, tmpCol = col;
         Tile tile = null;
         ArrayList<Tile> tilesArr = new ArrayList<>();
@@ -140,35 +125,55 @@ public class GameManager{
                 tilesArr.add(null); //Word on board, do not take
                 //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
             }
-            else if((tile = p.getRack().takeTileFromRack(tiles.charAt(i))) != null) //Tile is on the rack
-                tilesArr.add(tile);
-            else{ return null; } //Can't find tile!
-            
+            else
+            {
+                tile = p.getRack().takeTileFromRack(tiles.charAt(i)); 
+                if(tilesOnBoard[tmpRow][tmpCol] == null && tile != null) //Tile is on the rack
+                    tilesArr.add(tile);
+                else //Can't find tile / tile placed on another tile
+                    return null; 
+            }
+                
             //Adjust tmpRow and tmpCol according to vertical
             if(vertical)
-                tmpRow++;    
+            tmpRow++;    
             else
-                tmpCol++;
+            tmpCol++;     
         }
         Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
         return new Word(wordTiles, row, col, vertical);
     }
     
-    public String[] getWordsFromClientInput(Word w) //Uses getWords() to fetch all the words created from the word w
+    public String[] getStringsToSendToBS(Word w) //Uses getWords() to fetch all the words created from the word w
     {
         //We check if w is boardLegal (inside getWords())
         //We get all the words created from the word w
         //We query all the words
         //We use tryPlaceWord() to check boardLegal for all words
-
+        
         ArrayList<Word> words;
         words = board.getWords(w); //checks boardLegal
         if(words == null)
-            return null; //Word is not board legal
-
+        return null; //Word is not board legal
+        
         String[] queryWords = new String[words.size()]; //We change all the words to strings for query
         for (int i = 0; i < words.size(); i++)
-            queryWords[i] = words.get(i).toString();
+        queryWords[i] = words.get(i).toString();
         return queryWords;
+    }
+
+    public int tryPlaceWord(String pName, Word w)
+    { //Returns the score of the word. Must check boardLegal and dictionaryLegal before using!!!
+        Player p = players.get(pName);
+        ArrayList<Tile> tilesFromRack = new ArrayList<>();
+        for (int i = 0; i < w.length; i++) //Now we know what tiles are taken from the player
+            if(w.tiles[i] != null)
+                tilesFromRack.add(w.tiles[i]);
+        
+        int score = board.tryPlaceWord(w);
+        if(score == 0) //Return tiles back to player.rack
+            p.getRack().returnTilesToRack(tilesFromRack.toArray(new Tile[tilesFromRack.size()]));
+        
+        return score;
     }
 }
