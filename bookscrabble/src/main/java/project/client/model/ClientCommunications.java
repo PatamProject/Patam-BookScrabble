@@ -207,8 +207,10 @@ public class ClientCommunications{
                     {
                         allowedInput = false;
                         MyLogger.println("Enter row and col of starting character:");
-                        row = Integer.parseInt(scanner.nextLine());
-                        col = Integer.parseInt(scanner.nextLine());
+                        String input = scanner.nextLine();
+                        row = Integer.parseInt(input);
+                        input = scanner.nextLine();
+                        col = Integer.parseInt(input);
                         if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                         {
                             MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
