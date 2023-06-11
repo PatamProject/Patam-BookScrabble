@@ -5,7 +5,10 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
+import java.util.function.Function;
 
 import project.client.MyLogger;
 import project.client.RunClient;
@@ -39,7 +42,7 @@ public class ClientCommunications{
         sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
-            MyLogger.println("Client received: " + request);
+            //MyLogger.println("Client received: " + request);
             if(request.charAt(0) == '#') //If the host sent an error
             {
                 requestHandler.handleClient("#", request, null, null); //Error
@@ -97,39 +100,89 @@ public class ClientCommunications{
         boolean waitingForReply = false, allowedInput, isVertical = false, exit = false;
         int currentScore = 0, row = 0, col = 0, myID = requestHandler.getId();
         String word = null, myName = ClientModel.getName();
+        ArrayList<String> userCommands = new ArrayList<>(){{
+            add("!help");
+            add("!exit");
+            add("!skip");
+            add("!who");
+            add("!scores");
+            add("!board");
+            add("!tiles");
+        }};
+
+        HashMap<String, Function<Void, Boolean>> commands = new HashMap<>(){{
+            put("!help", (args) -> {
+                MyLogger.println("Available commands:");
+                for(String command : userCommands)
+                    MyLogger.println(command);
+                return false;
+            });
+            put("!exit", (args) -> {
+                sendAMessage(myID, myID == 1 ? myName + "&endGame" : myName + "&leave");
+                return true;
+            });
+            put("!skip", (args) -> {
+                sendAMessage(myID, myName + "&skipTurn");
+                return true;
+            });
+            put("!who", (args) -> {
+                MyLogger.println("Players in the game:");
+                for(String player : requestHandler.game.playersOrder)
+                    MyLogger.println(player);
+                return false;
+            });
+            put("!scores", (args) -> {
+                MyLogger.println("Scores:");
+                HashMap<String,Integer> playersAndScores = requestHandler.game.getPlayersAndScores();
+                for(String player : playersAndScores.keySet())
+                    MyLogger.println(player + " has " + playersAndScores.get(player) + " points.");
+                return false;
+            });
+            put("!board", (args) -> {
+                MyLogger.println("Board:");
+                MyLogger.printBoard(requestHandler.game.board);
+                return false;
+            });
+            put("!tiles", (args) -> {
+                MyLogger.println("Your tiles:");
+                MyLogger.printTiles(requestHandler.game.myTiles);
+                return false;
+            });
+        }};
+
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.myTiles, requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
-            if (myID == 1)
-                MyLogger.println("Write '!exit' to finish the game.");
-            else
-                MyLogger.println("Write '!exit' to quit the game.");
             //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
+                
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word
                 {
-
-                    MyLogger.println("Enter a word to place or write '!skip' to skip your turn: ");
+                    MyLogger.println("Enter a word to place or write '!help' to see available commands: ");
                     boolean skipTurn = false;
                     waitingForReply = false;
                     do
                     {
                         allowedInput = false;
-                        if(scanner.hasNextLine())
+                        word = scanner.nextLine();
+                        if(commands.containsKey(word))
                         {
-                            word = scanner.nextLine();
                             if(word.equals("!skip"))
                             {
-                                sendAMessage(myID, myName + "&skipTurn");
-                                skipTurn = true;
-                                continue;
+                                allowedInput = commands.get(word).apply(null);
+                                break;
                             }
-                            else if(word.equals("!exit")) {
-                                sendAMessage(myID, myID == 1 ? myName + "&endGame" : myName + "&leave");
-                                exit = true;
-                                allowedInput = true;
+                            else if(word.equals("!exit"))   
+                            {
+                                exit = commands.get(word).apply(null);
+                                break;
                             }
+                            else
+                                allowedInput = commands.get(word).apply(null);
+                        }
+                        else
+                        {
                             word = word.toUpperCase();
                             if(!requestHandler.game.isStringLegal(word.toCharArray()))
                             {
@@ -137,7 +190,7 @@ public class ClientCommunications{
                                 allowedInput = false;
                             }
                             else
-                                allowedInput = true;
+                                allowedInput = true;             
                         }
                     } while(!allowedInput);
 
@@ -145,24 +198,25 @@ public class ClientCommunications{
                         continue;
 
                     if(exit)
+                    {
+                        requestHandler.isGameRunning = false;
                         break;    
+                    }
 
                     do
                     {
                         allowedInput = false;
                         MyLogger.println("Enter row and col of starting character:");
-                        if(scanner.hasNextLine())
+                        row = Integer.parseInt(scanner.nextLine());
+                        col = Integer.parseInt(scanner.nextLine());
+                        if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
                         {
-                            row = scanner.nextInt();
-                            col = scanner.nextInt();
-                            if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
-                            {
-                                MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
-                                allowedInput = false;
-                            }
-                            else
-                                allowedInput = true;
+                            MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
+                            allowedInput = false;
                         }
+                        else
+                            allowedInput = true;
+                        
                     } while(!allowedInput);
 
                     do

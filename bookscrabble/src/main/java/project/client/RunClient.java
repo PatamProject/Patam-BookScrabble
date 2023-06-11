@@ -3,6 +3,8 @@ package project.client;
 import project.client.model.ClientModel;
 import project.client.model.MyHostServer;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 
@@ -161,7 +163,15 @@ public class RunClient{
 
     private void hostStartMenu()
     {
+        InetAddress ipAddress = null;
+        try {
+            ipAddress = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
         System.out.println("You have created a game lobby! Waiting for other players to join...");
+        System.out.println("Your IP is: " + ipAddress.getHostAddress() + " you can give this to your friends to join your game.");
         System.out.println("Type '!start' to begin the game, '!exit' to close or '!who' to see who's connected.");
         System.out.println("Remember, a game is played with 2-4 players.");
 
@@ -191,7 +201,7 @@ public class RunClient{
 
     private void guestStartMenu()
     {
-        System.out.println("Joined game successfully! Waiting for host to start the game...");
+        //System.out.println("Joined game successfully! Waiting for host to start the game...");
         //TODO: add commands for user
         //TODO: allow startGame call to close this function using exeptions!
 
@@ -215,10 +225,14 @@ public class RunClient{
 
     public static void disconnectedFromHost()
     {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
         MyLogger.println("Disconnected from host.");
         MyLogger.println("Choose 1 to play again or 2 to exit the game.");
 
-        myClient.close();
+        if(myClient != null)
+            myClient.close();
         myClient = null;
         scanner = MyLogger.getScanner();
 

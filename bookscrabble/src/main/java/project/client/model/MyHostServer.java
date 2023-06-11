@@ -99,7 +99,7 @@ public class MyHostServer{
                 
                 //Client is connected and sent a request
                 String request = in.nextLine(); // "'id':'senderName'&'commandName':'args1','args2',...'"
-                MyLogger.println("Host received a new request: " + request);
+                //MyLogger.println("Host received a new request: " + request);
                 String[] user_body_split = request.split("&");
                 if(user_body_split.length != 2){ //Must contain a sender name and a body
                     throwError(Error_Codes.UNKNOWN_CMD, out);

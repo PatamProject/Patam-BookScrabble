@@ -61,7 +61,9 @@ public class BookScrabbleHandler implements ClientHandler{
 
     @Override
     public void close() {
-        in.close();
-        out.close();
+        if(out != null)
+            out.close();
+        if(in != null)
+            in.close();
     }
 }
