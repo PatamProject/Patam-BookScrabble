@@ -31,4 +31,24 @@ public class GameViewModel implements Observer {
             isMyTurn.set(gameModel.getIsMyTurn());
         }
     }
+/* 
+    //Updates from View -> Model//
+
+    - Set my own name
+    - Set ifHost
+    //Host only options
+    - Send BSS ip and port to connect
+    - Set lobby password?
+    - Kick player?
+    - Send start game request
+    - Send end game request
+    //Player options
+    - Send join request(ip + port + password?)? (Inside ClientModel ctor)
+    - send leave request
+    - send word placement
+    - send skipTurn
+    - send challenge option
+
+*/
+
 }
