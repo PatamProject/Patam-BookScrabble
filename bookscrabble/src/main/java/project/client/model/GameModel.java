@@ -2,15 +2,17 @@ package project.client.model;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Observable;
 
 import project.client.MyLogger;
 
 
-public class GameModel {
+public class GameModel extends Observable {
     String myTiles; //The tiles I have
     HashMap<String,Integer> playersAndScores; //Name of player and their score
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board;
+    boolean isMyTurn;
 
     public GameModel() {
         playersOrder = new LinkedList<>(); //Will be updated by startGame
@@ -19,13 +21,13 @@ public class GameModel {
 
     public void setBoard(String board) {
         this.board = board;
+        setChanged();
+        notifyObservers();
     }
 
     public void addPlayers(String... players) {
         for (String player : players)
-        {
             this.playersAndScores.put(player, 0); //Each player starts with score 0
-        }
     }
 
     public void removePlayer(String player)
@@ -39,6 +41,8 @@ public class GameModel {
         int oldScore = playersAndScores.get(player);
         playersAndScores.remove(player);
         playersAndScores.put(player, oldScore + score);
+        setChanged();
+        notifyObservers();
     }
 
     public boolean isStringLegal(char[] word) //We check for allowed chars only
@@ -59,23 +63,16 @@ public class GameModel {
         return isItMyTurn();
     }
 
-    public String getCurrentPlayersName() {return playersOrder.peek();}
-
-    public String getBoard() {
-        return board;
-    }
-
-    public HashMap<String,Integer> getPlayersAndScores()
-    {
-        return playersAndScores;
-    }
+    public HashMap<String,Integer> getPlayersAndScores() {return playersAndScores;}
 
     public boolean isItMyTurn()
     {
-        boolean res = playersOrder.peek().equals(ClientModel.getName());
-        if(res)
+        isMyTurn = playersOrder.peek().equals(ClientModel.getName());
+        if(isMyTurn)
             ClientCommunications.unlock();
-        return res; 
+        setChanged();
+        notifyObservers();
+        return isMyTurn;
     }
 
     public void close()
@@ -84,4 +81,11 @@ public class GameModel {
         playersOrder.clear();
         board = "";
     }
+
+    //Getters
+    public int getMyScore() {return playersAndScores.get(ClientModel.getName());}
+    public String getMyTiles() {return myTiles;}
+    public boolean getIsMyTurn() {return isMyTurn;}
+    public String getBoard() {return board;}
+    public String getCurrentPlayersName() {return playersOrder.peek();}
 }

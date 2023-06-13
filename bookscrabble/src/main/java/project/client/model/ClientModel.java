@@ -41,7 +41,6 @@ public class ClientModel {
     public MyHostServer getMyHostServer() {
         return MyHostServer.getHostServer();
     }
-    
     public static String getName(){return myName;}
     public ClientCommunications getMyConnectionToHost() {return myConnectionToHost;}
 }
