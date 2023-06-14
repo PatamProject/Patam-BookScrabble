@@ -51,6 +51,7 @@ public class ClientSideHandler implements RequestHandler{
                 Integer score = Integer.parseInt(args[0]);
                 if(score == 0 || score == -1) //Not boardLegal
                 {
+                    game.wordPlacement(false);
                     MyLogger.failedWordPlacement(score, false);
                     ClientCommunications.unlock();
                 }
@@ -58,6 +59,7 @@ public class ClientSideHandler implements RequestHandler{
                 {
                     game.updateScore(myName, score); //Update score
                     game.myTiles = args[1]; //Updated the tiles
+                    game.wordPlacement(true);
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(myName, score, "Q");
                     MyLogger.printTiles(game.myTiles); //Print my tiles
@@ -72,6 +74,7 @@ public class ClientSideHandler implements RequestHandler{
                 if(score == 0 || score == -1) //Not boardLegal
                 {
                     numOfChallenges++;
+                    game.wordPlacement(false);
                     MyLogger.failedWordPlacement(score, true);
                     ClientCommunications.unlock();
                 } 
@@ -79,6 +82,7 @@ public class ClientSideHandler implements RequestHandler{
                 {
                     game.updateScore(myName, score); //Update score
                     game.myTiles = args[1]; //Updated the tiles
+                    game.wordPlacement(true);
                     game.nextTurn(); //Next turn
                     MyLogger.playerPlacedWord(myName, score, "C");
                     MyLogger.printTiles(game.myTiles); //Print my tiles

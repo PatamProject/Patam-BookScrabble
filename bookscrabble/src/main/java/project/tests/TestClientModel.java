@@ -38,8 +38,10 @@ public class TestClientModel
     public static void main(String[] args) {
         MyServer myServer = new MyServer(1234,new BookScrabbleHandler());
         myServer.start();
-        ClientModel host = new ClientModel(true,"localhost",8002,"hostPlayer");
-        ClientModel player1 = new ClientModel(false,"localhost",8002,"player1");
+        ClientModel host = new ClientModel();
+        ClientModel player1 = new ClientModel();
+        host.createClient(true,"localhost",8002,"hostPlayer");
+        player1.createClient(false,"localhost",8002,"player1");
         TestMsgToBS();
         myServer.close();
         host.close();

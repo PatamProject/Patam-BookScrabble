@@ -114,7 +114,8 @@ public class RunClient{
 
         MyHostServer.getHostServer().start(hostPort, bs_port, bs_IP);
         //Now we create the host itself
-        myClient = new ClientModel(true, "localhost", hostPort, name); 
+        myClient = new ClientModel();
+        myClient.createClient(true, "localhost", hostPort, name);
     }
 
     private void joinGame(String name)
@@ -148,7 +149,8 @@ public class RunClient{
         } while (invalidInput);
 
         System.out.println("Connecting to host...");
-        myClient = new ClientModel(false, host_ip, host_port , name); //Guest client
+        myClient = new ClientModel();
+        myClient.createClient(false, host_ip, host_port , name); //Guest client
     }
 
     private boolean checkConnectionToHost() //Returns true if connected to host

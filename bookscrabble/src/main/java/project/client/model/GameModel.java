@@ -82,10 +82,26 @@ public class GameModel extends Observable {
         board = "";
     }
 
+    public void wordPlacement(boolean isLegal) 
+    {
+        setChanged();
+        notifyObservers(isLegal);
+    }
+
+    //Setters
+
+
     //Getters
     public int getMyScore() {return playersAndScores.get(ClientModel.getName());}
     public String getMyTiles() {return myTiles;}
     public boolean getIsMyTurn() {return isMyTurn;}
     public String getBoard() {return board;}
     public String getCurrentPlayersName() {return playersOrder.peek();}
+    public String getPlayersAndScoresAsString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for(String player : playersOrder)
+            sb.append(player).append(",").append(playersAndScores.get(player)).append("-");
+        return sb.toString();
+    }
 }
