@@ -47,12 +47,12 @@ public class GameViewModel extends Observable implements Observer {
     public void update(Observable o, Object arg) {
         if (o.equals(gameModel)) {
             if(arg.equals(false)) //failedWordPlacement
-            {
                 wasLastWordValid.set(false);
-            }
-            else
+            else // True / null
             {
-                wasLastWordValid.set(true);
+                if(arg.equals(true)) //successfulWordPlacement
+                    wasLastWordValid.set(true);
+
                 board.set(gameModel.getBoard());
                 currentPlayerName.set(gameModel.getCurrentPlayersName());
                 myTiles.set(gameModel.getMyTiles());

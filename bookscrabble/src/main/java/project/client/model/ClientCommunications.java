@@ -119,8 +119,11 @@ public class ClientCommunications{
         HashMap<String, Function<Void, Boolean>> commands = new HashMap<>(){{
             put("!help", (args) -> {
                 MyLogger.println("Available commands:");
-                for(String command : userCommands)
-                    MyLogger.print(command + " , ");
+                for(int i = 0; i < userCommands.size(); i++)
+                    if(i != userCommands.size() - 1)
+                        MyLogger.print(userCommands.get(i) + " , ");
+                    else
+                        MyLogger.println(userCommands.get(i));
                 MyLogger.println("");    
                 return false;
             });
@@ -194,7 +197,7 @@ public class ClientCommunications{
                             word = word.toUpperCase();
                             if(!requestHandler.game.isStringLegal(word.toCharArray()))
                             {
-                                MyLogger.println("Illegal word!");
+                                MyLogger.println("Illegal word or command!");
                                 allowedInput = false;
                             }
                             else
