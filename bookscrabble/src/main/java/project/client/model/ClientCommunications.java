@@ -196,17 +196,14 @@ public class ClientCommunications{
                         {
                             word = word.toUpperCase();
                             if(!requestHandler.game.isStringLegal(word.toCharArray()))
-                            {
                                 MyLogger.println("Illegal word or command!");
-                                allowedInput = false;
-                            }
                             else
                                 allowedInput = true;             
                         }
                     } while(!allowedInput);
 
                     if(skipTurn);
-                    else if(exit)
+                    if(exit)
                     {
                         requestHandler.isGameRunning = false;
                         break;    
@@ -221,10 +218,7 @@ public class ClientCommunications{
                             col = scanner.nextInt();
                             scanner.nextLine();
                             if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
-                            {
                                 MyLogger.println("Illegal row or col!\nRemember that the board is " + BOARD_SIZE + "x" + BOARD_SIZE + "!");
-                                allowedInput = false;
-                            }
                             else
                                 allowedInput = true;
                             
@@ -238,10 +232,7 @@ public class ClientCommunications{
                             {
                                 int vertical = scanner.nextInt();
                                 if(vertical != 0 && vertical != 1)
-                                {
                                     MyLogger.println("Illegal input! Try again");
-                                    allowedInput = false;
-                                }
                                 else
                                 {
                                     isVertical = (vertical == 1);
@@ -273,17 +264,13 @@ public class ClientCommunications{
                             String decision = scanner.nextLine();
                             int res = Integer.parseInt(decision);
                             if(res != 1 && res != 2 && res != 3)
-                            {
                                 MyLogger.println("Illegal input! Try again");
-                                allowedInput = false;
-                            }
                             else
                             {
                                 allowedInput = true;
                                 switch (res) {
                                     case 1: //Trying again
-                                        shouldPlayerWaitAgain = false; //Player should not wait since he wants to try again
-                                        break;
+                                        break; //Player should not wait since he wants to try again
                                     case 2: //Skipping turn
                                         sendAMessage(myID, myName +"&skipTurn");
                                         shouldPlayerWaitAgain = true;

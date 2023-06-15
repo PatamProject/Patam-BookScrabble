@@ -9,10 +9,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class GameViewModel extends Observable implements Observer {
-    ClientModel clientModel;
-    GameModel gameModel;
+    ClientModel clientModel; //Model representation for client info
+    GameModel gameModel; // Model representation for game info
     //Game info
-    public StringProperty board, currentPlayerName, myTiles, playersAndScores; //Game info
+    public StringProperty board, currentPlayerName, myTiles, playersAndScores;
     public IntegerProperty myScore;
     //Client info
     public BooleanProperty isHost;
@@ -26,7 +26,7 @@ public class GameViewModel extends Observable implements Observer {
     public int col = 0;
     public boolean isVertical;
 
-    public GameViewModel(GameModel gameModel, ClientModel clientModel) {
+    public GameViewModel(GameModel gameModel, ClientModel clientModel) { //Ctor
         this.clientModel = clientModel;
         this.gameModel = gameModel;
         this.board = new SimpleStringProperty(); // AB-C----&D--E----&----T.... (A,B,C,D,E,T are tiles, - is empty, & is new line)
@@ -44,7 +44,7 @@ public class GameViewModel extends Observable implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Observable o, Object arg) { //Receiving updates from the class observables
         if (o.equals(gameModel)) {
             if(arg.equals(false)) //failedWordPlacement
                 wasLastWordValid.set(false);
@@ -58,13 +58,15 @@ public class GameViewModel extends Observable implements Observer {
                 myTiles.set(gameModel.getMyTiles());
                 playersAndScores.set(gameModel.getPlayersAndScoresAsString());
                 myScore.set(gameModel.getMyScore());
-                isHost.set(clientModel.isHost());
-                myName.set(ClientModel.getName());
-                hostIP.set(clientModel.getHostIP());
-                BsIP.set(clientModel.getBsIP());
-                hostPort.set(clientModel.getHostPort());
-                BsPort.set(clientModel.getBsPort());
             }
+        }
+        if (o.equals(clientModel)) {
+            isHost.set(clientModel.isHost());
+            myName.set(ClientModel.getName());
+            hostIP.set(clientModel.getHostIP());
+            BsIP.set(clientModel.getBsIP());
+            hostPort.set(clientModel.getHostPort());
+            BsPort.set(clientModel.getBsPort());
         }
     }
 
@@ -78,7 +80,7 @@ public class GameViewModel extends Observable implements Observer {
     public void createClient() {clientModel.createClient(isHost.get(), hostIP.get(), hostPort.get(), myName.get());}
 
     //Host only options
-    public void sendStartgameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame");}
+    public void sendStartGameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame");}
     public void sendEndgameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame");}
 
     //Player options
@@ -98,7 +100,6 @@ public class GameViewModel extends Observable implements Observer {
         ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&C:" + lastWord + "," + row + "," + col + "," + isVertical);
     }
 
-
 /* 
     //Updates from View -> Model//
 
@@ -116,7 +117,5 @@ public class GameViewModel extends Observable implements Observer {
     - send skipTurn ✓
     - send word placement ✓
     - send challenge option ✓
-
 */
-
 }

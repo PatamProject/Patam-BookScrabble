@@ -81,32 +81,28 @@ public class Rack {
 
     public void removeTiles(Tile... tilesToRemove)
     {
-        for (int i = 0; i < tilesToRemove.length; i++) {
-            if(tiles.containsKey(tilesToRemove[i]))
-            {
-                tiles.put(tilesToRemove[i], tiles.get(tilesToRemove[i]) - 1);
-                if(tiles.get(tilesToRemove[i]) == 0)
-                    tiles.remove(tilesToRemove[i]);
+        for (Tile tile : tilesToRemove)
+            if (tiles.containsKey(tile)) {
+                tiles.put(tile, tiles.get(tile) - 1);
+                if (tiles.get(tile) == 0)
+                    tiles.remove(tile);
             }
-        }
     }
 
     public void returnTilesToRack(Tile... tilesToAdd) //Used to pass tiles back to rack after a failed work placement
     {
-        for (int i = 0; i < tilesToAdd.length; i++) {
-            tiles.put(tilesToAdd[i], tiles.getOrDefault(tilesToAdd[i], 0) + 1);
-        }
+        for (Tile tile : tilesToAdd)
+            tiles.put(tile, tiles.getOrDefault(tile, 0) + 1);
     }
 
     @Override
     public String toString() //returns a string of all the tiles in the rack (including duplicates)
     {
         StringBuilder sb = new StringBuilder();
-        for (Tile tile : tiles.keySet()) {
+        for (Tile tile : tiles.keySet())
             for (int i = 0; i < tiles.get(tile); i++) {
                 sb.append(tile.letter);
             }
-        }
         return sb.toString();
     }
 

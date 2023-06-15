@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-// This class is used to handle the host's responses
+// This class is used to handle the host's responses and updates
 public class ClientSideHandler implements RequestHandler{
     GameModel game;
     PrintWriter out;
@@ -22,7 +22,7 @@ public class ClientSideHandler implements RequestHandler{
     private int numOfChallenges = 0;
     boolean isGameRunning = false;
 
-    public ClientSideHandler(PrintWriter out) {
+    public ClientSideHandler(PrintWriter out) { //Ctor
         myName = ClientModel.getName();
         game = new GameModel();
         this.out = out;

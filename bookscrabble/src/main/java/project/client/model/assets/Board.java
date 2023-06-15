@@ -2,7 +2,7 @@ package project.client.model.assets;
 import java.util.ArrayList;
 
 public class Board {
-    private static Board myBoard = null; //singelton
+    private static Board myBoard = null; //singleton
     Tile[][] tiles = new Tile[SIZE][SIZE];
     static final int SIZE = 15;
     static int num_Of_Tiles_Placed = 0;
@@ -49,7 +49,7 @@ public class Board {
 
     boolean boardLegal(Word w) ////boardLegal checks if the word being placed is legally placed:
     //1-A word must be fully inside the board
-    //2-A word must not be placed on top of exisiting tiles
+    //2-A word must not be placed on top of existing tiles
     //3-The first word must be placed in the center square
     //4-A word must be connected to other words unless it's the first word
     {
@@ -100,7 +100,7 @@ public class Board {
         return true;  
     }
 
-    private boolean isPlacedOverTiles(Word w) //is the word placed over exisiting tiles
+    private boolean isPlacedOverTiles(Word w) //is the word placed over existing tiles
     {
        for (int i = w.getRow(),j = w.getCol(), index = 0; index < w.tiles.length; index++) {
             if(w.tiles[index] != null)
@@ -136,7 +136,7 @@ public class Board {
         for (Tile t : w.tiles) { 
             if(t == null) //the word has a null char inside
                 if(tiles[w.getRow() + Rindex][w.getCol() + Cindex] != null)
-                    return true; //null char in word has an exisiting tile placed on board
+                    return true; //null char in word has an existing tile placed on board
                 else
                     return false;
 
@@ -185,18 +185,18 @@ public class Board {
         return true;    
     }
 
-    boolean dictionaryLegal(Word... words) //Not used due to sever-client seperation
+    boolean dictionaryLegal(Word... words) //Not used due to sever-client separation
     {
         return true;
     }
 
     ArrayList<Word> getWords(Word w) // returns all the words created by placing 'w' on the board
     {
-        if(!boardLegal(w)) // the word must be boardlegal
+        if(!boardLegal(w)) // the word must be boardLegal
             return null;   
         Tile[][] tmpBoard = getTiles();
-        ArrayList<Word> newWords = new ArrayList<Word>();
-        int startIndex = 0, endIndex = 0;
+        ArrayList<Word> newWords = new ArrayList<>();
+        int startIndex, endIndex;
         placeWord(tmpBoard, w); //place word temporarily
         if(w.isVertical())
         {
@@ -233,7 +233,7 @@ public class Board {
         return newWords; //All words are now boardLegal
     }
 
-    private int searchWordIndex(Tile[][] boardTiles, int row, int col, int diraction) //returns the starting index of the word on 'boardTiles'
+    private int searchWordIndex(Tile[][] boardTiles, int row, int col, int direction) //returns the starting index of the word on 'boardTiles'
     {
         for (int count = 0; count < SIZE; count++)
         {
@@ -241,7 +241,7 @@ public class Board {
             boardTiles[row][col] == null) //tile outside board or null
                 break; //stop checking
         
-            switch (diraction) { //checks the next tile according to diraction
+            switch (direction) { //checks the next tile according to direction
                 case S_UP:
                     row--;
                     break;
@@ -257,7 +257,7 @@ public class Board {
             } 
         }
 
-        switch (diraction) { //go back one tile
+        switch (direction) { //go back one tile
             case S_UP:
                 row++;
                 break;
@@ -272,7 +272,7 @@ public class Board {
                 break;
         }
 
-        if(diraction == S_UP || diraction == S_DOWN) // vertical
+        if(direction == S_UP || direction == S_DOWN) // vertical
             return row;
         else //(not vertical)
             return col;  
@@ -297,7 +297,7 @@ public class Board {
     {
         int score = 0;
         int wordMult = 1;
-        int tileScore = 0;
+        int tileScore;
         for (int i = w.getRow(), j = w.getCol(), count = 0; count < w.length;count++)
         {
             if(w.tiles[count] == null)

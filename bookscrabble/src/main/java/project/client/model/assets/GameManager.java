@@ -112,10 +112,10 @@ public class GameManager{
     { //A word is created from the tiles taken from the player and from the board respectively 
         Player p = players.get(pName);
         if(p == null)
-        return null;
+            return null;
         
         int tmpRow = row, tmpCol = col;
-        Tile tile = null;
+        Tile tile;
         ArrayList<Tile> tilesArr = new ArrayList<>();
         Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
         for (int i = 0; i < tiles.length(); i++)
@@ -136,9 +136,9 @@ public class GameManager{
                 
             //Adjust tmpRow and tmpCol according to vertical
             if(vertical)
-            tmpRow++;    
+                tmpRow++;
             else
-            tmpCol++;     
+                tmpCol++;
         }
         Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
         return new Word(wordTiles, row, col, vertical);
@@ -154,11 +154,11 @@ public class GameManager{
         ArrayList<Word> words;
         words = board.getWords(w); //checks boardLegal
         if(words == null)
-        return null; //Word is not board legal
+            return null; //Word is not board legal
         
         String[] queryWords = new String[words.size()]; //We change all the words to strings for query
         for (int i = 0; i < words.size(); i++)
-        queryWords[i] = words.get(i).toString();
+            queryWords[i] = words.get(i).toString();
         return queryWords;
     }
 

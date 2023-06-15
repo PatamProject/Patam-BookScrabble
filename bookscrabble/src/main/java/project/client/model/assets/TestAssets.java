@@ -3,7 +3,6 @@ package project.client.model.assets;
 import project.client.model.assets.Tile.Bag;
 
 public class TestAssets {
-	
 	public static void testBag() {
 		Bag b=Tile.Bag.getBag();
 		Bag b1=Tile.Bag.getBag();
@@ -37,8 +36,6 @@ public class TestAssets {
 		
 	}
 	
-	
-	
 	private static Tile[] get(String s) {
 		Tile[] ts=new Tile[s.length()];
 		int i=0;
@@ -49,13 +46,11 @@ public class TestAssets {
 		return ts;
 	}
 	
-	
 	public static void testBoard() {
 		Board b = Board.getBoard();
 		if(b!=Board.getBoard())
 			System.out.println("board should be a Singleton (-5)");
-		
-		
+
 		Bag bag = Bag.getBag();
 		Tile[] ts=new Tile[10];
 		for(int i=0;i<ts.length;i++) 
@@ -94,7 +89,6 @@ public class TestAssets {
 		Word bit=new Word(get("BIT"), 10, 4, false);
 		if(b.tryPlaceWord(bit)!=22)
 			System.out.println("problem in placeWord for 5th word (-15)");
-		
 	}
 
 	public static void main(String[] args) {
@@ -102,5 +96,4 @@ public class TestAssets {
 		testBoard(); // 70 points
 		System.out.println("done");				
 	}
-
 }

@@ -11,15 +11,15 @@ public class ClientModel extends Observable{
     public boolean isConnectedToHost = false;
     boolean isHost = false;
 
-    public ClientModel(){}
+    public ClientModel(){} //Ctor
 
-    public void createClient(boolean isHost, String hostIP, int hostPort, String name) //Only activate after setting all the needed ip's and ports
+    public void createClient(boolean isHost, String hostIP, int hostPort, String name) //Only activate after setting all the needed IPs and ports
     {
         myName = name;
         if(!isHost)
-        myHostServer = null;
+            myHostServer = null;
         else //isHost = true
-        myHostServer = MyHostServer.getHostServer(); //Create host-side   
+            myHostServer = getMyHostServer(); //Create host-side
         
         isConnectedToHost = createClientCommunications(hostIP, hostPort);    
     }
@@ -37,17 +37,15 @@ public class ClientModel extends Observable{
         return true;
     }
     
-    
-    
-    public void close()
+    public void close() //Close method for ClientModel
     {
         if(myHostServer != null)
-        myHostServer.close();
+            myHostServer.close();
         if(myConnectionToHost != null)    
-        myConnectionToHost.close();
+            myConnectionToHost.close();
     }
 
-    private void setChangedAndNotify()
+    private void setChangedAndNotify() //Notifies the observers about a change
     {
         setChanged();
         notifyObservers();

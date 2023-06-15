@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 import project.client.model.ClientModel;
 
-public class MyLogger {
+public class MyLogger { // A class to print to the CMD
     private static Scanner myScanner = new Scanner(System.in);
 
     public MyLogger(){}
@@ -93,7 +93,7 @@ public class MyLogger {
     public static void printPlayerAndScore(HashMap<String, Integer> players)
     {
         for (String name : players.keySet())
-            println(name + " has " + players.get(name) + " points!");
+            println(name.equals(ClientModel.getName()) ? "You have " + players.get(name) + " points!" : name + " has " + players.get(name) + " points!");
     }
 
     public static void nextPlayer(String nextPlayer){ println("Player " + nextPlayer + " is playing now!");}
@@ -114,15 +114,8 @@ public class MyLogger {
 
     public static void failedWordPlacement(int score, boolean isChallenge)
     {
-        if(score == 0)
-            println("Invalid word placement!");
-        else // score == -1
-            println("Illegal word!");    
-
-        if(isChallenge)    
-            println("Your challenge has failed! Choose another word!");
-        else
-            println("You can either try again or skip your turn or challenge the dictionary!");
+        println(score == 0 ? "Invalid word placement!" : "Illegal word!"); // else - score == -1
+        println(isChallenge ? "Your challenge has failed! Choose another word!" : "You can either try again or skip your turn or challenge the dictionary!");
     }
 
     public static void gameEnded(String player) {println("Player " + player + " won the game!");}

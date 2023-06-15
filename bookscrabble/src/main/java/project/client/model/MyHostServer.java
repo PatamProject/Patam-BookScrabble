@@ -152,8 +152,7 @@ public class MyHostServer{
                     tmp = command_args[1].split(","); //Split the arguments 
                     args = new String[tmp.length + 1]; //Add the sender name to the arguments
                     args[0] = sender;
-                    for (int i = 1; i < args.length; i++)
-                        args[i] = tmp[i-1];  
+                    System.arraycopy(tmp, 0, args, 1, args.length - 1);
                 }
                 //Check request
                 ArrayList<String> acceptableCommands = new ArrayList<>(){{
