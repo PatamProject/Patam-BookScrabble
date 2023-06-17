@@ -8,7 +8,7 @@ import project.client.model.GameModel;
 import java.util.Observable;
 import java.util.Observer;
 
-public class GameViewModel extends Observable implements Observer {
+public class ViewModel extends Observable implements Observer {
     ClientModel clientModel; //Model representation for client info
     GameModel gameModel; // Model representation for game info
     //Game info
@@ -26,7 +26,7 @@ public class GameViewModel extends Observable implements Observer {
     public int col = 0;
     public boolean isVertical;
 
-    public GameViewModel(GameModel gameModel, ClientModel clientModel) { //Ctor
+    public ViewModel(GameModel gameModel, ClientModel clientModel) { //Ctor
         this.clientModel = clientModel;
         this.gameModel = gameModel;
         this.board = new SimpleStringProperty(); // AB-C----&D--E----&----T.... (A,B,C,D,E,T are tiles, - is empty, & is new line)

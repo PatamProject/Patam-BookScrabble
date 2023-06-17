@@ -1,0 +1,16 @@
+.menu-button {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-background-color: #1552c4;
+    -fx-text-fill: white;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 5px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #1c62ff;
+}
+
+.menu-button:pressed {
+    -fx-background-color: #0e3baf;
+}
