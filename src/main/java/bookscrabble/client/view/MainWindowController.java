@@ -27,7 +27,9 @@ public class MainWindowController implements Observer {
     public Label errorLabel;
 
     public void setViewModel(ViewModel vm) { // Method to set all bindings and the ViewModel
-        this.vm = vm;
+        if(vm != null)
+            this.vm = vm;
+            
         if(MainApplication.getRoot().equals("ClientMode"))
             vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false));
 
