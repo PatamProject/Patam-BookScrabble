@@ -1,0 +1,30 @@
+.menu-button {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-background-color: #1552c4;
+    -fx-text-fill: white;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 5px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #1c62ff;
+}
+
+.menu-button:pressed {
+    -fx-background-color: #0e3baf;
+}
+
+.background {
+    -fx-background-image: url("pics/welcomePic.png");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+}
+
+.title-label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 20px;
+    -fx-text-fill: red;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 5px;
+}
