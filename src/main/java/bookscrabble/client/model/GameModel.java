@@ -88,7 +88,7 @@ public class GameModel extends Observable {
     }
 
     //Getters
-    public int getMyScore() {return playersAndScores.get(ClientModel.getName());}
+    public Integer getMyScore() {return playersAndScores.get(ClientModel.getName());}
     public String getMyTiles() {return myTiles;}
     public String getBoard() {return board;}
     public String getCurrentPlayersName() {return playersOrder.peek();}

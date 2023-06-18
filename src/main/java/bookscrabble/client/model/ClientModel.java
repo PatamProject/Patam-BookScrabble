@@ -62,9 +62,9 @@ public class ClientModel extends Observable{
     //getters
     public boolean isHost() {return isHost;}
     public String getHostIP() {return hostIP;}
-    public int getHostPort() {return hostPort;}
+    public Integer getHostPort() {return hostPort;}
     public String getBsIP() {return BsIP;}
-    public int getBsPort() {return BsPort;}
+    public Integer getBsPort() {return BsPort;}
     public MyHostServer getMyHostServer() { return MyHostServer.getHostServer();}
     public static String getName(){return myName;}
     public ClientCommunications getMyConnectionToHost() {return myConnectionToHost;}

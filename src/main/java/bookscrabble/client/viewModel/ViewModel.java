@@ -14,17 +14,17 @@ public class ViewModel extends Observable implements Observer {
     GameModel gameModel; // Model representation for game info
     //Game info
     public StringProperty board, currentPlayerName, myTiles, playersAndScores;
-    public IntegerProperty myScore;
+    public StringProperty myScore;
     //Client info
     public BooleanProperty isHost;
     public StringProperty myName, hostIP, BsIP;
-    public IntegerProperty hostPort, BsPort;
+    public StringProperty hostPort, BsPort;
 
     //Related to word placement
     public BooleanProperty wasLastWordValid;
     public String lastWord;
-    public int row = 0;
-    public int col = 0;
+    public Integer row = 0;
+    public Integer col = 0;
     public boolean isVertical;
 
     public ViewModel(GameModel gameModel, ClientModel clientModel) { //Ctor
@@ -32,15 +32,15 @@ public class ViewModel extends Observable implements Observer {
         this.gameModel = gameModel;
         this.board = new SimpleStringProperty(); // AB-C----&D--E----&----T.... (A,B,C,D,E,T are tiles, - is empty, & is new line)
         this.currentPlayerName = new SimpleStringProperty();
-        this.myScore = new SimpleIntegerProperty();
+        this.myScore = new SimpleStringProperty();
         this.myTiles = new SimpleStringProperty();
         this.myName = new SimpleStringProperty();
         this.playersAndScores = new SimpleStringProperty(); // name1,score1-name2,score2-... 
         this.isHost = new SimpleBooleanProperty();
         this.hostIP = new SimpleStringProperty();
-        this.hostPort = new SimpleIntegerProperty();
+        this.hostPort = new SimpleStringProperty();
         this.BsIP = new SimpleStringProperty();
-        this.BsPort = new SimpleIntegerProperty();
+        this.BsPort = new SimpleStringProperty();
         this.wasLastWordValid = new SimpleBooleanProperty();
     }
 
@@ -58,7 +58,7 @@ public class ViewModel extends Observable implements Observer {
                 currentPlayerName.set(gameModel.getCurrentPlayersName());
                 myTiles.set(gameModel.getMyTiles());
                 playersAndScores.set(gameModel.getPlayersAndScoresAsString());
-                myScore.set(gameModel.getMyScore());
+                myScore.set(gameModel.getMyScore().toString());
             }
         }
         if (o.equals(clientModel)) {
@@ -66,8 +66,8 @@ public class ViewModel extends Observable implements Observer {
             myName.set(ClientModel.getName());
             hostIP.set(clientModel.getHostIP());
             BsIP.set(clientModel.getBsIP());
-            hostPort.set(clientModel.getHostPort());
-            BsPort.set(clientModel.getBsPort());
+            hostPort.set(clientModel.getHostPort().toString());
+            BsPort.set(clientModel.getBsPort().toString());
         }
     }
 
@@ -75,10 +75,10 @@ public class ViewModel extends Observable implements Observer {
     public void setIfHost() {clientModel.setIfHost(isHost.get());}
     public void setMyName() {clientModel.setMyName(myName.get());}    
     public void setHostIP() {clientModel.setHostIP(hostIP.get());}
-    public void setHostPort() {clientModel.setHostPort(hostPort.get());}
+    public void setHostPort() {clientModel.setHostPort(Integer.parseInt(hostPort.get()));}
     public void setBsIP() {clientModel.setBsIP(BsIP.get());}
-    public void setBsPort() {clientModel.setBsPort(BsPort.get());}
-    public void createClient() {clientModel.createClient(isHost.get(), hostIP.get(), hostPort.get(), myName.get());}
+    public void setBsPort() {clientModel.setBsPort(Integer.parseInt(BsPort.get()));}
+    public void createClient() {clientModel.createClient(isHost.get(), hostIP.get(), Integer.parseInt(hostPort.get()), myName.get());}
 
     //Host only options
     public void sendStartGameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame");}

@@ -1,5 +1,6 @@
 package bookscrabble.client.view;
 
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,37 +10,50 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-//import project.client.viewModel.ViewModel;
 
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
 import bookscrabble.client.MainApplication;
+import bookscrabble.client.MyLogger;
+import bookscrabble.client.viewModel.ViewModel;
 
 public class MainWindowController implements Observer {
-    //ViewModel vm;
+    ViewModel vm;
+
     @FXML
     public Button startButton, exitButton, hostButton, guestButton, connectButton, goBackButton;
     @FXML
     public TextField nameTextField, ipTextField, portTextField, serverIpTextField, serverPortTextField;
 
-//    public void setViewModel(ViewModel vm) { // Method to set all bindings and the ViewModel
-//        this.vm = vm;
-//        vm.myName.bind(nameTextField.textProperty());
-//        vm.hostIP.bind(ipTextField.textProperty());
-//        vm.BsIP.bind(serverIpTextField.textProperty());
-//        //TODO: find solution for ports - binding between text to INTEGER
-//        //...
-//    }
+    public void setViewModel(ViewModel vm) { // Method to set all bindings and the ViewModel
+        this.vm = vm;
+        if(MainApplication.getRoot().equals("ClientMode"))
+            vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false));
+
+        if(MainApplication.getRoot().equals("HostMenu") || MainApplication.getRoot().equals("GuestMenu"))
+        {
+            vm.myName.bind(nameTextField.textProperty());
+            vm.hostPort.bind(portTextField.textProperty());
+            vm.hostIP.bind(ipTextField.textProperty());
+        }
+
+        if(MainApplication.getRoot().equals("HostMenu"))
+        {
+            vm.BsIP.bind(serverIpTextField.textProperty());
+            vm.BsPort.bind(serverPortTextField.textProperty());  
+        }
+    }
 
     @FXML
     public void buttonToChooseModeClicked(ActionEvent event) {
         try {
             MainApplication.setRoot("ClientMode");
         } catch (IOException e) {
-            e.printStackTrace();
+            MyLogger.logError(e.getMessage());
         }
+        setViewModel(this.vm);
     }
 
     @FXML
@@ -53,8 +67,9 @@ public class MainWindowController implements Observer {
         try {
             MainApplication.setRoot("HostMenu");
         } catch (IOException e) {
-            e.printStackTrace();
+            MyLogger.logError(e.getMessage());
         }
+        setViewModel(this.vm);
     }
 
     @FXML
@@ -62,8 +77,9 @@ public class MainWindowController implements Observer {
         try {
             MainApplication.setRoot("GuestMenu");
         } catch (IOException e) {
-            e.printStackTrace();
+            MyLogger.logError(e.getMessage());
         }
+        setViewModel(this.vm);
     }
 
     @FXML
@@ -71,7 +87,7 @@ public class MainWindowController implements Observer {
         try {
             MainApplication.setRoot("Main");
         } catch (IOException e) {
-            e.printStackTrace();
+            MyLogger.logError(e.getMessage());
         }
     }
 
