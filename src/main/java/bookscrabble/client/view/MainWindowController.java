@@ -9,7 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -47,55 +46,25 @@ public class MainWindowController implements Observer {
         }
     }
 
-    @FXML
-    public void buttonToChooseModeClicked(ActionEvent event) {
-        try {
-            MainApplication.setRoot("ClientMode");
-        } catch (IOException e) {
-            MyLogger.logError(e.getMessage());
-        }
-        setViewModel(this.vm);
-    }
-
-    @FXML
+    @FXML // Closing the app
     public void exitButtonClicked(ActionEvent event) {
         Stage stage = (Stage) exitButton.getScene().getWindow();
         stage.close();
     }
 
-    @FXML
-    private void hostButtonClicked(ActionEvent event) { // Showing the host menu bar
-        try {
-            MainApplication.setRoot("HostMenu");
-        } catch (IOException e) {
-            MyLogger.logError(e.getMessage());
-        }
-        setViewModel(this.vm);
-    }
+    @FXML // Showing the ModeMenu
+    public void chooseModeMenu(ActionEvent event) {switchRoot("ClientMode"); setViewModel(this.vm);}
+    @FXML // Showing the HostMenu
+    private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); setViewModel(this.vm);}
+    @FXML // Showing the GuestMenu
+    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); setViewModel(this.vm);}
+    @FXML // Showing MainMenu
+    private void returnToWelcomePage(ActionEvent event) {switchRoot("Main");}
 
-    @FXML
-    private void guestButtonClicked(ActionEvent event) { // Showing the guest menu bar
-        try {
-            MainApplication.setRoot("GuestMenu");
-        } catch (IOException e) {
-            MyLogger.logError(e.getMessage());
-        }
-        setViewModel(this.vm);
-    }
-
-    @FXML
-    private void returnToWelcomePage(ActionEvent event) { // Showing the guest menu bar
-        try {
-            MainApplication.setRoot("Main");
-        } catch (IOException e) {
-            MyLogger.logError(e.getMessage());
-        }
-    }
-
-    @FXML
-    public void creatingGameLobby(ActionEvent event) { // Creating the game lobby
+    @FXML // Creating the game lobby
+    public void creatingGameLobby(ActionEvent event) {
         if (nameTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty() || serverIpTextField.getText().isEmpty() || serverPortTextField.getText().isEmpty())
-            errorLabel.setText("Please fill in all fields.");
+            errorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
             vm.setBsIP();
             vm.setBsPort();
@@ -103,10 +72,10 @@ public class MainWindowController implements Observer {
         }
     }
 
-    @FXML
-    public void connectToHostButtonClicked(ActionEvent event) { // connects the user to the host
+    @FXML // Connects the user to the host
+    public void connectToHostButtonClicked(ActionEvent event) {
         if (nameTextField.getText().isEmpty() || hostIpTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty())
-            errorLabel.setText("Please fill in all fields.");
+            errorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
             hostIpTextField.setText("localhost");
             sendInitialInfoToModel();
@@ -116,7 +85,15 @@ public class MainWindowController implements Observer {
     @Override
     public void update(Observable o, Object arg) {} //Empty update method
 
-    private void sendInitialInfoToModel() {
+    private void switchRoot(String r) { // Switching between different roots
+        try {
+            MainApplication.setRoot(r);
+        } catch (IOException e) {
+            MyLogger.logError(e.getMessage());
+        }
+    }
+
+    private void sendInitialInfoToModel() { // Method to update the model with the user input
         vm.setMyName();
         vm.setIfHost();
         vm.setHostIP();

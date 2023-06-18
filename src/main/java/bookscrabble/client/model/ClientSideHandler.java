@@ -34,9 +34,9 @@ public class ClientSideHandler implements RequestHandler{
             { //Successful join, args[0] = id, args[1]... = players
                 id = Integer.parseInt(args[0]);
                 String[] connectedPlayers = new String[args.length - 1];
-                System.arraycopy(args, 1, connectedPlayers, 0, args.length - 1);
-                
-                game.addPlayers(myName); //Add myself to the game
+                connectedPlayers[0] = myName; //Adding myself to the game
+                System.arraycopy(args, 1, connectedPlayers, 1, args.length - 1);
+
                 game.addPlayers(connectedPlayers); //Add the rest of existing players
                 for (String p : connectedPlayers)
                     MyLogger.playerJoined(p);
