@@ -24,9 +24,11 @@ public class GameModel extends Observable {
         notifyObservers();
     }
 
-    public void addPlayers(String... players) { //Adds the players of the game after it starts
+    public void addPlayers(String... players) { //Adds the players of the game
         for (String player : players)
             this.playersAndScores.put(player, 0); //Each player starts with score 0
+        setChanged();
+        notifyObservers();
     }
 
     public void removePlayer(String player)
