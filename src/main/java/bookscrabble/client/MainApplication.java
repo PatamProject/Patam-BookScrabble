@@ -14,7 +14,6 @@ import bookscrabble.client.view.MainWindowController;
 import bookscrabble.client.viewModel.ViewModel;
 
 public class MainApplication extends Application {
-
     private static Scene scene;
     private static FXMLLoader fxmlLoader = new FXMLLoader();
 
@@ -30,8 +29,6 @@ public class MainApplication extends Application {
         stage.setTitle("SCRABBLE GAME");
         stage.setScene(scene);
         stage.setResizable(true);
-        stage.setMinWidth(800);
-        stage.setMinHeight(600);
 
         MainWindowController mwc = fxmlLoader.getController();
         mwc.setViewModel(vm);

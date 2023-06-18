@@ -17,14 +17,14 @@
                 </font>
             </Label>
             <ImageView fitHeight="247.0" fitWidth="295.0" layoutY="153.0">
-                <Image url="@../pictures/images_2.jpeg"/>
+                <Image url="@../pictures/images_2.jpeg" />
             </ImageView>
         </AnchorPane>
     </left>
     <right>
         <AnchorPane prefHeight="400.0" prefWidth="338.0" BorderPane.alignment="CENTER">
-            <Button fx:id="startButton" alignment="CENTER" contentDisplay="CENTER" layoutX="-46.0" layoutY="111.0" mnemonicParsing="false" onAction="#buttonToChooseModeClicked" prefHeight="41.0" prefWidth="91.0" text="start game" />
-            <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" layoutX="-46.0" layoutY="170.0" mnemonicParsing="false" onAction="#exitButtonClicked" prefHeight="41.0" prefWidth="91.0" text="Exit" />
+            <Button fx:id="startButton" alignment="CENTER" contentDisplay="CENTER" layoutX="-32.0" layoutY="111.0" mnemonicParsing="false" onAction="#buttonToChooseModeClicked" prefHeight="41.0" prefWidth="91.0" text="start game" />
+            <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" layoutX="-32.0" layoutY="169.0" mnemonicParsing="false" onAction="#exitButtonClicked" prefHeight="41.0" prefWidth="91.0" text="Exit" />
             <ImageView fitHeight="185.0" fitWidth="263.0" layoutX="52.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true">
                 <Image url="@../pictures/images_1.jpeg" />
             </ImageView>
