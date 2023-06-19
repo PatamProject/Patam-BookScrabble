@@ -28,7 +28,7 @@ public class MainWindowController implements Observer, Initializable {
     @FXML
     public TextField nameTextField, hostIpTextField, hostPortTextField, serverIpTextField, serverPortTextField;
     @FXML
-    public Label errorLabel, messageLabel;
+    public Label modelErrorLabel, viewErrorLabel, messageLabel;
 
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
 
@@ -47,7 +47,7 @@ public class MainWindowController implements Observer, Initializable {
             vm.myName.bind(nameTextField.textProperty());
             vm.hostPort.bind(hostPortTextField.textProperty());
             vm.hostIP.bind(hostIpTextField.textProperty());
-            errorLabel.textProperty().bind(vm.errorMessage);
+            modelErrorLabel.textProperty().bind(vm.errorMessage);
             isConnectedToGame.bind(vm.isConnectedToHost);
         }
 
@@ -76,7 +76,7 @@ public class MainWindowController implements Observer, Initializable {
     @FXML // Creating the game lobby
     public void creatingGameLobby(ActionEvent event) {
         if (nameTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty() || serverIpTextField.getText().isEmpty() || serverPortTextField.getText().isEmpty())
-            errorLabel.setText("Please fill in all fields."); // Preventing empty field
+            viewErrorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
             messageLabel.setText("Creating game lobby...");
             vm.setBsIP();
@@ -90,7 +90,7 @@ public class MainWindowController implements Observer, Initializable {
     @FXML // Connects the user to the host
     public void connectToHostButtonClicked(ActionEvent event) {
         if (nameTextField.getText().isEmpty() || hostIpTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty())
-            errorLabel.setText("Please fill in all fields."); // Preventing empty field
+            viewErrorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
             messageLabel.setText("Connecting to host...");
             hostIpTextField.setText("localhost");
@@ -106,7 +106,7 @@ public class MainWindowController implements Observer, Initializable {
         {
             if(timeOutCounter == 50) // If the connection times out (5 seconds)
             {
-                errorLabel.setText(failedMessage);
+                modelErrorLabel.setText(failedMessage);
                 return false;
             }
 
@@ -117,7 +117,7 @@ public class MainWindowController implements Observer, Initializable {
                 MyLogger.logError(e.getMessage());
             }
         } // Waiting for the connection to be established
-        errorLabel.setText(successMessage);
+        modelErrorLabel.setText(successMessage);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {}

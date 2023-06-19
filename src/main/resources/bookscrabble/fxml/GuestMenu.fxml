@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bookscrabble.client.view.MainWindowController">
     <Label text="Connect to a host:" textFill="#1552c4" underline="true">
         <font>
             <Font name="Guttman Haim-Condensed" size="18.0" />
@@ -28,7 +28,13 @@
             <Insets top="25.0" />
         </VBox.margin></Button>
     <Button fx:id="goBackButton" onAction="#chooseModeMenu" text="Go Back" />
-    <Label fx:id="errorLabel" textFill="red" />
+    <Label fx:id="modelErrorLabel" textFill="red">
+      <graphic>
+          <Label fx:id="messageLabel" textFill="black">
+            <graphic>
+               <Label fx:id="viewErrorLabel" textFill="red" />
+            </graphic></Label>
+      </graphic></Label>
 
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="2437b60d-bf4f-4bfb-9e33-0e41e967745a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/MainApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GuestMenu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GuestMenu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/HostMenu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/HostMenu.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,26 +148,6 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java</url>
-          <line>64</line>
-          <properties class="bookscrabble.client.view.MainWindowController" method="creatingGameLobby">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java</url>
-          <line>68</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
