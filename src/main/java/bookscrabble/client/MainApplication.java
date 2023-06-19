@@ -18,6 +18,10 @@ public class MainApplication extends Application {
     private static FXMLLoader fxmlLoader = new FXMLLoader();
     static ViewModel vm;
 
+    public static void main(String[] args) {
+        launch();
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         GameModel gameModel = new GameModel();
@@ -49,9 +53,5 @@ public class MainApplication extends Application {
 
     public static String getRoot() {
         return fxmlLoader.getLocation().getPath();
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 }

@@ -158,56 +158,67 @@ public class ClientSideHandler implements RequestHandler{
         errorHandler = new HashMap<>(){{
             put(Error_Codes.UNKNOWN_CMD, (String[] args) -> 
             { 
-                MyLogger.println("Unknown command");
+                game.setErrorMessage("Unknown command");
+                MyLogger.println(game.getErrorMessage());
             });
 
             put(Error_Codes.INVALID_ARGS, (String[] args) -> 
             { 
-                MyLogger.println("Invalid arguments for command");
+                game.setErrorMessage("Invalid arguments for command");
+                MyLogger.println(game.getErrorMessage());
             });
             put(Error_Codes.MISSING_ARGS, (String[] args) -> 
             { 
-                MyLogger.println("Missing arguments for command");
+                game.setErrorMessage("Missing arguments for command");
+                MyLogger.println(game.getErrorMessage());
             });
     
             put(Error_Codes.SERVER_ERR, (String[] args) -> 
             { 
-                MyLogger.println("Server error");
+                game.setErrorMessage("Server error");
+                MyLogger.println(game.getErrorMessage());
             });
     
             put(Error_Codes.ACCESS_DENIED, (String[] args) -> 
             { 
-                MyLogger.println("Access denied, you are not permitted to use this command");
+                game.setErrorMessage("Access denied, you are not permitted to use this command");
+                MyLogger.println(game.getErrorMessage());
             });
     
             put(Error_Codes.SERVER_FULL, (String[] args) -> 
             { 
-                MyLogger.println("Server is full, try again later");
+                game.setErrorMessage("Server is full, try again later");
+                MyLogger.println(game.getErrorMessage());
             });
     
             put(Error_Codes.GAME_STARTED, (String[] args) -> 
             {
-                MyLogger.println("Game has already started, you can't join now");
+                game.setErrorMessage("Game has already started, you can't join now");
+                MyLogger.println(game.getErrorMessage());
             });
     
             put(Error_Codes.NAME_TAKEN, (String[] args) -> 
             { 
-                MyLogger.println("Name is already taken, try another name");
+                game.setErrorMessage("Name is already taken, try another name");
+                MyLogger.println(game.getErrorMessage());
             });
      
             put(Error_Codes.NOT_YOUR_TURN, (String[] args) -> 
             { 
-                MyLogger.println("It's not your turn, you can't use this command now");
+                game.setErrorMessage("It's not your turn, you can't use this command now");
+                MyLogger.println(game.getErrorMessage());
             });
 
             put(Error_Codes.NOT_ENOUGH_PLAYERS, (String[] args) -> 
             { 
-                MyLogger.println("Can't start game, not enough players");
+                game.setErrorMessage("Can't start game, not enough players");
+                MyLogger.println(game.getErrorMessage());
             });
 
             put(Error_Codes.GAME_ENDED, (String[] args) -> //Do we need this?
             { 
-                MyLogger.println("The game has ended, you can't use this command now");
+                game.setErrorMessage("The game has ended, you can't use this command now");
+                MyLogger.println(game.getErrorMessage());
             });
         }};
     }

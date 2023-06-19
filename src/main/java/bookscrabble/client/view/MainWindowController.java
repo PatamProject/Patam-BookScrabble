@@ -1,45 +1,57 @@
 package bookscrabble.client.view;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.ResourceBundle;
 
 import bookscrabble.client.MainApplication;
 import bookscrabble.client.MyLogger;
 import bookscrabble.client.viewModel.ViewModel;
 
-public class MainWindowController implements Observer {
+public class MainWindowController implements Observer, Initializable {
     static ViewModel vm;
     @FXML
     public Button startButton, exitButton, hostButton, guestButton, connectButton, goBackButton;
     @FXML
     public TextField nameTextField, hostIpTextField, hostPortTextField, serverIpTextField, serverPortTextField;
     @FXML
-    public Label errorLabel;
+    public Label errorLabel, messageLabel;
+
+    public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
 
     public void setViewModel(ViewModel vm) { // Method to set all bindings and the ViewModel
         if(vm != null)
-            MainWindowController.vm = vm;
-            
-        if(MainApplication.getRoot().equals("ClientMode"))
-            vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false));
+            MainWindowController.vm = vm;    
+    }
 
-        if(MainApplication.getRoot().equals("HostMenu") || MainApplication.getRoot().equals("GuestMenu"))
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        String path = location.getFile();
+        if(path.endsWith("ClientMode.fxml")) // if FXML file is Main.fxml
+            vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false));
+        if(path.endsWith("HostMenu.fxml") || path.endsWith("GuestMenu.fxml")) // if FXML file is HostMenu.fxml or GuestMenu.fxml
         {
             vm.myName.bind(nameTextField.textProperty());
             vm.hostPort.bind(hostPortTextField.textProperty());
             vm.hostIP.bind(hostIpTextField.textProperty());
+            errorLabel.textProperty().bind(vm.errorMessage);
+            isConnectedToGame.bind(vm.isConnectedToHost);
         }
 
-        if(MainApplication.getRoot().equals("HostMenu"))
+        if(path.endsWith("HostMenu.fxml")) // if FXML file is HostMenu.fxml
         {
             vm.BsIP.bind(serverIpTextField.textProperty());
             vm.BsPort.bind(serverPortTextField.textProperty());  
@@ -53,11 +65,11 @@ public class MainWindowController implements Observer {
     }
 
     @FXML // Showing the ModeMenu
-    public void chooseModeMenu(ActionEvent event) {switchRoot("ClientMode"); setViewModel(this.vm);}
+    public void chooseModeMenu(ActionEvent event) {switchRoot("ClientMode");}
     @FXML // Showing the HostMenu
-    private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); setViewModel(this.vm);}
+    private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu");}
     @FXML // Showing the GuestMenu
-    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); setViewModel(this.vm);}
+    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu");}
     @FXML // Showing MainMenu
     private void returnToWelcomePage(ActionEvent event) {switchRoot("Main");}
 
@@ -66,9 +78,12 @@ public class MainWindowController implements Observer {
         if (nameTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty() || serverIpTextField.getText().isEmpty() || serverPortTextField.getText().isEmpty())
             errorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
+            messageLabel.setText("Creating game lobby...");
             vm.setBsIP();
             vm.setBsPort();
             sendInitialInfoToModel();
+            if(tryToConnect("Failed to create game lobby.", "Game lobby created successfully.")) // If the connection is established
+                switchRoot("GameLobby");
         }
     }
 
@@ -77,9 +92,36 @@ public class MainWindowController implements Observer {
         if (nameTextField.getText().isEmpty() || hostIpTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty())
             errorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
+            messageLabel.setText("Connecting to host...");
             hostIpTextField.setText("localhost");
             sendInitialInfoToModel();
+            if(tryToConnect("Failed to connect to host.", "Connected to host successfully.")) // If the connection is established
+                switchRoot("GameLobby");
         }
+    }
+
+    private boolean tryToConnect(String failedMessage, String successMessage) {
+        int timeOutCounter = 0;
+        while(!vm.isConnectedToHost.get())
+        {
+            if(timeOutCounter == 50) // If the connection times out (5 seconds)
+            {
+                errorLabel.setText(failedMessage);
+                return false;
+            }
+
+            try {
+                timeOutCounter++;
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                MyLogger.logError(e.getMessage());
+            }
+        } // Waiting for the connection to be established
+        errorLabel.setText(successMessage);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {}
+        return true;
     }
 
     @Override

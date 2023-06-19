@@ -46,7 +46,6 @@ public class ClientCommunications{
             if(request.charAt(0) == '#') //If the host sent an error
             {
                 requestHandler.handleClient("#", request, null, null); //Error
-                
                 toHostSocket.close();
                 throw new ConnectException(request.substring(1));
             }
@@ -163,7 +162,6 @@ public class ClientCommunications{
         try {
             Scanner scanner = MyLogger.getScanner();
             MyLogger.gameStarted(requestHandler.game.myTiles, requestHandler.game.playersOrder.toArray(new String[requestHandler.game.playersOrder.size()]));
-            //TODO : add a timer for turn time, game time, etc.
             while(requestHandler.isGameRunning) //While the game is running
             {    
                 if(requestHandler.game.isItMyTurn()) //My turn and I can now place a word

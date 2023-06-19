@@ -13,7 +13,8 @@ public class ViewModel extends Observable implements Observer {
     ClientModel clientModel; //Model representation for client info
     GameModel gameModel; // Model representation for game info
     //Game info
-    public StringProperty board, currentPlayerName, myTiles, playersAndScores;
+    public BooleanProperty isConnectedToHost;
+    public StringProperty board, currentPlayerName, myTiles, playersAndScores, errorMessage;
     public StringProperty myScore;
     //Client info
     public BooleanProperty isHost;
@@ -42,6 +43,8 @@ public class ViewModel extends Observable implements Observer {
         this.BsIP = new SimpleStringProperty();
         this.BsPort = new SimpleStringProperty();
         this.wasLastWordValid = new SimpleBooleanProperty();
+        this.isConnectedToHost = new SimpleBooleanProperty();
+        this.errorMessage = new SimpleStringProperty();
     }
 
     @Override
@@ -59,15 +62,11 @@ public class ViewModel extends Observable implements Observer {
                 myTiles.set(gameModel.getMyTiles());
                 playersAndScores.set(gameModel.getPlayersAndScoresAsString());
                 myScore.set(gameModel.getMyScore().toString());
+                errorMessage.set(gameModel.getErrorMessage());
             }
         }
         if (o.equals(clientModel)) {
-            isHost.set(clientModel.isHost());
-            myName.set(ClientModel.getName());
-            hostIP.set(clientModel.getHostIP());
-            BsIP.set(clientModel.getBsIP());
-            hostPort.set(clientModel.getHostPort().toString());
-            BsPort.set(clientModel.getBsPort().toString());
+            isConnectedToHost.set(clientModel.isConnectedToHost);
         }
     }
 
