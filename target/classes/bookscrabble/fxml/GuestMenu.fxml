@@ -27,7 +27,7 @@
         <VBox.margin>
             <Insets top="25.0" />
         </VBox.margin></Button>
-    <Button fx:id="goBackButton" onAction="#buttonToChooseModeClicked" text="Go Back" />
+    <Button fx:id="goBackButton" onAction="#chooseModeMenu" text="Go Back" />
     <Label fx:id="errorLabel" textFill="red" />
 
     <padding>

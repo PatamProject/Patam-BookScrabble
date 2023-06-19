@@ -17,7 +17,7 @@ import bookscrabble.client.MyLogger;
 import bookscrabble.client.viewModel.ViewModel;
 
 public class MainWindowController implements Observer {
-    ViewModel vm;
+    static ViewModel vm;
     @FXML
     public Button startButton, exitButton, hostButton, guestButton, connectButton, goBackButton;
     @FXML
@@ -27,7 +27,7 @@ public class MainWindowController implements Observer {
 
     public void setViewModel(ViewModel vm) { // Method to set all bindings and the ViewModel
         if(vm != null)
-            this.vm = vm;
+            MainWindowController.vm = vm;
             
         if(MainApplication.getRoot().equals("ClientMode"))
             vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false));
@@ -83,7 +83,7 @@ public class MainWindowController implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {} //Empty update method
+    public void update(Observable o, Object arg) {} // Empty update method
 
     private void switchRoot(String r) { // Switching between different roots
         try {

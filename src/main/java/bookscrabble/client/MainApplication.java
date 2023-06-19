@@ -16,12 +16,13 @@ import bookscrabble.client.viewModel.ViewModel;
 public class MainApplication extends Application {
     private static Scene scene;
     private static FXMLLoader fxmlLoader = new FXMLLoader();
+    static ViewModel vm;
 
     @Override
     public void start(Stage stage) throws IOException {
         GameModel gameModel = new GameModel();
         ClientModel clientModel = new ClientModel();
-        ViewModel vm = new ViewModel(gameModel,clientModel);
+        vm = new ViewModel(gameModel,clientModel);
         gameModel.addObserver(vm);
         clientModel.addObserver(vm);
 

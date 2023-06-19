@@ -27,7 +27,7 @@
     <TextField fx:id="serverPortTextField" alignment="CENTER" maxWidth="170.0" promptText="Enter server's port" />
 
     <Button fx:id="connectButton" onAction="#creatingGameLobby" text="Connect" />
-    <Button fx:id="goBackButton" onAction="#buttonToChooseModeClicked" text="Go Back" />
+    <Button fx:id="goBackButton" onAction="#chooseModeMenu" text="Go Back" />
     <TextField fx:id="hostIpTextField" disable="true" maxHeight="0.0" maxWidth="0.0" minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="0.0" visible="false" />
     <Label fx:id="errorLabel" textFill="red" />
 
