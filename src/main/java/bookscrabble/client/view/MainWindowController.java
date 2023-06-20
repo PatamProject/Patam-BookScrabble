@@ -29,7 +29,6 @@ public class MainWindowController implements Observer, Initializable {
     public TextField nameTextField, hostIpTextField, hostPortTextField, serverIpTextField, serverPortTextField;
     @FXML
     public Label modelErrorLabel, viewErrorLabel, messageLabel;
-
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
 
     public void setViewModel(ViewModel vm) { // Method to set all bindings and the ViewModel
@@ -40,8 +39,8 @@ public class MainWindowController implements Observer, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         String path = location.getFile();
-        if(path.endsWith("ClientMode.fxml")) // if FXML file is Main.fxml
-            vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false));
+        if(path.endsWith("ClientMode.fxml")) // if FXML file is ClientMode.fxml
+            vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false)); //TODO: find why isHost is false when I am the host
         if(path.endsWith("HostMenu.fxml") || path.endsWith("GuestMenu.fxml")) // if FXML file is HostMenu.fxml or GuestMenu.fxml
         {
             vm.myName.bind(nameTextField.textProperty());
@@ -75,27 +74,31 @@ public class MainWindowController implements Observer, Initializable {
 
     @FXML // Creating the game lobby
     public void creatingGameLobby(ActionEvent event) {
+        viewErrorLabel.setText("");
+        messageLabel.setText("");
         if (nameTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty() || serverIpTextField.getText().isEmpty() || serverPortTextField.getText().isEmpty())
             viewErrorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
+            hostIpTextField.setText("localhost");
             messageLabel.setText("Creating game lobby...");
             vm.setBsIP();
             vm.setBsPort();
             sendInitialInfoToModel();
-            if(tryToConnect("Failed to create game lobby.", "Game lobby created successfully.")) // If the connection is established
+            if(tryToConnect("Failed to create game lobby. Please try again.", "Game lobby created successfully.")) // If the connection is established
                 switchRoot("GameLobby");
         }
     }
 
     @FXML // Connects the user to the host
     public void connectToHostButtonClicked(ActionEvent event) {
+        viewErrorLabel.setText("");
+        messageLabel.setText("");
         if (nameTextField.getText().isEmpty() || hostIpTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty())
             viewErrorLabel.setText("Please fill in all fields."); // Preventing empty field
         else {
             messageLabel.setText("Connecting to host...");
-            hostIpTextField.setText("localhost");
             sendInitialInfoToModel();
-            if(tryToConnect("Failed to connect to host.", "Connected to host successfully.")) // If the connection is established
+            if(tryToConnect("Failed to connect to host. Please try again.", "Connected to host successfully.")) // If the connection is established
                 switchRoot("GameLobby");
         }
     }
@@ -103,10 +106,11 @@ public class MainWindowController implements Observer, Initializable {
     private boolean tryToConnect(String failedMessage, String successMessage) {
         int timeOutCounter = 0;
         while(!vm.isConnectedToHost.get())
-        {
+        { //TODO: find why timeOutCounter reaches to 50 and connection is not established
             if(timeOutCounter == 50) // If the connection times out (5 seconds)
             {
-                modelErrorLabel.setText(failedMessage);
+                modelErrorLabel.getText(); //TODO: why it's null?
+                viewErrorLabel.setText(failedMessage);
                 return false;
             }
 
@@ -117,7 +121,7 @@ public class MainWindowController implements Observer, Initializable {
                 MyLogger.logError(e.getMessage());
             }
         } // Waiting for the connection to be established
-        modelErrorLabel.setText(successMessage);
+        viewErrorLabel.setText(successMessage);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {}

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
+<VBox alignment="CENTER" prefHeight="450.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
     <Label text="Choose mode:" textFill="#1552c4" underline="true">
         <font>
             <Font name="Guttman Haim-Condensed" size="18.0" />
@@ -16,7 +16,7 @@
 
     <Button fx:id="hostButton" onAction="#hostButtonClicked" prefWidth="120.0" styleClass="menu-button" text="Host" />
     <Button fx:id="guestButton" onAction="#guestButtonClicked" prefWidth="120.0" styleClass="menu-button" text="Guest" />
-   <Button fx:id="goBackButton" onAction="#returnToWelcomePage" prefWidth="120.0" styleClass="menu-button" text="Go back" />
+    <Button fx:id="goBackButton" onAction="#returnToWelcomePage" prefWidth="120.0" styleClass="menu-button" text="Go back" />
 
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
