@@ -67,7 +67,7 @@ public class MainWindowController implements Observer, Initializable {
     private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); vm.isHost.set(true);}
 
     @FXML // Showing the GuestMenu
-    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu");}
+    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); vm.isHost.set(false);}
     @FXML // Showing MainMenu
     private void returnToWelcomePage(ActionEvent event) {switchRoot("Main");}
 

@@ -42,9 +42,14 @@ public class MainApplication extends Application {
         stage.show();
     }
     
-    private static Parent loadFXML(String fxml) throws IOException {
+    private static Parent loadFXML(String fxml) {
         fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/bookscrabble/fxml/" + fxml + ".fxml"));
-        return fxmlLoader.load();
+        try {
+            return fxmlLoader.load();
+        } catch (IOException e) {
+            MyLogger.logError("Error loading fxml file: " + e.getMessage());
+        }
+        return null;
     }
 
     public static void setRoot(String fxml) throws IOException {

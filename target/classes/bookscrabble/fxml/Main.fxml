@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
+    <left>
+        <AnchorPane prefHeight="450.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <Label alignment="CENTER" contentDisplay="CENTER" graphicTextGap="5.0" layoutX="172.0" layoutY="40.0" prefHeight="57.0" prefWidth="255.0" text="welcome To Book Scrabble Game!" textAlignment="CENTER" textFill="#fdf8f8">
+                <font>
+                    <Font name="Amiri Quran" size="16.0" />
+                </font>
+            </Label>
+            <ImageView fitHeight="247.0" fitWidth="295.0" layoutY="203.0">
+                <Image url="@../pictures/images_2.jpeg" />
+            </ImageView>
+        </AnchorPane>
+    </left>
+    <right>
+        <AnchorPane prefHeight="414.0" prefWidth="315.0" BorderPane.alignment="CENTER">
+            <Button fx:id="startButton" alignment="CENTER" contentDisplay="CENTER" layoutX="-32.0" layoutY="111.0" mnemonicParsing="false" onAction="#chooseModeMenu" prefHeight="41.0" prefWidth="91.0" text="start game" />
+            <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" layoutX="-32.0" layoutY="169.0" mnemonicParsing="false" onAction="#exitButtonClicked" prefHeight="41.0" prefWidth="91.0" text="Exit" />
+            <ImageView fitHeight="185.0" fitWidth="263.0" layoutX="52.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../pictures/images_1.jpeg" />
+            </ImageView>
+        </AnchorPane>
+    </right>
+</BorderPane>
