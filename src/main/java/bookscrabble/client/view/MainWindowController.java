@@ -39,8 +39,6 @@ public class MainWindowController implements Observer, Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         String path = location.getFile();
-        if(path.endsWith("ClientMode.fxml")) // if FXML file is ClientMode.fxml
-            vm.isHost.bind(Bindings.when(hostButton.pressedProperty()).then(true).otherwise(false)); //TODO: find why isHost is false when I am the host
         if(path.endsWith("HostMenu.fxml") || path.endsWith("GuestMenu.fxml")) // if FXML file is HostMenu.fxml or GuestMenu.fxml
         {
             vm.myName.bind(nameTextField.textProperty());
@@ -66,7 +64,8 @@ public class MainWindowController implements Observer, Initializable {
     @FXML // Showing the ModeMenu
     public void chooseModeMenu(ActionEvent event) {switchRoot("ClientMode");}
     @FXML // Showing the HostMenu
-    private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu");}
+    private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); vm.isHost.set(true);}
+
     @FXML // Showing the GuestMenu
     private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu");}
     @FXML // Showing MainMenu

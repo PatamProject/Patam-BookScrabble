@@ -43,7 +43,7 @@ public class MainApplication extends Application {
     }
     
     private static Parent loadFXML(String fxml) throws IOException {
-        fxmlLoader = new FXMLLoader(App.class.getResource("/bookscrabble/fxml/" + fxml + ".fxml"));
+        fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/bookscrabble/fxml/" + fxml + ".fxml"));
         return fxmlLoader.load();
     }
 
