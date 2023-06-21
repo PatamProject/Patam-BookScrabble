@@ -21,7 +21,7 @@ public class MyHostServer{
     private int hostPort, bookScrabblePort; // Ports
     private String BookScrabbleServerIP; // IP
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
-    private volatile boolean stopServer = false;
+    private volatile boolean stopHost = false;
     public volatile boolean isGameRunning = false;
     private final int MAX_CLIENTS = 4;
  
@@ -37,14 +37,17 @@ public class MyHostServer{
         requestHandler = new HostSideHandler();
         threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
         connectedClients = new HashMap<>();
-        stopServer = false;
+        stopHost = false;
         isGameRunning = false;
     }
 
     public void start(int hostPort, int bsPort, String bs_IP) {
         this.hostPort = hostPort;
         bookScrabblePort = bsPort;
-        BookScrabbleServerIP = bs_IP;
+        if(bs_IP.equals("localhost"))
+            BookScrabbleServerIP = "127.0.0.1";
+        else
+            BookScrabbleServerIP = bs_IP;
         if(!msgToBSServer("S,hello")) //Check connection to BS server
         {
             MyLogger.logError("Unable to connect to BookScrabble server!");
@@ -64,10 +67,17 @@ public class MyHostServer{
     public void run() throws Exception {
         ServerSocket hostSocket = new ServerSocket(hostPort,MAX_CLIENTS);
         MyLogger.println("Host is listening on port " + hostPort);
-        while (!stopServer) {
+        while (!stopHost) {
             try {
                 Socket clientSocket = hostSocket.accept();
-                MyLogger.println("A new client has connected: " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort());
+                String ip = clientSocket.getInetAddress().getHostAddress();
+                if(ip.equals(BookScrabbleServerIP))
+                {
+                    MyLogger.println("A connection with BookScrabble server has been established!");
+                    continue; //Don't add BS server to connected clients
+                }
+                else
+                    MyLogger.println("A new client has connected: " + ip + ":" + clientSocket.getPort());
                 threadPool.execute(() -> handleClientConnection(clientSocket)); //Handle client in a separate thread
             } catch (SocketTimeoutException e) {
                 MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
@@ -300,7 +310,7 @@ public class MyHostServer{
     public void close() // A method to close the hostServer
     {
         MyLogger.println("Stopping server...");
-        stopServer = true;
+        stopHost = true;
         playerCount = 0;
     } 
 }

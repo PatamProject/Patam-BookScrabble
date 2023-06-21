@@ -7,7 +7,7 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="450.0" prefWidth="600.0" spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.GameController">
+<VBox alignment="CENTER" prefHeight="450.0" prefWidth="600.0" spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.GameWindowController">
     <Label style="-fx-font-size: 18px;" text="Thank you for playing!" />
     <TableView fx:id="scoreTable" maxWidth="240.0" prefHeight="200" prefWidth="400">
         <columns>
