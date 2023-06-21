@@ -6,4 +6,5 @@ module bookscrabble {
     exports bookscrabble.client;
     exports bookscrabble.client.view;
     exports bookscrabble.client.viewModel;
+    opens bookscrabble.client to javafx.fxml;
 }

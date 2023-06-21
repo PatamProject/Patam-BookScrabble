@@ -1,5 +1,6 @@
 package bookscrabble.client;
 
+import bookscrabble.client.view.PlayerScreenController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,9 +19,7 @@ public class MainApplication extends Application {
     private static FXMLLoader fxmlLoader = new FXMLLoader();
     static ViewModel vm;
 
-    public static void main(String[] args) {
-        launch();
-    }
+    public static void main(String[] args) {launch();}
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -30,11 +29,13 @@ public class MainApplication extends Application {
         gameModel.addObserver(vm);
         clientModel.addObserver(vm);
 
-        scene = new Scene(loadFXML("Main"));   
+        scene = new Scene(loadFXML("GameWindow"));
         stage.setTitle("SCRABBLE GAME");
         stage.setScene(scene);
         stage.setResizable(true);
 
+//        PlayerScreenController playerScreenController = fxmlLoader.getController();
+//        playerScreenController.displayAll();
         MainWindowController mwc = fxmlLoader.getController();
         mwc.setViewModel(vm);
         vm.addObserver(mwc);
@@ -52,10 +53,7 @@ public class MainApplication extends Application {
         return null;
     }
 
-    public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
+    public static void setRoot(String fxml) throws IOException {scene.setRoot(loadFXML(fxml));}
     public static String getRoot() {
         return fxmlLoader.getLocation().getPath();
     }

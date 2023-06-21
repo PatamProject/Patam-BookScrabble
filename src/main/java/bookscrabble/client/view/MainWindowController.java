@@ -23,6 +23,7 @@ import bookscrabble.client.viewModel.ViewModel;
 
 public class MainWindowController implements Observer, Initializable {
     static ViewModel vm;
+    //public PlayerScreenController playerScreenController = new PlayerScreenController();
     @FXML
     public Button startButton, exitButton, hostButton, guestButton, connectButton, goBackButton;
     @FXML
@@ -65,7 +66,6 @@ public class MainWindowController implements Observer, Initializable {
     public void chooseModeMenu(ActionEvent event) {switchRoot("ClientMode");}
     @FXML // Showing the HostMenu
     private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); vm.isHost.set(true);}
-
     @FXML // Showing the GuestMenu
     private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); vm.isHost.set(false);}
     @FXML // Showing MainMenu
