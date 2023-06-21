@@ -5,11 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2437b60d-bf4f-4bfb-9e33-0e41e967745a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GuestGameLobby.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/AIcon.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/BIcon.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/CIcon.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/WordTilesImage.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/tilesIcon.jpeg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/MainApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/PlayerScreenApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/PlayerScreenApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/PlayerScreenController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/GameWindowController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/PlayerScreenDisplayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/GameWindowDisplayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/ClientMode.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/ClientMode.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GameWindow.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GameWindow.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/Main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/Main.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/server.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/ClientMode.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/ClientMode.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/GameWindow.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/GameWindow.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/Main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/Main.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/server.fxml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,9 +34,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="FxmlFile" />
         <option value="Class" />
         <option value="JavaFXApplication" />
+        <option value="FxmlFile" />
       </list>
     </option>
   </component>
@@ -48,7 +63,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/Uri Beeri/ASP/Project/BookScrabble Server",
+    "last_opened_file_path": "C:/Users/Uri Beeri/ASP/Project/Semester2/Patam-BookScrabble/src/main/resources/bookscrabble/pictures",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -62,6 +77,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Uri Beeri\ASP\Project\Semester2\Patam-BookScrabble\src\main\resources\bookscrabble\pictures" />
       <recent name="C:\Users\Uri Beeri\ASP\Project\Semester2\Patam-BookScrabble" />
       <recent name="C:\Users\Uri Beeri\ASP\Project\Semester2\Patam-BookScrabble\bookscrabble\src\main\java\project\client\view" />
       <recent name="C:\Users\Uri Beeri\ASP\Project\Semester2\Patam-BookScrabble\bookscrabble\src\main" />

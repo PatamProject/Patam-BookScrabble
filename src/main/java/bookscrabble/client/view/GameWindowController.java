@@ -1,24 +1,52 @@
 package bookscrabble.client.view;
 
+import bookscrabble.client.MainApplication;
+import bookscrabble.client.viewModel.ViewModel;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-public class PlayerScreenController {
-    private PlayerScreenDisplayer playerScreenDisplayer = new PlayerScreenDisplayer();
+import static bookscrabble.client.view.MainWindowController.switchRoot;
+
+public class GameWindowController implements Observer {
+    static ViewModel vm;
+    MainWindowController mwc;
+    @FXML
+    public TableView scoreTable;
+    @FXML
+    public Button skipTurn, done, challenge, Quit, mainMenu;
+    @FXML
+    public Rectangle place1, place2, place3, place4, place5, place6, place7; //TODO: Ofek needs to change those names to something more understandable
     @FXML
     GridPane gridPane;
     @FXML
     HBox hBox;
+    private GameWindowDisplayer playerScreenDisplayer = new GameWindowDisplayer();
     private List<Group> alreadyDrag = new ArrayList<>();
     private Group draggedGroup=null;
     private double initialX, initialY;
+
+    @Override
+    public void update(Observable o, Object arg) {} // Empty update method
+
+    public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
+        if(vm != null)
+            MainWindowController.vm = vm;
+        //TODO: Add bindings to update the game
+    }
+
+    //TODO: Ofek needs to add comments to all of his functions
 
     public void displayAll() {playerScreenDisplayer.completeBoard(gridPane,hBox);}
 
@@ -134,5 +162,36 @@ public class PlayerScreenController {
             }
         }
         return null;
+    }
+
+    @FXML
+    public void quitButtonClicked(ActionEvent event) { // Quits the game and showing final scores
+        //TODO: Commented section for communication with the model
+//        if (vm.isHost.get())
+//            vm.sendEndgameRequest();
+//        else
+//            vm.sendLeaveRequest();
+        switchRoot("EndGame");
+    }
+
+    @FXML
+    public void doneButtonClicked(ActionEvent event) {
+        //vm.sendWordPlacementRequest(); //TODO: Commented section for communication with the model
+    }
+
+    @FXML
+    public void challengeButtonClicked(ActionEvent event) {
+        //vm.sendChallengeRequest(); //TODO: Commented section for communication with the model
+    }
+
+    @FXML
+    public void skipTurnButtonClicked(ActionEvent event) {
+        //vm.sendSkipTurnRequest(); //TODO: Commented section for communication with the model
+    }
+
+    @FXML
+    public void mainMenuButtonClicked(ActionEvent event) { // Returns the user to the main menu
+        switchRoot("Main");
+        mwc = MainApplication.getFxmlLoader().getController();
     }
 }

@@ -1,5 +1,6 @@
 package bookscrabble.client;
 
+import bookscrabble.client.view.GameWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,7 +20,7 @@ public class PlayerScreenApplication extends Application {
     {
         FXMLLoader fxmlLoader = new FXMLLoader();
         BorderPane root = fxmlLoader.load(getClass().getResource("PlayerScreen.fxml").openStream());
-        bookscrabble.client.view.PlayerScreenController playerScreenController = fxmlLoader.getController();
+        GameWindowController playerScreenController = fxmlLoader.getController();
         playerScreenController.displayAll();
         Scene scene = new Scene(root, 320, 240);
         stage.setTitle("Scrabble Game");

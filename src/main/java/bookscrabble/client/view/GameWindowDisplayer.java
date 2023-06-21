@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class PlayerScreenDisplayer {
+public class GameWindowDisplayer {
     private final int GRID_COUNT = 15, GRID_SIZE = 55;
     int rowNode=0, colNode=0;
 
