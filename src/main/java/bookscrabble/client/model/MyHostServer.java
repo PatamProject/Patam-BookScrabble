@@ -309,7 +309,7 @@ public class MyHostServer{
 
     public void close() // A method to close the hostServer
     {
-        MyLogger.println("Stopping server...");
+        MyLogger.println("Stopping host...");
         stopHost = true;
         playerCount = 0;
     } 

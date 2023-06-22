@@ -8,6 +8,7 @@ import java.util.Observer;
 import bookscrabble.client.model.ClientCommunications;
 import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.GameModel;
+import bookscrabble.client.model.MyHostServer;
 
 public class ViewModel extends Observable implements Observer {
     ClientModel clientModel; //Model representation for client info
@@ -80,6 +81,11 @@ public class ViewModel extends Observable implements Observer {
     public void createClient() {clientModel.createClient(isHost.get(), hostIP.get(), Integer.parseInt(hostPort.get()), myName.get());}
 
     //Host only options
+    public void startHostServer()  
+    {
+        if(isHost.get()) //If I am the host
+            MyHostServer.getHostServer().start(Integer.parseInt(hostPort.get()), Integer.parseInt(BsPort.get()), BsIP.get());
+    }
     public void sendStartGameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame");}
     public void sendEndgameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame");}
 
