@@ -12,6 +12,7 @@ public class GameModel extends Observable {
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board; //The game board as a string
     boolean isMyTurn;
+    private String lastErrorReceived;
 
     public GameModel() { //Ctor
         playersOrder = new LinkedList<>(); //Will be updated by startGame
@@ -24,9 +25,11 @@ public class GameModel extends Observable {
         notifyObservers();
     }
 
-    public void addPlayers(String... players) { //Adds the players of the game after it starts
+    public void addPlayers(String... players) { //Adds the players of the game
         for (String player : players)
             this.playersAndScores.put(player, 0); //Each player starts with score 0
+        setChanged();
+        notifyObservers();
     }
 
     public void removePlayer(String player)
@@ -85,6 +88,17 @@ public class GameModel extends Observable {
     {
         setChanged();
         notifyObservers(isLegal);
+    }
+
+    public void setErrorMessage(String error)
+    {
+        lastErrorReceived = error;
+        setChanged();
+        notifyObservers();
+    }
+
+    public String getErrorMessage() {
+        return lastErrorReceived;
     }
 
     //Getters

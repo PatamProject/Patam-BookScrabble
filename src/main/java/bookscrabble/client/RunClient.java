@@ -112,9 +112,9 @@ public class RunClient{
             }
         } while (invalidInput);
 
+        myClient = new ClientModel();
         MyHostServer.getHostServer().start(hostPort, bs_port, bs_IP);
         //Now we create the host itself
-        myClient = new ClientModel();
         myClient.createClient(true, "localhost", hostPort, name);
     }
 

@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import bookscrabble.client.MyLogger;
+import bookscrabble.server.App;
 import bookscrabble.server.cacheHandler.DictionaryManager;
 
 public class BookScrabbleHandler implements ClientHandler{
@@ -28,7 +28,7 @@ public class BookScrabbleHandler implements ClientHandler{
     }
 
     @Override
-    public void handleClient(InputStream inFromClient, OutputStream outToClient) {
+    public void handleClient(InputStream inFromClient, OutputStream outToClient, String ip) {
         out=new PrintWriter(outToClient,true);
         in=new Scanner(inFromClient);
         String line = in.next();
@@ -37,26 +37,31 @@ public class BookScrabbleHandler implements ClientHandler{
         String[] args = new String[dictionaries.length + 1];
         System.arraycopy(dictionaries, 0, args, 0, dictionaries.length);
         args[dictionaries.length] = line; //args = [dictionary1, dictionary2, ..., dictionaryN, word]
-        MyLogger.println("Server received: " + args[args.length - 1]);
+        App.write("Server received a request from " + ip + " : " + args[args.length - 1]);
 
         if(c == 'Q')
         {
             if(DictionaryManager.get().query(args))
-                out.println("true");
+                send("true",ip);
             else
-                out.println("false");
+                send("false",ip);
         }
         else if(c == 'C')
         {
             if(DictionaryManager.get().challenge(args))
-                out.println("true");
+                send("true",ip);
             else
-                out.println("false");
+                send("false",ip);
         } else if(c == 'S')
         {
-            out.println("Hello");
+            send("Hello",ip);
         }
         out.flush();
+    }
+
+    private void send(String msg, String ip) {
+        out.println(msg);
+        App.write("Server replied to " + ip + " with : " + msg);
     }
 
     @Override
