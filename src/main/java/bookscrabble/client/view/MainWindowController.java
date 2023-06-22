@@ -111,23 +111,23 @@ public class MainWindowController implements Observer, Initializable {
 
     private boolean tryToConnect(String failedMessage, String successMessage) { // Method to establish a connection with a host or with myHostServer
         //TODO: Commented section for communication with the model
-//        int timeOutCounter = 0;
-//        while(!vm.isConnectedToHost.get())
-//        { //TODO: find why timeOutCounter reaches to 50 and connection is not established
-//            if(timeOutCounter == 50) // If the connection times out (5 seconds)
-//            {
-//                modelErrorLabel.getText(); //TODO: why it's null?
-//                viewErrorLabel.setText(failedMessage);
-//                return false;
-//            }
-//
-//            try {
-//                timeOutCounter++;
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//                MyLogger.logError(e.getMessage());
-//            }
-//        } // Waiting for the connection to be established
+       int timeOutCounter = 0;
+       while(!vm.isConnectedToHost.get())
+       { //TODO: find why timeOutCounter reaches to 50 and connection is not established
+           if(timeOutCounter == 50) // If the connection times out (5 seconds)
+           {
+               modelErrorLabel.getText(); //TODO: why it's null?
+               viewErrorLabel.setText(failedMessage);
+               return false;
+           }
+
+           try {
+               timeOutCounter++;
+               Thread.sleep(100);
+           } catch (InterruptedException e) {
+               MyLogger.logError(e.getMessage());
+           }
+       } // Waiting for the connection to be established
         viewErrorLabel.setText(successMessage);
         try {
             Thread.sleep(1000);
