@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
+<VBox alignment="CENTER" prefHeight="450.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
     <Label text="Connect to a host:" textFill="#1552c4" underline="true">
         <font>
             <Font name="Guttman Haim-Condensed" size="18.0" />
@@ -18,17 +18,19 @@
     <TextField fx:id="nameTextField" alignment="CENTER" maxWidth="170.0" promptText="Enter your name" />
 
     <Label text="Host's IP:" />
-    <TextField fx:id="ipTextField" alignment="CENTER" maxWidth="170.0" promptText="Enter host's IP address" />
+    <TextField fx:id="hostIpTextField" alignment="CENTER" maxWidth="170.0" promptText="Enter host's IP address" />
 
     <Label text="Host's port:" />
-    <TextField fx:id="portTextField" alignment="CENTER" maxWidth="170.0" promptText="Enter host's port" />
+    <TextField fx:id="hostPortTextField" alignment="CENTER" maxWidth="170.0" promptText="Enter host's port" />
 
-    <Button fx:id="connectButton" onAction="#guestConnectButtonClicked" text="Connect">
+    <Button fx:id="connectButton" onAction="#connectToHostButtonClicked" text="Connect">
         <VBox.margin>
             <Insets top="25.0" />
         </VBox.margin></Button>
-    <Button fx:id="goBackButton" onAction="#buttonToChooseModeClicked" text="Go Back" />
-
+    <Button fx:id="goBackButton" onAction="#chooseModeMenu" text="Go Back" />
+    <Label fx:id="modelErrorLabel" textFill="red">
+      <graphic> <Label fx:id="messageLabel" textFill="black"> </Label></graphic></Label>
+    <Label fx:id="viewErrorLabel" textFill="red" />
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
