@@ -17,7 +17,7 @@ public class TestserverAndClient {
 		PrintWriter out;
 		Scanner in;		
 		@Override
-		public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+		public void handleClient(InputStream inFromclient, OutputStream outToClient, String ip) {
 			out=new PrintWriter(outToClient);
 			in=new Scanner(inFromclient);
 			String text = in.next();
