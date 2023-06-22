@@ -1,5 +1,6 @@
 package bookscrabble.client;
 
+
 import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.GameModel;
 import bookscrabble.client.view.MainWindowController;
@@ -38,7 +39,7 @@ public class MainApplication extends Application {
 
         stage.show();
     }
-    
+
     private static Parent loadFXML(String fxml) {
         fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/bookscrabble/fxml/" + fxml + ".fxml"));
         try {

@@ -163,7 +163,7 @@ public class MainWindowController implements Observer, Initializable {
             MyLogger.logError(e.getMessage());
         }
     }
-
+  
     private void sendInitialInfoToModel() { // Method to update the model with the user input
         vm.setMyName();
         vm.setIfHost();
