@@ -324,6 +324,7 @@ public class ClientCommunications{
         }
     }
 
+    public ClientSideHandler getRequestHandler() { return requestHandler;}
     public Socket getToHostSocket() { return toHostSocket;}
     public int getMyID() { return requestHandler.getId();}
 }

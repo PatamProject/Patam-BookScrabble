@@ -29,6 +29,7 @@
     </center>
     <bottom>
         <VBox alignment="CENTER" spacing="10">
+        <Label fx:id="viewErrorLabel" textFill="red" />
          <Button fx:id="startButton" onAction="#startGameButtonClicked" text="Start" />
          <Button fx:id="goBackButton" onAction="#returnToHostMenu" text="Go Back">
                 <VBox.margin>

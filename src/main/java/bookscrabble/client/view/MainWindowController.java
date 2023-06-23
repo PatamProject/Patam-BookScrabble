@@ -50,7 +50,8 @@ public class MainWindowController implements Observer, Initializable {
             vm.myName.bind(nameTextField.textProperty());
             vm.hostPort.bind(hostPortTextField.textProperty());
             vm.hostIP.bind(hostIpTextField.textProperty());
-            modelErrorLabel.textProperty().bind(vm.errorMessage);
+            modelErrorLabel.textProperty().bind(vm.gameErrorMessage);
+            modelErrorLabel.textProperty().bind(vm.clientErrorMessage);
             isConnectedToGame.bind(vm.isConnectedToHost);
         }
 
@@ -80,10 +81,10 @@ public class MainWindowController implements Observer, Initializable {
     public void creatingGameLobby(ActionEvent event) {
         viewErrorLabel.setText("");
         messageLabel.setText("");
-        //TODO: Implement a condition for accepting only strings of numbers in text fields of ports
-        if (nameTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty() || serverIpTextField.getText().isEmpty() || serverPortTextField.getText().isEmpty())
-            viewErrorLabel.setText("Please fill in all fields."); // Preventing empty field
-        else {
+
+        // If the user input is legal (for host)
+        if(validateUserInput(true))
+        {
             hostIpTextField.setText("localhost");
             messageLabel.setText("Creating game lobby...");
             vm.setBsIP();
@@ -98,10 +99,10 @@ public class MainWindowController implements Observer, Initializable {
     public void connectToHostButtonClicked(ActionEvent event) {
         viewErrorLabel.setText("");
         messageLabel.setText("");
-        //TODO: Implement a condition for accepting only strings of numbers in text fields of ports
-        if (nameTextField.getText().isEmpty() || hostIpTextField.getText().isEmpty() || hostPortTextField.getText().isEmpty())
-            viewErrorLabel.setText("Please fill in all fields."); // Preventing empty field
-        else {
+        
+        // If the user input is legal (for guest)
+        if(validateUserInput(false))
+        {
             messageLabel.setText("Connecting to host...");
             sendInitialInfoToModel();
             if(tryToConnect("Failed to connect to host. Please try again.", "Connected to host successfully.")) // If the connection is established
@@ -110,14 +111,14 @@ public class MainWindowController implements Observer, Initializable {
     }
 
     private boolean tryToConnect(String failedMessage, String successMessage) { // Method to establish a connection with a host or with myHostServer
-        vm.startHostServer(); // Starting the host server
-        vm.createClient(); // Creating a client and sending a join request to host or server
+        vm.startHostServer(); // Starting the host server (only works if the user is a host)
+        vm.createClient(); // Cre ating a client and sending a join request to host or server
         int timeOutCounter = 0;
         while(!vm.isConnectedToHost.get())
-        { //TODO: find why timeOutCounter reaches to 50 and connection is not established
+        {
             if(timeOutCounter == 50) // If the connection times out (5 seconds)
             {
-                modelErrorLabel.getText(); //TODO: why it's null?
+                modelErrorLabel.getText(); 
                 viewErrorLabel.setText(failedMessage);
                 return false;
             }
@@ -150,6 +151,11 @@ public class MainWindowController implements Observer, Initializable {
 
     @FXML // A method for the host to start the game with
     public void startGameButtonClicked(ActionEvent event) {
+        if(vm.playersAndScoresMap.size() < 2)
+        {
+            viewErrorLabel.setText("There must be at least 2 players in the game lobby to start the game.");
+            return;
+        }
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
         gwc.displayAll();
@@ -170,6 +176,54 @@ public class MainWindowController implements Observer, Initializable {
         vm.setIfHost();
         vm.setHostIP();
         vm.setHostPort();
-        //vm.createClient(); //TODO: Commented section for communication with the model
+    }
+
+    private boolean validateUserInput(boolean isHost)
+    {
+        String nameRegex = "^.{0,10}$", portRegex = "^\\d{1,5}$", ipRegex = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
+        if(isHost)
+            if(isTextFieldLegal(nameRegex, 15 ,nameTextField) && 
+            isTextFieldLegal(portRegex, 5 ,hostPortTextField, serverPortTextField) && 
+            isTextFieldLegal(ipRegex, 15 , serverIpTextField))
+                return true;
+            else
+                return false;
+        else
+            if(isTextFieldLegal(nameRegex, 15 ,nameTextField) && 
+            isTextFieldLegal(portRegex, 5 ,hostPortTextField) && 
+            isTextFieldLegal(ipRegex, 15 , hostIpTextField))
+                return true;
+            else
+                return false;
+    }
+
+    private boolean isTextFieldLegal(String regex, int maxInputLength ,TextField...inputs)
+    {
+        for(TextField input : inputs)
+        {
+            if(input.getText().isEmpty())
+            {
+                viewErrorLabel.setText("Please fill in all fields.");
+                return false;
+            }
+
+            if(input.getText().length() > maxInputLength)
+            {
+                viewErrorLabel.setText("Please only write up to " + maxInputLength + "characters.");
+                return false;
+            }
+
+            if(!input.getText().matches(regex))
+            {
+                if(input.equals(serverIpTextField) || input.equals(hostIpTextField))
+                {
+                    if(input.getText().equals("localhost"))
+                        return true;
+                }
+                viewErrorLabel.setText("Please fill in all fields correctly.");
+                return false;
+            }
+        }
+        return true;
     }
 }

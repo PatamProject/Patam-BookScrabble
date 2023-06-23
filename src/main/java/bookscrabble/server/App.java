@@ -72,9 +72,8 @@ public class App extends Application {
             return;
         }
 
-        if(portText.length() > 5)
-        {
-            alert.setContentText("Port number cannot be longer than 5 digits");
+        if(portText.matches("^\\d{1,5}$")) { //Only allow 5 digits
+            alert.setContentText("Port number cannot contain letters or is too long");
             alert.showAndWait();
             return;
         }

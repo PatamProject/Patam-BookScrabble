@@ -207,7 +207,8 @@ public class MyHostServer{
                         out.close();
                     if(in != null)
                         in.close();
-                    clientSocket.close();
+                    if(clientSocket != null && !clientSocket.isClosed())    
+                        clientSocket.close();
                     break;
                 }
             

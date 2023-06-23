@@ -1,6 +1,8 @@
 package bookscrabble.client.viewModel;
 
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -15,12 +17,15 @@ public class ViewModel extends Observable implements Observer {
     GameModel gameModel; // Model representation for game info
     //Game info
     public BooleanProperty isConnectedToHost;
-    public StringProperty board, currentPlayerName, myTiles, playersAndScores, errorMessage;
+    public StringProperty board, currentPlayerName, myTiles, gameErrorMessage;
     public StringProperty myScore;
+    public MapProperty<String, Integer> playersAndScoresMap;
     //Client info
     public BooleanProperty isHost;
-    public StringProperty myName, hostIP, BsIP;
+    public StringProperty myName, hostIP, BsIP, clientErrorMessage;
     public StringProperty hostPort, BsPort;
+
+    //
 
     //Related to word placement
     public BooleanProperty wasLastWordValid;
@@ -37,7 +42,6 @@ public class ViewModel extends Observable implements Observer {
         this.myScore = new SimpleStringProperty();
         this.myTiles = new SimpleStringProperty();
         this.myName = new SimpleStringProperty();
-        this.playersAndScores = new SimpleStringProperty(); // name1,score1-name2,score2-... 
         this.isHost = new SimpleBooleanProperty();
         this.hostIP = new SimpleStringProperty();
         this.hostPort = new SimpleStringProperty();
@@ -45,7 +49,9 @@ public class ViewModel extends Observable implements Observer {
         this.BsPort = new SimpleStringProperty();
         this.wasLastWordValid = new SimpleBooleanProperty();
         this.isConnectedToHost = new SimpleBooleanProperty();
-        this.errorMessage = new SimpleStringProperty();
+        this.gameErrorMessage = new SimpleStringProperty();
+        clientErrorMessage = new SimpleStringProperty();
+        playersAndScoresMap = new SimpleMapProperty<>();
     }
 
     @Override
@@ -61,13 +67,14 @@ public class ViewModel extends Observable implements Observer {
                 board.set(gameModel.getBoard());
                 currentPlayerName.set(gameModel.getCurrentPlayersName());
                 myTiles.set(gameModel.getMyTiles());
-                playersAndScores.set(gameModel.getPlayersAndScoresAsString());
+                playersAndScoresMap.set(FXCollections.observableMap(gameModel.getPlayersAndScores()));
                 myScore.set(gameModel.getMyScore().toString());
-                errorMessage.set(gameModel.getErrorMessage());
+                gameErrorMessage.set(gameModel.getErrorMessage());
             }
         }
         if (o.equals(clientModel)) {
             isConnectedToHost.set(clientModel.isConnectedToHost);
+            clientErrorMessage.set(clientModel.getErrorMessage());
         }
     }
 

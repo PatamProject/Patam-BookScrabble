@@ -12,7 +12,7 @@ public class GameModel extends Observable {
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board; //The game board as a string
     boolean isMyTurn;
-    private String lastErrorReceived;
+    String lastErrorReceivedFromGame;
 
     public GameModel() { //Ctor
         playersOrder = new LinkedList<>(); //Will be updated by startGame
@@ -92,13 +92,13 @@ public class GameModel extends Observable {
 
     public void setErrorMessage(String error)
     {
-        lastErrorReceived = error;
+        lastErrorReceivedFromGame = error;
         setChanged();
         notifyObservers();
     }
 
     public String getErrorMessage() {
-        return lastErrorReceived;
+        return lastErrorReceivedFromGame;
     }
 
     //Getters
@@ -107,11 +107,4 @@ public class GameModel extends Observable {
     public String getBoard() {return board;}
     public String getCurrentPlayersName() {return playersOrder.peek();}
     public HashMap<String,Integer> getPlayersAndScores() {return playersAndScores;}
-    public String getPlayersAndScoresAsString()
-    {
-        StringBuilder sb = new StringBuilder();
-        for(String player : playersOrder) //From HashMap to String
-            sb.append(player).append(",").append(playersAndScores.get(player)).append("-");
-        return sb.toString();
-    }
 }

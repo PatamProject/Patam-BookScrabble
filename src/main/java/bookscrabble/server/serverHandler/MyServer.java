@@ -57,6 +57,7 @@ public class MyServer {
                     });
                 } catch (SocketTimeoutException e) {
                     App.write("Server timed out.");
+                    close();
                 } catch (IOException e) {
                     App.write("Server closed.\n");
                 }

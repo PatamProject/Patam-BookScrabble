@@ -11,6 +11,7 @@ public class ClientModel extends Observable{
     int hostPort, BsPort;
     public boolean isConnectedToHost = false;
     boolean isHost = false;
+    String lastErrorReceivedFromClient;
 
     public ClientModel(){} //Ctor
 
@@ -32,8 +33,13 @@ public class ClientModel extends Observable{
         try {
             myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
-            Thread.sleep(1000);
-        } catch (Exception e) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {}
+        } catch (Exception e) { //Failed to connect to host
+            lastErrorReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
+            setChanged();
+            notifyObservers();
             close();
             return false;
         }  
@@ -57,6 +63,7 @@ public class ClientModel extends Observable{
     public void setBsPort(int BsPort){this.BsPort = BsPort;}
 
     //getters
+    public String getErrorMessage() {return lastErrorReceivedFromClient;}
     public boolean isHost() {return isHost;}
     public String getHostIP() {return hostIP;}
     public Integer getHostPort() {return hostPort;}
