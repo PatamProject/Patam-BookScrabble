@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-import bookscrabble.client.MyLogger;
+import bookscrabble.client.misc.MyLogger;
 
 public class TestClientCommunication {
     public static void main(String[] args) {

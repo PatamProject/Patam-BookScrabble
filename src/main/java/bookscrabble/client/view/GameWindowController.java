@@ -1,6 +1,5 @@
 package bookscrabble.client.view;
 
-import bookscrabble.client.MainApplication;
 import bookscrabble.client.viewModel.ViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import bookscrabble.client.Error_Codes;
-import bookscrabble.client.MyLogger;
-import bookscrabble.client.RunClient;
+import bookscrabble.client.misc.Error_Codes;
+import bookscrabble.client.misc.MyLogger;
+import bookscrabble.client.misc.RunClient;
 
 // This class is used to handle the host's responses and updates
 public class ClientSideHandler implements RequestHandler{

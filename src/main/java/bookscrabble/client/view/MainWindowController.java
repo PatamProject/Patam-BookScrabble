@@ -17,8 +17,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
-import bookscrabble.client.MainApplication;
-import bookscrabble.client.MyLogger;
+import bookscrabble.client.misc.MyLogger;
 import bookscrabble.client.viewModel.ViewModel;
 
 public class MainWindowController implements Observer, Initializable {

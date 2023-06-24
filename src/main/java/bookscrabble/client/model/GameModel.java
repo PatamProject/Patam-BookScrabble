@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 
-import bookscrabble.client.MyLogger;
+import bookscrabble.client.misc.MyLogger;
 
 public class GameModel extends Observable {
     String myTiles; //The tiles I have

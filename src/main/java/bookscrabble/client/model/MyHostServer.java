@@ -10,8 +10,8 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import bookscrabble.client.Error_Codes;
-import bookscrabble.client.MyLogger;
+import bookscrabble.client.misc.Error_Codes;
+import bookscrabble.client.misc.MyLogger;
 
 public class MyHostServer{
     private static MyHostServer myHostServer = null; //singleton

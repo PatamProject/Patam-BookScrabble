@@ -61,7 +61,7 @@ public class BookScrabbleHandler implements ClientHandler{
 
     private void send(String msg, String ip) {
         out.println(msg);
-        App.write("Server replied to " + ip + " with : " + msg);
+        App.write("Server replied to " + ip + " : " + msg);
     }
 
     @Override

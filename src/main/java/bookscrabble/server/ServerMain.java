@@ -6,7 +6,7 @@ import bookscrabble.server.serverHandler.BookScrabbleHandler;
 import bookscrabble.server.serverHandler.MyServer;
 
 public class ServerMain{
-    public static void main(String[] args) {
+    public static void main(String[] args) { //Used only for running the server in a code editor
         Scanner scanner = new Scanner(System.in);
         System.out.println("Starting server...");
         System.out.println("Please choose a port: ");

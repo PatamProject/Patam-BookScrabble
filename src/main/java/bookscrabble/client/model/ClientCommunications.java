@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.function.Function;
 
-import bookscrabble.client.MyLogger;
-import bookscrabble.client.RunClient;
+import bookscrabble.client.misc.MyLogger;
+import bookscrabble.client.misc.RunClient;
 
 public class ClientCommunications{
     private ClientSideHandler requestHandler;

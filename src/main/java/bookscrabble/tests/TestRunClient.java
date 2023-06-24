@@ -1,5 +1,5 @@
 package bookscrabble.tests;
-import bookscrabble.client.RunClient;
+import bookscrabble.client.misc.RunClient;
 import bookscrabble.server.serverHandler.BookScrabbleHandler;
 import bookscrabble.server.serverHandler.MyServer;
 

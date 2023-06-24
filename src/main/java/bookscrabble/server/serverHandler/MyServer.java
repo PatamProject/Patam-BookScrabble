@@ -35,9 +35,10 @@ public class MyServer {
 
     public void run() {     
         try {
+            int timeout = 360 * 1000; // Timeout in seconds
             server = new ServerSocket(port);
-            App.write("Server is running on port " + port + "\n");
-            server.setSoTimeout(360 * 1000); // Timeout in seconds
+            App.write("Server is running on port " + port + "\nTimeout is set to " + timeout/1000 + " seconds");
+            server.setSoTimeout(timeout); // Timeout in seconds
             while (!stopServer) {
                 try {
                     Socket aClient = server.accept();
@@ -67,6 +68,7 @@ public class MyServer {
         } 
         finally {
             threadPool.shutdown();
+            close();
         }
     }
 
@@ -74,8 +76,6 @@ public class MyServer {
         stopServer = true;
         try {
             server.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) {}
     }
 }

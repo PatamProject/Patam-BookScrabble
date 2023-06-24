@@ -1,5 +1,4 @@
 package bookscrabble.server;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -16,7 +15,7 @@ public class App extends Application {
     private Button startButton;
     private Button stopButton;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { //Used to run the server with a GUI
         launch(args);
     }
 
@@ -72,14 +71,14 @@ public class App extends Application {
             return;
         }
 
-        if(portText.matches("^\\d{1,5}$")) { //Only allow 5 digits
+        if(!portText.matches("^\\d{1,5}$")) { //Only allow 5 digits
             alert.setContentText("Port number cannot contain letters or is too long");
             alert.showAndWait();
             return;
         }
 
         port = Integer.parseInt(portText);
-        if(port < 0 || port > 65535) {
+        if(port <= 0 || port > 65535) {
             alert.setContentText("Invalid port number, must be between 0 and 65535");
             alert.showAndWait();
             return;

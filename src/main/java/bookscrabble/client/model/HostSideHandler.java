@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import bookscrabble.client.Error_Codes;
+import bookscrabble.client.misc.Error_Codes;
 import bookscrabble.client.model.assets.GameManager;
 import bookscrabble.client.model.assets.Word;
 

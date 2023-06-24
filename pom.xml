@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>bookscrabble</groupId>
     <artifactId>bookscrabble</artifactId>
-    <version>1.0</version>
+    <version>2.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
@@ -41,7 +41,7 @@
                         <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>bookscrabble.client.MainApplication</mainClass>
+                            <mainClass>bookscrabble.client.Run</mainClass>
                         </configuration>
                     </execution>
                 </executions>
