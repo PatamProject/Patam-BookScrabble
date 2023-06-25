@@ -9,44 +9,77 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bookscrabble.client.view.MainWindowController">
     <left>
-        <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fitHeight="200.0" fitWidth="212.0" layoutX="14.0" layoutY="187.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="75.0" fitWidth="61.0" layoutX="14.0" layoutY="35.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../pictures/tilesIcon.jpeg" />
+                        <Image url="@Aicon.jpeg" />
                     </image>
                     <effect>
                         <Blend />
                     </effect>
                 </ImageView>
+            <ImageView fitHeight="66.0" fitWidth="61.0" layoutX="64.0" layoutY="126.0">
+               <image>
+                  <Image url="@B%20icon.jpeg" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="66.0" fitWidth="61.0" layoutX="125.0" layoutY="222.0">
+               <image>
+                  <Image url="@Cicon.jpeg" />
+               </image>
+            </ImageView>
             </children>
         </AnchorPane>
     </left>
     <right>
-        <AnchorPane prefHeight="400.0" prefWidth="367.0" BorderPane.alignment="CENTER">
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="197.0" prefWidth="230.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fitHeight="154.0" fitWidth="275.0" layoutX="46.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../pictures/WordTilesImage.jpeg" />
-                    </image>
-                </ImageView>
-                <Label alignment="CENTER" contentDisplay="CENTER" graphicTextGap="5.0" layoutX="-118.0" prefHeight="123.0" prefWidth="353.0" text="Welcome To Book Scrabble Game!" textAlignment="CENTER" textFill="#fb0404">
+            <ImageView layoutX="127.0" layoutY="14.0">
+               <image>
+                  <Image url="@tielsIcon.jpeg" />
+               </image>
+            </ImageView>
+            </children>
+        </AnchorPane>
+    </right>
+   <bottom>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="91.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="60.0" fitWidth="228.0" layoutX="209.0" layoutY="16.0">
+               <image>
+                  <Image url="@WordTielsImage.jpeg" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </bottom>
+   <top>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="57.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+                <Label alignment="CENTER" contentDisplay="CENTER" graphicTextGap="5.0" layoutX="55.0" layoutY="3.0" prefHeight="123.0" prefWidth="465.0" text="Welcome To Book Scrabble Game!" textAlignment="CENTER" textFill="#fb0404">
                     <font>
-                        <Font name="Berlin Sans FB Bold" size="21.0" />
+                        <Font name="Berlin Sans FB Bold" size="28.0" />
                     </font>
                 </Label>
-                <Button fx:id="startButton" onAction="#chooseModeMenu" layoutX="11.0" layoutY="115.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="96.0" text="Start Game">
+         </children>
+      </AnchorPane>
+   </top>
+   <center>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="254.0" prefWidth="213.0" BorderPane.alignment="CENTER">
+         <children>
+                <Button fx:id="startButton" layoutX="83.0" layoutY="42.0" mnemonicParsing="false" onAction="#chooseModeMenu" prefHeight="41.0" prefWidth="96.0" text="Start Game">
                     <font>
                         <Font name="Berlin Sans FB" size="15.0" />
                     </font></Button>
-                <Button fx:id="exitButton" onAction="#exitButtonClicked" layoutX="10.0" layoutY="181.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="97.0" text="Exit">
+                <Button fx:id="exitButton" layoutX="82.0" layoutY="115.0" mnemonicParsing="false" onAction="#exitButtonClicked" prefHeight="37.0" prefWidth="97.0" text="Exit">
                     <font>
                         <Font name="Berlin Sans FB" size="15.0" />
                     </font>
                 </Button>
-            </children>
-        </AnchorPane>
-    </right>
+         </children>
+      </AnchorPane>
+   </center>
 </BorderPane>
