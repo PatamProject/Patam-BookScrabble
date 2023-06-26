@@ -34,7 +34,7 @@ public class ClientCommunications{
     public void uncaughtException(Thread th, Throwable e){
         try {
             if(isGameRunningInTerminal)
-                RunClient.disconnectedFromHost(); //never caught
+                RunClient.disconnectedFromHost(); 
             else 
             {
                 if(e.getMessage().equals("Disconnected from host!"))
