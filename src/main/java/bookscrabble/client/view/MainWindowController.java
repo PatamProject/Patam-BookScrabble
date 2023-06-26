@@ -33,7 +33,7 @@ public class MainWindowController implements Observer, Initializable {
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
 
-    private String playerJoinedMsg = " has joined the lobby!\n";
+    private final String playerJoinedMsg = " has joined the lobby!\n";
 
     @Override
     public void update(Observable o, Object arg) 
@@ -53,6 +53,10 @@ public class MainWindowController implements Observer, Initializable {
             }
             else
                 switchRoot("GuestMenu"); 
+        }
+        else if(arg != null && arg.equals("gameStarted")) 
+        {
+            gameStarted();
         }
     }
 
@@ -189,6 +193,13 @@ public class MainWindowController implements Observer, Initializable {
             viewErrorLabel.setText("There must be at least 2 players in the game lobby to start the game.");
             return;
         }
+        playersTextArea.setText("Starting game...\n");
+        //Waiting for an update from viewModel that the game has started successfully
+    }
+
+    private void gameStarted()
+    {
+        vm.sendStartGameRequest();
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
         gwc.displayAll();

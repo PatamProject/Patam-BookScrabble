@@ -15,7 +15,7 @@ public class ViewModel extends Observable implements Observer {
     ClientModel clientModel; //Model representation for client info
     GameModel gameModel; // Model representation for game info
     //Game info
-    public BooleanProperty isConnectedToHost;
+    public BooleanProperty isConnectedToHost, isGameRunning;
     public StringProperty board, currentPlayerName, myTiles, gameErrorMessage;
     public StringProperty myScore;
     public MapProperty<String, Integer> playersAndScoresMap;
@@ -53,6 +53,7 @@ public class ViewModel extends Observable implements Observer {
         clientErrorMessage = new SimpleStringProperty();
         playersAndScoresMap = new SimpleMapProperty<>();
         lobbyMessage = new SimpleStringProperty();
+        isGameRunning = new SimpleBooleanProperty();
     }
 
     @Override
@@ -89,6 +90,13 @@ public class ViewModel extends Observable implements Observer {
             }
             isConnectedToHost.set(clientModel.isConnectedToHost);
             clientErrorMessage.set(clientModel.getErrorMessage());
+        }
+
+        if(arg != null && arg.equals("gameStarted"))
+        {
+            //isGameRunning.set(true);
+            setChanged();
+            notifyObservers("gameStarted");
         }
     }
 

@@ -131,8 +131,9 @@ public class ClientSideHandler implements RequestHandler{
             });
 
             put("!endGame", (String[] args)->{
+                if(isGameRunning == true)
+                    MyLogger.gameEnded(args[0]);
                 isGameRunning = false;
-                MyLogger.gameEnded(args[0]);
                 try {
                     throw new Exception("endGame");
                 } catch (Exception e) {}
