@@ -2,6 +2,7 @@ package bookscrabble.client.misc;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -11,36 +12,39 @@ import bookscrabble.client.model.ClientModel;
 
 public class MyLogger { // A class to print to the CMD
     private static Scanner myScanner = new Scanner(System.in);
-    private static PrintWriter myWriter = null;
-    File logFile;
+    private static PrintWriter myWriter = initWriter();
 
-    public MyLogger() //Creates a new log file
+    public MyLogger(){}
+    private static PrintWriter initWriter()
     {
-        Path filePath = Paths.get("Patam-BookScrabble","src","main","resources","bookscrabble","logs","log.txt");        
-        logFile = filePath.toFile();
+        PrintWriter writer = null;
+        String baseDirectory = Paths.get("").toAbsolutePath().toString();
+        Path filePath = Paths.get(baseDirectory, "src", "main", "resources", "bookscrabble", "logs", "log.txt");
+        File logFile = filePath.toFile();   
         if(logFile.exists())
             logFile.delete();
         
         try {
             logFile.createNewFile();
-            myWriter = new PrintWriter(logFile);
+            writer = new PrintWriter(logFile);
         } catch (Exception e) {
             System.out.println("Failed to create log file! " + e.getMessage());
         }
+        return writer;
     }
 
     public static synchronized void println(String message)
     {
         System.out.println(message);
         System.out.flush();
-        myWriter.println(message);
+        getWriter().println(message);
     }
 
     public static synchronized void print(String message)
     {
         System.out.print(message);
         System.out.flush();
-        myWriter.println(message);
+        getWriter().println(message);
     }
 
     public static synchronized void logError(String errorMessage)
@@ -151,7 +155,12 @@ public class MyLogger { // A class to print to the CMD
         return myScanner;
     }
 
-    private static PrintWriter getWriter(){return myWriter;}
+    private static PrintWriter getWriter()
+    {
+        if(myWriter == null)
+            myWriter = initWriter();
+        return myWriter;
+    }
     
     public static void close()
     {
