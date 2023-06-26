@@ -23,6 +23,7 @@
 hs_err_pid*
 
 **/target
+/target
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -37,3 +38,21 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+src/main/java/bookscrabble/client/misc/MyLogger.java
+target/classes/bookscrabble/Dictionaries/alice_in_wonderland.txt
+target/classes/bookscrabble/Dictionaries/Frank Herbert - Dune.txt
+target/classes/bookscrabble/Dictionaries/Harry Potter.txt
+target/classes/bookscrabble/Dictionaries/mobydick.txt
+target/classes/bookscrabble/Dictionaries/pg10.txt
+target/classes/bookscrabble/Dictionaries/shakespeare.txt
+target/classes/bookscrabble/Dictionaries/The Matrix.txt
+target/classes/bookscrabble/Dictionaries/wordDictionary.txt
+target/classes/bookscrabble/fxml/ClientMode.fxml
+target/classes/bookscrabble/fxml/GuestMenu.fxml
+target/classes/bookscrabble/fxml/HostMenu.fxml
+target/classes/bookscrabble/fxml/Main.fxml
+target/classes/bookscrabble/logs/log.txt
+target/classes/bookscrabble/pictures/images_1.jpeg
+target/classes/bookscrabble/pictures/images_2.jpeg
+target/classes/bookscrabble/pictures/welcomePic.png
+target/classes/bookscrabble/TestMyServer/wordsToTest.txt
