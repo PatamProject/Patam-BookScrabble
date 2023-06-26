@@ -1,40 +1,79 @@
 package bookscrabble.client.view;
 
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Scale;
+import javafx.stage.Screen;
+
+import java.io.IOException;
 
 public class GameWindowDisplayer {
-    private final int GRID_COUNT = 15, GRID_SIZE = 55;
-    int rowNode=0, colNode=0;
+    private final int GRID_SIZE = 15, SQUARE_SIZE = 55;
+    private int rowNode=0, colNode=0;
+    private String myTiles;
+    private GridPane gridPane;
 
-    public void completeBoard(GridPane gridPane , HBox hBox)
+    public void completeBoard(GridPane gridPane ,HBox hBox, String myTiles)
     {
+        this.gridPane = gridPane;
+        this.myTiles = myTiles;
         for (int i = 0; i < 225; i++) {
             Node node = gridPane.getChildren().get(i);
             Rectangle rec = (Rectangle) node;
             GridPane.setRowIndex(node, rowNode);
             GridPane.setColumnIndex(node, colNode);
-            rec.setId("rec:" + rowNode + ":" + colNode);
             colNode++;
             if (colNode == 15) {
                 colNode = 0;
                 rowNode++;
             }
-            rec.setWidth(GRID_SIZE);
-            rec.setHeight(GRID_SIZE);
-            rec.setId("rec:" + rowNode + ":" + colNode);
+            rec.setWidth(SQUARE_SIZE);
+            rec.setHeight(SQUARE_SIZE);
             GridPane.setHgrow(rec, Priority.ALWAYS);
             GridPane.setVgrow(rec, Priority.ALWAYS);
         }
-        gridPane.setPrefSize(GRID_SIZE * GRID_COUNT, GRID_SIZE * GRID_COUNT);
+        gridPane.setPrefSize(SQUARE_SIZE * GRID_SIZE, SQUARE_SIZE * GRID_SIZE);
         gridPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         gridPane.autosize();
         finishBoard(gridPane);
+        insertImage(hBox);
     }
+
+    private void insertImage(HBox hBox)
+    {
+        String tileArr[] = myTiles.split(" ");
+        for(int i=0;i<7;i++)
+        {
+            String imageTile = tileArr[i].concat("tile.png");
+            String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
+            ClassLoader classLoader = getClass().getClassLoader();
+            Image image = new Image(classLoader.getResourceAsStream(imagePath));
+            StackPane stackPane = (StackPane) hBox.getChildren().get(i);
+            Group group = (Group) stackPane.getChildren().get(0);
+            ImageView imageView = (ImageView) group.getChildren().get(1);
+            imageView.setImage(image);
+            group.setId(tileArr[i]);
+        }
+    }
+
+//    public void putTile(String letter, int row, int col)
+//    {
+//        Rectangle rectangle = (Rectangle) getNodeByRowColumnIndex(gridPane,row,col);
+//        String imageTile = letter.concat("tile.png");
+//        String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
+//        Image image = new Image(imagePath);
+//        ImagePattern imagePattern = new ImagePattern(image);
+//        rectangle.setFill(imagePattern);
+//    }
 
     private void setColorAndText(GridPane gridPane , int row, int col, Color color, String text)
     {
