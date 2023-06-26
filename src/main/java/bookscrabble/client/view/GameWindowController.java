@@ -24,6 +24,7 @@ import static bookscrabble.client.view.MainWindowController.switchRoot;
 public class GameWindowController implements Observer , Initializable {
     static ViewModel vm;
     MainWindowController mwc;
+    private GameWindowDisplayer playerScreenDisplayer = new GameWindowDisplayer();
     @FXML
     public TableView scoreTable;
     @FXML
@@ -47,7 +48,6 @@ public class GameWindowController implements Observer , Initializable {
     @FXML
     private TableColumn<?,?> scoreList;
 
-    private GameWindowDisplayer playerScreenDisplayer = new GameWindowDisplayer();
     private List<Group> alreadyDrag = new ArrayList<>();
     private Group draggedGroup=null;
     private double initialX, initialY;
@@ -68,15 +68,18 @@ public class GameWindowController implements Observer , Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) { // Method to set all bindings
-        myTilesProperty.bindBidirectional(vm.myTiles);
-        myBoardProperty.bindBidirectional(vm.board);
+        String path = location.getFile();
+
+        if (path.endsWith("GameWindow")) {
+            myTilesProperty.bindBidirectional(vm.myTiles);
+            myBoardProperty.bindBidirectional(vm.board);
+        }
         myPlayersAndScores.bindBidirectional(vm.playersAndScoresMap);
 
 //        nameList.setCellValueFactory(new PropertyValueFactory<>("key"));
 //        scoreList.setCellValueFactory(new PropertyValueFactory<>("value"));
 //        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(vm.playersAndScoresMap.entrySet());
 //        tableView.setItems(FXCollections.observableArrayList(entryList));
-
     }
 
     public void displayAll()
