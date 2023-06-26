@@ -19,8 +19,14 @@
 *.tar.gz
 *.rar
 
+#Folders to ignore
+target/
+target/classes/bookscrabble/fxml/ClientMode.css
+target/classes/bookscrabble/fxml/ClientMode.fxml
+target/classes/bookscrabble/fxml/GuestMenu.fxml
+target/classes/bookscrabble/fxml/HostMenu.fxml
+target/classes/bookscrabble/fxml/Main.fxml
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-#Folders to ignore
-/target/
