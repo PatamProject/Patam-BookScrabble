@@ -11,7 +11,7 @@ public class ClientModel extends Observable{
     int hostPort, BsPort;
     public boolean isConnectedToHost = false;
     boolean isHost = false;
-    String lastErrorReceivedFromClient;
+    String lastMsgReceivedFromClient;
 
     public static ClientModel getClientModel() //Singleton
     {
@@ -45,11 +45,11 @@ public class ClientModel extends Observable{
             } catch (Exception e) {}
         } catch (Exception e) { //Failed to connect to host
             if(e.getMessage().equals("Disconnected from host!"))
-                lastErrorReceivedFromClient = e.getMessage();
+                lastMsgReceivedFromClient = e.getMessage();
             else if(isHost)
-                lastErrorReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
+                lastMsgReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
             else
-                lastErrorReceivedFromClient = "Failed to connect to host";
+                lastMsgReceivedFromClient = "Failed to connect to host";
 
             isConnectedToHost = false;    
             setChanged();
@@ -84,7 +84,7 @@ public class ClientModel extends Observable{
     public void setBsPort(int BsPort){this.BsPort = BsPort;}
 
     //getters
-    public String getErrorMessage() {return lastErrorReceivedFromClient;}
+    public String getErrorMessage() {return lastMsgReceivedFromClient;}
     public boolean isHost() {return isHost;}
     public String getHostIP() {return hostIP;}
     public Integer getHostPort() {return hostPort;}
