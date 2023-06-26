@@ -29,6 +29,7 @@
     </center>
     <bottom>
         <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="viewErrorLabel" textFill="red" />
             <Button fx:id="goBackButton" onAction="#returnToGuestMenu" text="Go Back">
             <VBox.margin>
                <Insets bottom="10.0" />

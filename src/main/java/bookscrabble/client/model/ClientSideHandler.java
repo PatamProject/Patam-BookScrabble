@@ -23,8 +23,8 @@ public class ClientSideHandler implements RequestHandler{
     boolean isGameRunning = false;
 
     public ClientSideHandler(PrintWriter out) { //Ctor
-        myName = ClientModel.getName();
-        game = new GameModel();
+        myName = ClientModel.getMyName();
+        game = GameModel.getGameModel();
         this.out = out;
 
         //ResponseHandler (responses from the server to the client's request)
@@ -34,8 +34,10 @@ public class ClientSideHandler implements RequestHandler{
             { //Successful join, args[0] = id, args[1]... = players
                 id = Integer.parseInt(args[0]);
                 String[] connectedPlayers = new String[args.length - 1];
-                connectedPlayers[0] = myName; //Adding myself to the game
-                System.arraycopy(args, 1, connectedPlayers, 1, args.length - 1);
+                connectedPlayers[0] = myName; //Adding myself to the beginning of the array
+                for (int i = 2; i < args.length; i++) //Adding the rest of the players
+                    if(!args[i].equals(myName)) //Not me
+                        connectedPlayers[i - 1] = args[i];
 
                 game.addPlayers(connectedPlayers); //Add the rest of existing players
                 for (String p : connectedPlayers)
@@ -101,12 +103,14 @@ public class ClientSideHandler implements RequestHandler{
             put("!join", (String[] args) -> 
             { //args[0] = new player
                 MyLogger.playerJoined(args[0]); //This function is for notification only
+                game.setPlayerUpdateMessage(args[0] + " joined the game");
             });
     
             //A player left the game
             put("!leave", (String[] args) -> 
             { //args[0] = leaving player
                 MyLogger.playerLeft(args[0]); //This function is for notification only
+                game.setPlayerUpdateMessage(args[0] + " left the game");
             });
 
             //Game started, tiles are sent to each player individually

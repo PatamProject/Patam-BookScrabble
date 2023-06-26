@@ -34,7 +34,14 @@ public class MainWindowController implements Observer, Initializable {
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
 
     @Override
-    public void update(Observable o, Object arg) {} // Empty update method
+    public void update(Observable o, Object arg) 
+    {
+        if(arg.equals("playerUpdateMessage"))
+        {
+            if(playersTextArea != null)
+                playersTextArea.appendText(vm.lobbyMessage + "\n");
+        }
+    }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
         if(vm != null)
@@ -58,6 +65,13 @@ public class MainWindowController implements Observer, Initializable {
         {
             vm.BsIP.bind(serverIpTextField.textProperty());
             vm.BsPort.bind(serverPortTextField.textProperty());  
+        }
+
+        if(path.endsWith("GuestGameLobby.fxml") || path.endsWith("HostGameLobby.fxml"))
+        {
+            for (String player : vm.playersAndScoresMap.keySet()) {
+                playersTextArea.appendText(player + " has joined the lobby!" + "\n");  
+            }
         }
     }
 
@@ -90,7 +104,9 @@ public class MainWindowController implements Observer, Initializable {
             vm.setBsPort();
             sendInitialInfoToModel();
             if(tryToConnect("Failed to create game lobby. Please try again.", "Game lobby created successfully.")) // If the connection is established
+            {
                 switchRoot("HostGameLobby");
+            }
         }
     }
 
@@ -105,7 +121,9 @@ public class MainWindowController implements Observer, Initializable {
             messageLabel.setText("Connecting to host...");
             sendInitialInfoToModel();
             if(tryToConnect("Failed to connect to host. Please try again.", "Connected to host successfully.")) // If the connection is established
+            {
                 switchRoot("GuestGameLobby");
+            }
         }
     }
 
@@ -130,9 +148,12 @@ public class MainWindowController implements Observer, Initializable {
             }
         } // Waiting for the connection to be established
         viewErrorLabel.setText(successMessage);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {}
+        while(vm.playersAndScoresMap.size() == 0) // Waiting for the host to send the player list
+        {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {}
+        } 
         return true;
     }
 

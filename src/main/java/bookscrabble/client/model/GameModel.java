@@ -7,14 +7,21 @@ import java.util.Observable;
 import bookscrabble.client.misc.MyLogger;
 
 public class GameModel extends Observable {
+    private static GameModel myGameModel; //Singleton
     String myTiles; //The tiles I have
     HashMap<String,Integer> playersAndScores; //Name of player and their score
     LinkedList<String> playersOrder; //The order of the players in the game (0 goes first...)
     String board; //The game board as a string
     boolean isMyTurn;
-    String lastErrorReceivedFromGame;
+    String lastErrorReceivedFromGame, playerUpdateMessage;
 
-    public GameModel() { //Ctor
+    public static GameModel getGameModel() { //Singleton
+        if (myGameModel == null)
+            myGameModel = new GameModel();
+        return myGameModel;
+    }
+
+    private GameModel() { //Ctor
         playersOrder = new LinkedList<>(); //Will be updated by startGame
         this.playersAndScores = new HashMap<>();
     }
@@ -27,7 +34,9 @@ public class GameModel extends Observable {
 
     public void addPlayers(String... players) { //Adds the players of the game
         for (String player : players)
+        {
             this.playersAndScores.put(player, 0); //Each player starts with score 0
+        }
         setChanged();
         notifyObservers();
     }
@@ -68,7 +77,7 @@ public class GameModel extends Observable {
 
     public boolean isItMyTurn() //Checks who is playing
     {
-        isMyTurn = playersOrder.peek().equals(ClientModel.getName());
+        isMyTurn = playersOrder.peek().equals(ClientModel.getMyName());
         if(isMyTurn)
             ClientCommunications.unlock();
         setChanged();
@@ -87,7 +96,7 @@ public class GameModel extends Observable {
     public void wordPlacement(boolean isLegal) //Notifies observers if a placement of a word is successful
     {
         setChanged();
-        notifyObservers(isLegal);
+        notifyObservers("isLegal");
     }
 
     public void setErrorMessage(String error)
@@ -101,10 +110,18 @@ public class GameModel extends Observable {
         return lastErrorReceivedFromGame;
     }
 
+    public void setPlayerUpdateMessage(String message)
+    {
+        playerUpdateMessage = message;
+        setChanged();
+        notifyObservers("playerUpdateMessage");
+    }
+
     //Getters
-    public Integer getMyScore() {return playersAndScores.get(ClientModel.getName());}
+    public Integer getMyScore() {return playersAndScores.get(ClientModel.getMyName());}
     public String getMyTiles() {return myTiles;}
     public String getBoard() {return board;}
     public String getCurrentPlayersName() {return playersOrder.peek();}
     public HashMap<String,Integer> getPlayersAndScores() {return playersAndScores;}
+    public String getPlayerUpdateMessage() {return playerUpdateMessage;}
 }

@@ -1,9 +1,9 @@
 package bookscrabble.client.model;
 
 import java.util.Observable;
-import java.util.Observer;
 
 public class ClientModel extends Observable{
+    private static ClientModel myClientModel; //Singleton
     ClientCommunications myConnectionToHost;
     MyHostServer myHostServer;
     private static String myName;
@@ -13,7 +13,14 @@ public class ClientModel extends Observable{
     boolean isHost = false;
     String lastErrorReceivedFromClient;
 
-    public ClientModel(){} //Ctor
+    public static ClientModel getClientModel() //Singleton
+    {
+        if(myClientModel == null)
+            myClientModel = new ClientModel();
+        return myClientModel;
+    }
+
+    private ClientModel(){} //Ctor
 
     public void createClient(boolean isHost, String hostIP, int hostPort, String name) //Only activate after setting all the needed IPs and ports
     {
@@ -37,7 +44,10 @@ public class ClientModel extends Observable{
                 Thread.sleep(1000);
             } catch (Exception e) {}
         } catch (Exception e) { //Failed to connect to host
-            lastErrorReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
+            if(isHost)
+                lastErrorReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
+            else
+                lastErrorReceivedFromClient = "Failed to connect to host";
             setChanged();
             notifyObservers();
             close();
@@ -70,6 +80,6 @@ public class ClientModel extends Observable{
     public String getBsIP() {return BsIP;}
     public Integer getBsPort() {return BsPort;}
     public MyHostServer getMyHostServer() { return MyHostServer.getHostServer();}
-    public static String getName(){return myName;}
+    public static String getMyName(){return myName;}
     public ClientCommunications getMyConnectionToHost() {return myConnectionToHost;}
 }

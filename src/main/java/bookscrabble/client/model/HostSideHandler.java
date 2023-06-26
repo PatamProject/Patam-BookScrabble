@@ -33,7 +33,7 @@ public class HostSideHandler implements RequestHandler{
                 sendPlayers = new StringBuilder(sendPlayers.substring(0, sendPlayers.length() - 1)); //Trim last comma
 
                 game.addNewPlayer(args[0]); //Add to gameManager
-                out.println("join:"+args[1] + "," + sendPlayers); //Send ID and players to the client
+                out.println("join:"+args[1] + "," + sendPlayers.toString()); //Send ID and players to the client
                 MyHostServer.updateAll("!join:" + args[0], args[0]);
             });
 
@@ -66,7 +66,7 @@ public class HostSideHandler implements RequestHandler{
             //Start the game (Host only)
             put("startGame", (String[] args) ->
             {
-                if (args[0].equals(ClientModel.getName()) && game.getPlayersAmount() >= 2) //Enough players and is the host
+                if (args[0].equals(ClientModel.getMyName()) && game.getPlayersAmount() >= 2) //Enough players and is the host
                 { //Each player and tiles are sent in this format from startGame(): "p1%tiles"
                     try {
                         MyHostServer.getHostServer().isGameRunning = true; //Set gameStarted to true
@@ -90,7 +90,7 @@ public class HostSideHandler implements RequestHandler{
             //End the game and declare a winner (Host only)
             put("endGame", (String[] args) -> 
             {
-                if(args[0].equals(ClientModel.getName()) || game.getPlayersAmount() < 2) //Is the host
+                if(args[0].equals(ClientModel.getMyName()) || game.getPlayersAmount() < 2) //Is the host
                 {
                     String winner = game.getWinner();
                     MyHostServer.updateAll("!endGame:" + winner, null);

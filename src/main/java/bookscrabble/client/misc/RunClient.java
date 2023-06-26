@@ -1,5 +1,6 @@
 package bookscrabble.client.misc;
 
+import bookscrabble.client.model.ClientCommunications;
 import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.MyHostServer;
 
@@ -9,16 +10,16 @@ import java.util.Scanner;
 
 
 public class RunClient{ //Used to run the game in the terminal
-    static ClientModel myClient;
+    static ClientModel myClient = ClientModel.getClientModel();
     static Scanner scanner = MyLogger.getScanner();
     public static boolean exit = false;
 
     public RunClient() // always running
     {
+        ClientCommunications.isGameRunningInTerminal = true;
         do {
             String name = getPlayerName();
             boolean isHost = chooseIfHost();
-
             if(isHost)
             {
                 do
@@ -112,7 +113,7 @@ public class RunClient{ //Used to run the game in the terminal
             }
         } while (invalidInput);
 
-        myClient = new ClientModel();
+        myClient = ClientModel.getClientModel();
         MyHostServer.getHostServer().start(hostPort, bs_port, bs_IP);
         //Now we create the host itself
         myClient.createClient(true, "localhost", hostPort, name);
@@ -149,7 +150,6 @@ public class RunClient{ //Used to run the game in the terminal
         } while (invalidInput);
 
         System.out.println("Connecting to host...");
-        myClient = new ClientModel();
         myClient.createClient(false, host_ip, host_port , name); //Guest client
     }
 
@@ -157,7 +157,8 @@ public class RunClient{ //Used to run the game in the terminal
     {
         if(!myClient.isConnectedToHost)
         {
-            System.out.println("Could not connect to host.");
+            if(!myClient.isHost())
+                System.out.println("Could not connect to host.");
             System.out.println("Trying again...");
             myClient = null;
             return false;

@@ -71,13 +71,7 @@ public class MyHostServer{
             try {
                 Socket clientSocket = hostSocket.accept();
                 String ip = clientSocket.getInetAddress().getHostAddress();
-                if(ip.equals(BookScrabbleServerIP))
-                {
-                    MyLogger.println("A connection with BookScrabble server has been established!");
-                    continue; //Don't add BS server to connected clients
-                }
-                else
-                    MyLogger.println("A new client has connected: " + ip + ":" + clientSocket.getPort());
+                MyLogger.println("A new client has connected: " + ip + ":" + clientSocket.getPort());
                 threadPool.execute(() -> handleClientConnection(clientSocket)); //Handle client in a separate thread
             } catch (SocketTimeoutException e) {
                 MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
@@ -86,7 +80,7 @@ public class MyHostServer{
         }
 
         // Close all client connections
-        String myName = ClientModel.getName();
+        String myName = ClientModel.getMyName();
         for (int i = 0; i < connectedClients.keySet().size(); i++) {
             Socket client = connectedClients.get(connectedClients.keySet().toArray()[i]);
             if(!connectedClients.keySet().toArray()[i].equals(myName))
@@ -176,7 +170,7 @@ public class MyHostServer{
                 }};
 
 
-                if(!sender.equals(ClientModel.getName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) //Host only commands
+                if(!sender.equals(ClientModel.getMyName()) && (commandName.equals("startGame") || commandName.equals("endGame"))) //Host only commands
                     throwError(Error_Codes.ACCESS_DENIED, out);
                 else if (commandName.equals("startGame") && connectedClients.size() < 2) 
                     throwError(Error_Codes.NOT_ENOUGH_PLAYERS, out);  
@@ -282,7 +276,7 @@ public class MyHostServer{
         if(connectedClients.size() > 1)
         {
             try {
-                requestHandler.handleClient(ClientModel.getName(), "startGame", new String[]{ClientModel.getName()}, connectedClients.get(ClientModel.getName()).getOutputStream());
+                requestHandler.handleClient(ClientModel.getMyName(), "startGame", new String[]{ClientModel.getMyName()}, connectedClients.get(ClientModel.getMyName()).getOutputStream());
             } catch (IOException e) {
                 MyLogger.logError("Failed to start game on MyHostServer: " + e.getMessage());
                 e.printStackTrace();

@@ -19,6 +19,7 @@ public class ClientCommunications{
     private Scanner inFromHost;
     private static PrintWriter outToHost;
     private static Object lock = new Object();
+    public static boolean isGameRunningInTerminal = false;
 
     public ClientCommunications(String hostIP, int hostPort) throws IOException, InterruptedException { // Ctor
         toHostSocket = new Socket();
@@ -33,13 +34,16 @@ public class ClientCommunications{
             try {
                 run();
             } catch (Exception e) {
-                RunClient.disconnectedFromHost();
+                if(isGameRunningInTerminal)
+                    RunClient.disconnectedFromHost();
+                //else
+                    //TODO: update gui   
             }
         }).start();
     }
 
     public void run() throws Exception { // A method that consistently receives messages from the host
-        sendAMessage(0,ClientModel.getName()+"&join"); // Send a message to the host that the client wants to join with id = 0
+        sendAMessage(0,ClientModel.getMyName()+"&join"); // Send a message to the host that the client wants to join with id = 0
         while (!toHostSocket.isClosed()) { // The socket will be open until the game is over
             String request = inFromHost.nextLine(); // "!'takeTile':'Y'"
             //MyLogger.println("Client received: " + request);
@@ -86,7 +90,7 @@ public class ClientCommunications{
                 }
             }
             else //A reply from the host
-                sender = ClientModel.getName();
+                sender = ClientModel.getMyName();
             
             requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream()); 
         }
@@ -104,7 +108,7 @@ public class ClientCommunications{
         int BOARD_SIZE = 15;
         boolean waitingForReply = false, allowedInput, isVertical = false, exit = false;
         int currentScore = 0, row = 0, col = 0, myID = requestHandler.getId();
-        String word = null, myName = ClientModel.getName();
+        String word = null, myName = ClientModel.getMyName();
         ArrayList<String> userCommands = new ArrayList<>(){{
             add("!help");
             add("!exit");

@@ -2,7 +2,6 @@ package bookscrabble.client.viewModel;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -25,7 +24,8 @@ public class ViewModel extends Observable implements Observer {
     public StringProperty myName, hostIP, BsIP, clientErrorMessage;
     public StringProperty hostPort, BsPort;
 
-    //
+    //Lobby info
+    public StringProperty lobbyMessage;
 
     //Related to word placement
     public BooleanProperty wasLastWordValid;
@@ -52,16 +52,17 @@ public class ViewModel extends Observable implements Observer {
         this.gameErrorMessage = new SimpleStringProperty();
         clientErrorMessage = new SimpleStringProperty();
         playersAndScoresMap = new SimpleMapProperty<>();
+        lobbyMessage = new SimpleStringProperty();
     }
 
     @Override
     public void update(Observable o, Object arg) { //Receiving updates from the class observables
         if (o.equals(gameModel)) {
-            if(arg.equals(false)) //failedWordPlacement
+            if(arg != null && arg.equals("isLegal")) //failedWordPlacement
                 wasLastWordValid.set(false);
             else // True / null
             {
-                if(arg.equals(true)) //successfulWordPlacement
+                if(arg != null && arg.equals("isLegal")) //successfulWordPlacement
                     wasLastWordValid.set(true);
 
                 board.set(gameModel.getBoard());
@@ -70,6 +71,12 @@ public class ViewModel extends Observable implements Observer {
                 playersAndScoresMap.set(FXCollections.observableMap(gameModel.getPlayersAndScores()));
                 myScore.set(gameModel.getMyScore().toString());
                 gameErrorMessage.set(gameModel.getErrorMessage());
+                if(arg != null && arg.equals("playerUpdateMessage"))
+                {
+                    lobbyMessage.set(gameModel.getPlayerUpdateMessage());
+                    setChanged();
+                    notifyObservers("playerUpdateMessage");
+                }
             }
         }
         if (o.equals(clientModel)) {

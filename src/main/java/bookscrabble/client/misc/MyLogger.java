@@ -99,14 +99,14 @@ public class MyLogger { // A class to print to the CMD
     public static void printPlayerAndScore(HashMap<String, Integer> players)
     {
         for (String name : players.keySet())
-            println(name.equals(ClientModel.getName()) ? "You have " + players.get(name) + " points!" : name + " has " + players.get(name) + " points!");
+            println(name.equals(ClientModel.getMyName()) ? "You have " + players.get(name) + " points!" : name + " has " + players.get(name) + " points!");
     }
 
     public static void nextPlayer(String nextPlayer){ println("Player " + nextPlayer + " is playing now!");}
 
     public static void playerPlacedWord(String player, int score, String commandName)
     {
-        if(ClientModel.getName().equals(player))
+        if(ClientModel.getMyName().equals(player))
         {
             println("You got " + score + " points!");
             return;

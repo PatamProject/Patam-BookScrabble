@@ -16,17 +16,19 @@ import java.io.IOException;
 public class MainApplication extends Application { //Used to run the game in a GUI
     private static Scene scene;
     private static FXMLLoader fxmlLoader = new FXMLLoader();
-    static ViewModel vm;
+    private static ViewModel vm;
+    private static ClientModel cm;
+    private static GameModel gm;
 
     public static void main(String[] args) {launch();}
 
     @Override
     public void start(Stage stage) throws IOException {
-        GameModel gameModel = new GameModel();
-        ClientModel clientModel = new ClientModel();
-        vm = new ViewModel(gameModel,clientModel);
-        gameModel.addObserver(vm);
-        clientModel.addObserver(vm);
+        gm = GameModel.getGameModel();
+        cm = ClientModel.getClientModel();
+        vm = new ViewModel(gm,cm);
+        gm.addObserver(vm);
+        cm.addObserver(vm);
 
         scene = new Scene(loadFXML("Main"));
         stage.setTitle("SCRABBLE GAME");
