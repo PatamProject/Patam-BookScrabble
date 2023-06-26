@@ -19,6 +19,7 @@ public class MainApplication extends Application { //Used to run the game in a G
     private static ViewModel vm;
     private static ClientModel cm;
     private static GameModel gm;
+    private static MainWindowController mwc;
 
     public static void main(String[] args) {launch();}
 
@@ -35,7 +36,7 @@ public class MainApplication extends Application { //Used to run the game in a G
         stage.setScene(scene);
         stage.setResizable(true);
 
-        MainWindowController mwc = fxmlLoader.getController();
+        mwc = fxmlLoader.getController();
         mwc.setViewModel(vm);
         vm.addObserver(mwc);
 

@@ -41,7 +41,7 @@ public class MainWindowController implements Observer, Initializable {
         if(arg != null && arg.equals("playerUpdateMessage"))
         {
             if(playersTextArea != null)
-                playersTextArea.appendText(vm.lobbyMessage + playerJoinedMsg);
+                playersTextArea.appendText(vm.lobbyMessage.get() + playerJoinedMsg);
         }
         else if(arg != null && arg.equals("endGame"))
         {

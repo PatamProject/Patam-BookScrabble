@@ -38,16 +38,10 @@ public class ClientCommunications{
                 if(isGameRunningInTerminal)
                     RunClient.disconnectedFromHost(); 
                 else 
-                {
-                    if(e.getMessage().equals("Disconnected from host!"))
-                        throw new ConnectException(e.getMessage());
-                    else if(e.getMessage().equals("endGame"))
-                        throw new ConnectException(e.getMessage());
-                    throw new RuntimeException(e);
-                }
+                    ClientModel.getClientModel().disconnectedFromHost(e.getMessage());
             } catch (Exception e2) {}
         }};
-        
+
         Thread t = new Thread (()-> {
             try {
                 run();
@@ -124,7 +118,7 @@ public class ClientCommunications{
                 {
                     requestHandler.handleClient(sender, commandName, args, toHostSocket.getOutputStream());
                     Thread.sleep(1000);
-                    throw new ConnectException("Game ended by host!"); 
+                    throw new ConnectException("endGame"); 
                 }
             }
             else //A reply from the host

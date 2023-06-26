@@ -44,28 +44,31 @@ public class ClientModel extends Observable{
                 Thread.sleep(1000);
             } catch (Exception e) {}
         } catch (Exception e) { //Failed to connect to host
-            String knownExeptions = "gameStarted, endGame, Disconnected from host!";
-            if(knownExeptions.contains(e.getMessage())) //Known exceptions
-                lastMsgReceivedFromClient = e.getMessage();
-            else if(isHost)
-                lastMsgReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
-            else
-                lastMsgReceivedFromClient = "Failed to connect to host";
-
-            isConnectedToHost = false;    
-            setChanged();
-            notifyObservers();
-            close();
+            disconnectedFromHost(e.getMessage());
             return false;
         }  
         return true;
     }
 
-    public void disconnectedFromHost() //Called when the client is disconnected from the host
+    public void disconnectedFromHost(String msg) //Called when the client is disconnected from the host
     {
+        String knownExeptions = "gameStarted, endGame, Disconnected from host!";
+        String arg = "endGame";
+        if(knownExeptions.contains(msg)) //Known exceptions
+        {
+            if(msg.equals("gameStarted"))
+                arg = "gameStarted";
+
+            lastMsgReceivedFromClient = msg;
+        }
+        else if(isHost)
+            lastMsgReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
+        else
+            lastMsgReceivedFromClient = "Failed to connect to host";
         isConnectedToHost = false;
         setChanged();
-        notifyObservers();
+        notifyObservers(arg);
+        close();
     }
     
     public void close() //Close method for ClientModel
