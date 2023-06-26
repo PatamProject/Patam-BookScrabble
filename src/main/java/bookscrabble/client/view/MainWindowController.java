@@ -33,13 +33,15 @@ public class MainWindowController implements Observer, Initializable {
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
 
+    private String playerJoinedMsg = " has joined the lobby!\n";
+
     @Override
     public void update(Observable o, Object arg) 
     {
         if(arg.equals("playerUpdateMessage"))
         {
             if(playersTextArea != null)
-                playersTextArea.appendText(vm.lobbyMessage + "\n");
+                playersTextArea.appendText(vm.lobbyMessage + playerJoinedMsg);
         }
     }
 
@@ -70,7 +72,7 @@ public class MainWindowController implements Observer, Initializable {
         if(path.endsWith("GuestGameLobby.fxml") || path.endsWith("HostGameLobby.fxml"))
         {
             for (String player : vm.playersAndScoresMap.keySet()) {
-                playersTextArea.appendText(player + " has joined the lobby!" + "\n");  
+                playersTextArea.appendText(player + playerJoinedMsg);  
             }
         }
     }
