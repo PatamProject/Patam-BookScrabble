@@ -2,7 +2,6 @@ package bookscrabble.client.misc;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -19,8 +18,8 @@ public class MyLogger { // A class to print to the CMD
     {
         PrintWriter writer = null;
         String baseDirectory = Paths.get("").toAbsolutePath().toString();
-        Path filePath = Paths.get(baseDirectory, "src", "main", "resources", "bookscrabble", "logs", "log.txt");
-        File logFile = filePath.toFile();   
+        Path filePath = Paths.get(baseDirectory,"Patam-BookScrabble", "src", "main", "resources", "bookscrabble", "logs", "log.txt");
+        File logFile = filePath.toFile();   //Patam-BookScrabble\src\main\resources\bookscrabble\logs\log.txt
         if(logFile.exists())
             logFile.delete();
         
