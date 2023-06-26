@@ -5,26 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2437b60d-bf4f-4bfb-9e33-0e41e967745a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GuestGameLobby.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/AIcon.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/BIcon.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/CIcon.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/WordTilesImage.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/pictures/tilesIcon.jpeg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/MainApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/PlayerScreenApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/PlayerScreenApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/MainWindowController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/PlayerScreenController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/GameWindowController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/PlayerScreenDisplayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/GameWindowDisplayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/ClientMode.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/ClientMode.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GameWindow.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/GameWindow.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/Main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/Main.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/bookscrabble/fxml/server.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/ClientMode.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/ClientMode.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/GameWindow.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/GameWindow.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/Main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/Main.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bookscrabble/fxml/server.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/GameWindowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bookscrabble/client/view/GameWindowController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,23 +40,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/Uri Beeri/ASP/Project/Semester2/Patam-BookScrabble/src/main/resources/bookscrabble/pictures",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pathVariables",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Uri Beeri/ASP/Project/Semester2/Patam-BookScrabble/src/main/resources/bookscrabble/pictures&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pathVariables&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Uri Beeri\ASP\Project\Semester2\Patam-BookScrabble\src\main\resources\bookscrabble\pictures" />
