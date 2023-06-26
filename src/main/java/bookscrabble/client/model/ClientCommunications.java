@@ -29,18 +29,12 @@ public class ClientCommunications{
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
 
-    public void start() throws Exception {
+    Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
+    @Override
+    public void uncaughtException(Thread th, Throwable e){
         try {
-            new Thread(()-> {
-                try {
-                    run();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
-        } catch (Exception e) { //disconnected from host
             if(isGameRunningInTerminal)
-                RunClient.disconnectedFromHost();
+                RunClient.disconnectedFromHost(); //never caught
             else 
             {
                 if(e.getMessage().equals("Disconnected from host!"))
@@ -49,7 +43,40 @@ public class ClientCommunications{
                     throw new ConnectException(e.getMessage());
                 throw new RuntimeException(e);
             }
-        }
+        } catch (Exception e2) {}
+    }};
+
+    public void start() throws Exception {
+        Thread t = new Thread (()-> {
+            try {
+                run();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        t.setUncaughtExceptionHandler(h);
+        t.start();
+
+        // try {
+        //     new Thread(()-> {
+        //         try {
+        //             run();
+        //         } catch (Exception e) {
+        //             throw new RuntimeException(e);
+        //         }
+        //     }).start();
+        // } catch (Exception e) { //disconnected from host
+        //     if(isGameRunningInTerminal)
+        //         RunClient.disconnectedFromHost(); //never caught
+        //     else 
+        //     {
+        //         if(e.getMessage().equals("Disconnected from host!"))
+        //             throw new ConnectException(e.getMessage());
+        //         else if(e.getMessage().equals("endGame"))
+        //             throw new ConnectException(e.getMessage());
+        //         throw new RuntimeException(e);
+        //     }
+        // }
     }
 
     public void run() throws Exception { // A method that consistently receives messages from the host
