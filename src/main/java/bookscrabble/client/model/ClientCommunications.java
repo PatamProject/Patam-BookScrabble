@@ -29,24 +29,25 @@ public class ClientCommunications{
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
 
-    Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
-    @Override
-    public void uncaughtException(Thread th, Throwable e){
-        try {
-            if(isGameRunningInTerminal)
-                RunClient.disconnectedFromHost(); 
-            else 
-            {
-                if(e.getMessage().equals("Disconnected from host!"))
-                    throw new ConnectException(e.getMessage());
-                else if(e.getMessage().equals("endGame"))
-                    throw new ConnectException(e.getMessage());
-                throw new RuntimeException(e);
-            }
-        } catch (Exception e2) {}
-    }};
-
+    
     public void start() throws Exception {
+        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
+        @Override
+        public void uncaughtException(Thread th, Throwable e){
+            try {
+                if(isGameRunningInTerminal)
+                    RunClient.disconnectedFromHost(); 
+                else 
+                {
+                    if(e.getMessage().equals("Disconnected from host!"))
+                        throw new ConnectException(e.getMessage());
+                    else if(e.getMessage().equals("endGame"))
+                        throw new ConnectException(e.getMessage());
+                    throw new RuntimeException(e);
+                }
+            } catch (Exception e2) {}
+        }};
+        
         Thread t = new Thread (()-> {
             try {
                 run();
