@@ -44,16 +44,27 @@ public class ClientModel extends Observable{
                 Thread.sleep(1000);
             } catch (Exception e) {}
         } catch (Exception e) { //Failed to connect to host
-            if(isHost)
+            if(e.getMessage().equals("Disconnected from host!"))
+                lastErrorReceivedFromClient = e.getMessage();
+            else if(isHost)
                 lastErrorReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
             else
                 lastErrorReceivedFromClient = "Failed to connect to host";
+
+            isConnectedToHost = false;    
             setChanged();
             notifyObservers();
             close();
             return false;
         }  
         return true;
+    }
+
+    public void disconnectedFromHost() //Called when the client is disconnected from the host
+    {
+        isConnectedToHost = false;
+        setChanged();
+        notifyObservers();
     }
     
     public void close() //Close method for ClientModel

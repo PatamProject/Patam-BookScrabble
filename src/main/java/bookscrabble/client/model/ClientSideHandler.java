@@ -103,14 +103,14 @@ public class ClientSideHandler implements RequestHandler{
             put("!join", (String[] args) -> 
             { //args[0] = new player
                 MyLogger.playerJoined(args[0]); //This function is for notification only
-                game.setPlayerUpdateMessage(args[0] + " joined the game");
+                game.setPlayerUpdateMessage(args[0]);
             });
     
             //A player left the game
             put("!leave", (String[] args) -> 
             { //args[0] = leaving player
                 MyLogger.playerLeft(args[0]); //This function is for notification only
-                game.setPlayerUpdateMessage(args[0] + " left the game");
+                game.setPlayerUpdateMessage(args[0]);
             });
 
             //Game started, tiles are sent to each player individually

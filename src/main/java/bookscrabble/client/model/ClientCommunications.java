@@ -36,8 +36,8 @@ public class ClientCommunications{
             } catch (Exception e) {
                 if(isGameRunningInTerminal)
                     RunClient.disconnectedFromHost();
-                //else
-                    //TODO: update gui   
+                else 
+                    throw new RuntimeException("Disconnected from host!"); 
             }
         }).start();
     }
