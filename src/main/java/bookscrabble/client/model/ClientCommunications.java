@@ -30,16 +30,26 @@ public class ClientCommunications{
     }
 
     public void start() throws Exception {
-        new Thread(()-> {
-            try {
-                run();
-            } catch (Exception e) {
-                if(isGameRunningInTerminal)
-                    RunClient.disconnectedFromHost();
-                else 
-                    throw new RuntimeException("Disconnected from host!"); 
+        try {
+            new Thread(()-> {
+                try {
+                    run();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        } catch (Exception e) { //disconnected from host
+            if(isGameRunningInTerminal)
+                RunClient.disconnectedFromHost();
+            else 
+            {
+                if(e.getMessage().equals("Disconnected from host!"))
+                    throw new ConnectException(e.getMessage());
+                else if(e.getMessage().equals("endGame"))
+                    throw new ConnectException(e.getMessage());
+                throw new RuntimeException(e);
             }
-        }).start();
+        }
     }
 
     public void run() throws Exception { // A method that consistently receives messages from the host

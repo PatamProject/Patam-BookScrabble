@@ -88,7 +88,8 @@ public class MyHostServer{
         }
         connectedClients.get(myName).close();
         connectedClients.clear();
-        hostSocket.close();
+        if(hostSocket != null)
+            hostSocket.close();
     }
 
     private void handleClientConnection(Socket clientSocket) //Runs in a separate thread

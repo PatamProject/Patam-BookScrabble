@@ -80,6 +80,13 @@ public class ViewModel extends Observable implements Observer {
             }
         }
         if (o.equals(clientModel)) {
+            if(arg != null && arg.equals("endGame"))
+            {
+                isConnectedToHost.set(false);
+                clientErrorMessage.set("Game ended!");
+                setChanged();
+                notifyObservers("endGame");
+            }
             isConnectedToHost.set(clientModel.isConnectedToHost);
             clientErrorMessage.set(clientModel.getErrorMessage());
         }

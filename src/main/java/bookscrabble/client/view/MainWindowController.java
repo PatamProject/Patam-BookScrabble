@@ -38,10 +38,21 @@ public class MainWindowController implements Observer, Initializable {
     @Override
     public void update(Observable o, Object arg) 
     {
-        if(arg.equals("playerUpdateMessage"))
+        if(arg != null && arg.equals("playerUpdateMessage"))
         {
             if(playersTextArea != null)
                 playersTextArea.appendText(vm.lobbyMessage + playerJoinedMsg);
+        }
+        else if(arg != null && arg.equals("endGame"))
+        {
+            if(playersTextArea != null)
+                playersTextArea.appendText("Game ended!\n");
+            if(vm.isHost.get())
+            {
+                switchRoot("HostMenu");
+            }
+            else
+                switchRoot("GuestMenu"); 
         }
     }
 
@@ -161,13 +172,13 @@ public class MainWindowController implements Observer, Initializable {
 
     @FXML // Leaving the gameLobby and disconnecting from the game
     public void returnToGuestMenu(ActionEvent event) {
-        //vm.sendLeaveRequest(); //TODO: Commented section for communication with the model
+        vm.sendLeaveRequest();
         guestButtonClicked(event);
     }
 
     @FXML // Leaving the gameLobby and closing the game
     public void returnToHostMenu(ActionEvent event) {
-        //vm.sendEndgameRequest(); //TODO: Commented section for communication with the model
+        vm.sendEndgameRequest();
         hostButtonClicked(event);
     }
 

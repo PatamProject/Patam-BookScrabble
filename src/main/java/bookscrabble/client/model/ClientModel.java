@@ -44,7 +44,7 @@ public class ClientModel extends Observable{
                 Thread.sleep(1000);
             } catch (Exception e) {}
         } catch (Exception e) { //Failed to connect to host
-            if(e.getMessage().equals("Disconnected from host!"))
+            if(e.getMessage().equals("Disconnected from host!") || e.getMessage().equals("endGame")) //Known exceptions
                 lastMsgReceivedFromClient = e.getMessage();
             else if(isHost)
                 lastMsgReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI

@@ -133,6 +133,9 @@ public class ClientSideHandler implements RequestHandler{
             put("!endGame", (String[] args)->{
                 isGameRunning = false;
                 MyLogger.gameEnded(args[0]);
+                try {
+                    throw new Exception("endGame");
+                } catch (Exception e) {}
             });
     
             //Board update (replace the board completely)
