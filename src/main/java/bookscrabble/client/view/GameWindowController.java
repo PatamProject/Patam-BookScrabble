@@ -1,25 +1,30 @@
 package bookscrabble.client.view;
 
-import bookscrabble.client.MainApplication;
 import bookscrabble.client.viewModel.ViewModel;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.net.URL;
+import java.util.*;
 
 import static bookscrabble.client.view.MainWindowController.switchRoot;
 
-public class GameWindowController implements Observer {
+public class GameWindowController implements Observer , Initializable {
     static ViewModel vm;
     MainWindowController mwc;
     @FXML
@@ -32,13 +37,35 @@ public class GameWindowController implements Observer {
     GridPane gridPane;
     @FXML
     HBox hBox;
+//    @FXML
+//    TableView<?> tableView;
+//    @FXML
+//    TableColumn<String,String> nameList;
+//    @FXML
+//    TableColumn<String,Integer> scoreList;
+    @FXML
+    private TableView<?> tableView;
+    @FXML
+    private TableColumn<?,?> nameList;
+    @FXML
+    private TableColumn<?,?> scoreList;
+
     private GameWindowDisplayer playerScreenDisplayer = new GameWindowDisplayer();
     private List<Group> alreadyDrag = new ArrayList<>();
     private Group draggedGroup=null;
     private double initialX, initialY;
+    private StringProperty myTilesProperty = new SimpleStringProperty();
+    private StringProperty myBoardProperty = new SimpleStringProperty();
+    private MapProperty<String, Integer> myPlayerandScore = new SimpleMapProperty<>();
+    private String myTiles , myTilesTest , myStringBoard , myBoard[];
+    private String letterUpdate;
+    private int rowUpdate,colUpdate;
 
     @Override
-    public void update(Observable o, Object arg) {} // Empty update method
+    public void update(Observable o, Object arg)
+    {
+
+    } // Empty update method
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
         if(vm != null)
@@ -46,11 +73,49 @@ public class GameWindowController implements Observer {
         //TODO: Add bindings to update the game
     }
 
-    //TODO: Ofek needs to add comments to all of his functions
+    @Override
+    public void initialize(URL location, ResourceBundle resources) { // Method to set all bindings
+        myTilesProperty.bindBidirectional(vm.myTiles);
+        myBoardProperty.bindBidirectional(vm.board);
+        myPlayerandScore.bindBidirectional(vm.playersAndScoresMap);
 
-    public void displayAll() {playerScreenDisplayer.completeBoard(gridPane,hBox);}
+//        nameList.setCellValueFactory(new PropertyValueFactory<>("key"));
+//        scoreList.setCellValueFactory(new PropertyValueFactory<>("value"));
+//        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(vm.playersAndScoresMap.entrySet());
+//        tableView.setItems(FXCollections.observableArrayList(entryList));
 
-    public void onMouseClicked(MouseEvent event)
+    }
+
+    public void displayAll()
+    {
+        getMyTiles();
+        myTilesTest = "A B C D E F G";
+        playerScreenDisplayer.completeBoard(gridPane,hBox,myTilesTest);
+    }
+
+    public void displayUpdateBoard()
+    {
+        getMyBoard();
+        for(int row=0;row<15;row++)
+        {
+            String line[] = myBoard[row].split(" ");
+            for(int col=0;col<15;col++)
+            {
+                if(!line[col].equals("-"))
+                {
+                    putTileOnBoard(line[col],row,col);
+                }
+            }
+        }
+    }
+
+    public void getMyTiles() {  myTiles = myTilesProperty.get(); } // Prints the current value of myTilesProperty
+    public void getMyBoard() {
+        myStringBoard = myTilesProperty.get();
+        myBoard = myStringBoard.split("&");
+    }
+
+    public void onMouseClicked(MouseEvent event) // Runs when the mouse is clicked, saves which group the mouse clicked on, and saves the X Y position of the click
     {
         initialX = event.getSceneX();
         initialY = event.getSceneY();
@@ -59,7 +124,7 @@ public class GameWindowController implements Observer {
             draggedGroup.setManaged(false);
     }
 
-    public void onMouseDragged(MouseEvent event)
+    public void onMouseDragged(MouseEvent event) // Runs when the mouse is dragged, drag the group on the map , and saves the X Y position of the drag
     {
         if(draggedGroup != null && !alreadyDrag.contains(draggedGroup))
         {
@@ -74,7 +139,7 @@ public class GameWindowController implements Observer {
         }
     }
 
-    public void onMouseReleased(MouseEvent event) {
+    public void onMouseReleased(MouseEvent event) { // רRuns when the mouse is released, drops the group on the board and places it in the appropriate position according to X Y
         if (draggedGroup != null && !alreadyDrag.contains(draggedGroup))
         {
             initialX = event.getSceneX();
@@ -87,30 +152,38 @@ public class GameWindowController implements Observer {
         }
     }
 
-    private void dropRectangle(double releaseX , double releaseY)
+    private void dropRectangle(double releaseX , double releaseY) // Put the group on the board.
     {
-        boolean flag=false;
+        boolean stop=false;
         int indexRow = 0 , indexCol = 0 ;
-        for(int y = 4 ; y < 830 ; y+=55)
+        for(int y = 4 ; y < 830 && !stop ; y+=55)
         {
-            for(int x = 547 ; x < 1373 ; x+=55)
+            for(int x = 547 ; x < 1373 && !stop ; x+=55)
             {
                 if((releaseX >= x && releaseX < x+55) && (releaseY >= y && releaseY < y+55))
                 {
                     final int row = indexRow;
                     final int col = indexCol;
-                    Node removeNode = getRectangle(indexRow, indexCol);
-                    copyInfo(draggedGroup,removeNode);
+                    Node removeNode = getNode(indexRow, indexCol);
+                    if(removeNode instanceof Rectangle)
+                    {
+                       if(!checkRemoveRectangle(removeNode))
+                       {
+                           System.out.println("Cant remove this rectangle");
+                           break;
+                       }
+                    }
+                    copyCords(draggedGroup,removeNode);
                     removeFromFather(draggedGroup , indexRow , indexCol);
+                    letterUpdate = draggedGroup.getId();
+                    rowUpdate = indexRow;
+                    colUpdate = indexCol;
+                    draggedGroup.setId("group:"+indexRow+":"+indexCol);
                     gridPane.add(draggedGroup,row,col);
-
-                    flag = true;
-                    break;
+                    stop = true;
                 }
                 indexCol++;
             }
-            if(flag)
-                break;
             indexRow++;
             indexCol=0;
         }
@@ -118,7 +191,15 @@ public class GameWindowController implements Observer {
         draggedGroup = null;
     }
 
-    private void removeFromFather(Group draggedGroup , int row , int col)
+    private boolean checkRemoveRectangle(Node removeNode)
+    {
+        Rectangle rectangle = (Rectangle) removeNode;
+        if(removeNode.getId().equals("UnRemoveable"))
+            return false;
+        return true;
+    }
+
+    private void removeFromFather(Group draggedGroup , int row , int col) // Remove the group from his father
     {
         if(draggedGroup.getParent() instanceof HBox) {
             for (int i = 0; i < 7; i++) {
@@ -133,7 +214,7 @@ public class GameWindowController implements Observer {
         }
     }
 
-    private void copyInfo(Group draggedGroup, Node infoSquare)
+    private void copyCords(Group draggedGroup, Node infoSquare) // Copy the cords from the removed rectangle the dropped group.
     {
         draggedGroup.setTranslateX(infoSquare.getTranslateX());
         draggedGroup.setTranslateY(infoSquare.getTranslateY());
@@ -143,7 +224,7 @@ public class GameWindowController implements Observer {
         draggedGroup.setScaleY(infoSquare.getScaleY());
     }
 
-    private Node getRectangle(int rowIndex, int columnIndex) {
+    private Node getNode(int rowIndex, int columnIndex) { // return the Node that need to be removed.
         for (Node node : gridPane.getChildren()) {
             if(node instanceof Rectangle) {
                 Integer nodeColumnIndex = GridPane.getColumnIndex(node);
@@ -164,6 +245,40 @@ public class GameWindowController implements Observer {
         return null;
     }
 
+    private void UpdateBoard(String letter, int row, int col)
+    {
+        getMyBoard();
+        boolean stop=false;
+        String newBoard = new String();
+        for(int i=0;i<15&& !stop;i++)
+        {
+            String line[] = myBoard[i].split(" ");
+            for(int j=0;j<15 && !stop;j++)
+            {
+                if(row == i && col == j)
+                {
+                    line[j] = letter;
+                    stop=true;
+                }
+                newBoard.concat(line[j]);
+                newBoard.concat(" ");
+            }
+            newBoard.concat("&");
+        }
+        myBoardProperty.set(newBoard);
+    }
+
+    private void putTileOnBoard(String letter, int row, int col)
+    {
+        Rectangle rectangle = (Rectangle) getNode(row,col);
+        String imageTile = letter.concat("tile.png");
+        String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
+        Image image = new Image(imagePath);
+        ImagePattern imagePattern = new ImagePattern(image);
+        rectangle.setFill(imagePattern);
+        rectangle.setId("UnRemovable");
+    }
+
     @FXML
     public void quitButtonClicked(ActionEvent event) { // Quits the game and showing final scores
         //TODO: Commented section for communication with the model
@@ -176,6 +291,7 @@ public class GameWindowController implements Observer {
 
     @FXML
     public void doneButtonClicked(ActionEvent event) {
+        UpdateBoard(letterUpdate,rowUpdate,colUpdate);
         //vm.sendWordPlacementRequest(); //TODO: Commented section for communication with the model
     }
 
