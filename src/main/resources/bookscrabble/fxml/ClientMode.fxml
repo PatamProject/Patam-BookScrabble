@@ -8,69 +8,70 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
-<top>
-    <AnchorPane prefHeight="65.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-        <children>
-            <Text fill="#ef3131" fontSmoothingType="LCD" layoutX="133.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Book Scrabble Game" textAlignment="CENTER" wrappingWidth="317.0911560058594">
-                <font>
-                    <Font name="Berlin Sans FB Bold" size="32.0" />
-                </font>
-            </Text>
-        </children>
-    </AnchorPane>
-</top>
-<left>
-    <AnchorPane prefHeight="295.0" prefWidth="207.0" BorderPane.alignment="CENTER">
-        <children>
-            <Text fill="#fbf9f9" layoutX="24.0" layoutY="138.0" strokeType="OUTSIDE" strokeWidth="0.0" text="please choose:">
-                <font>
-                    <Font name="Berlin Sans FB" size="25.0" />
-                </font>
-            </Text>
-        </children>
-    </AnchorPane>
-</left>
-<center>
-    <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <children>
-            <Button fx:id="hostButton" onAction="#hostButtonClicked" layoutX="22.0" layoutY="42.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="127.0" text="Host">
-                <font>
-                    <Font name="Berlin Sans FB" size="22.0" />
-                </font>
-            </Button>
-            <Button fx:id="guestButton" onAction="#guestButtonClicked" layoutX="22.0" layoutY="113.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="128.0" text="Guest" textAlignment="CENTER">
-                <font>
-                    <Font name="Berlin Sans FB" size="20.0" />
-                </font>
-            </Button>
-            <Button fx:id="goBackButton" onAction="#returnToWelcomePage" layoutX="23.0" layoutY="184.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="126.0" text="Go Back">
-                <font>
-                    <Font name="Berlin Sans FB" size="20.0" />
-                </font>
-            </Button>
-        </children>
-    </AnchorPane>
-</center>
-<right>
-    <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <children>
-            <ImageView fitHeight="65.0" fitWidth="76.0" layoutX="14.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../pictures/AIcon.jpeg" />
-                </image>
-            </ImageView>
-            <ImageView fitHeight="70.0" fitWidth="70.0" layoutX="67.0" layoutY="119.0" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../pictures/BIcon.jpeg" />
-                </image>
-            </ImageView>
-            <ImageView fitHeight="67.0" fitWidth="72.0" layoutX="118.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
-                <image>
-                    <Image url="@../pictures/CIcon.jpeg" />
-                </image>
-            </ImageView>
-        </children>
-    </AnchorPane>
-</right>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
+    <top>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="65.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <Text fill="#ef3131" fontSmoothingType="LCD" layoutX="133.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Book Scrabble Game" textAlignment="CENTER" wrappingWidth="317.0911560058594">
+                    <font>
+                        <Font name="Berlin Sans FB Bold" size="32.0" />
+                    </font>
+                </Text>
+            </children>
+        </AnchorPane>
+    </top>
+    <left>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="295.0" prefWidth="207.0" BorderPane.alignment="CENTER">
+            <children>
+                <Text fill="#fbf9f9" layoutX="24.0" layoutY="138.0" strokeType="OUTSIDE" strokeWidth="0.0" text="please choose:">
+                    <font>
+                        <Font name="Berlin Sans FB" size="25.0" />
+                    </font>
+                </Text>
+            </children>
+        </AnchorPane>
+    </left>
+    <center>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="hostButton" layoutX="22.0" layoutY="14.0" mnemonicParsing="false" onAction="#hostButtonClicked" prefHeight="51.0" prefWidth="127.0" text="Host">
+                    <font>
+                        <Font name="Berlin Sans FB" size="22.0" />
+                    </font>
+                </Button>
+                <Button fx:id="guestButton" layoutX="22.0" layoutY="86.0" mnemonicParsing="false" onAction="#guestButtonClicked" prefHeight="53.0" prefWidth="128.0" text="Guest" textAlignment="CENTER">
+                    <font>
+                        <Font name="Berlin Sans FB" size="20.0" />
+                    </font>
+                </Button>
+                <Button fx:id="goBackButton" layoutX="23.0" layoutY="161.0" mnemonicParsing="false" onAction="#returnToWelcomePage" prefHeight="51.0" prefWidth="126.0" text="Go Back">
+                    <font>
+                        <Font name="Berlin Sans FB" size="20.0" />
+                    </font>
+                </Button>
+            </children>
+        </AnchorPane>
+    </center>
+    <right>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="233.0" fitWidth="175.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../pictures/tilesIcon.jpeg" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </right>
+    <bottom>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="89.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="85.0" fitWidth="246.0" layoutX="173.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../pictures/WordTilesImage.jpeg" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </bottom>
 </BorderPane>

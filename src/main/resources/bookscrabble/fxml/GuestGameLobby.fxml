@@ -1,39 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
-    <top>
-        <Label style="-fx-font-size: 18px;" text="You joined the game lobby!" BorderPane.alignment="TOP_CENTER">
-         <BorderPane.margin>
-            <Insets top="20.0" />
-         </BorderPane.margin></Label>
-    </top>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
     <center>
-        <VBox alignment="CENTER" spacing="10">
-            <Label style="-fx-font-size: 16px;" text="Waiting for the host to start the game...">
-            <VBox.margin>
-               <Insets />
-            </VBox.margin></Label>
-            <Label style="-fx-font-size: 14px;" text="Connected players:" />
-            <TextArea fx:id="playersTextArea" editable="false" prefHeight="200" prefWidth="400.0">
-            <VBox.margin>
-               <Insets bottom="70.0" left="20.0" right="20.0" />
-            </VBox.margin></TextArea>
-        </VBox>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <ListView editable="true" layoutX="-13.0" layoutY="-13.0" prefHeight="233.0" prefWidth="251.0" style="-fx-background-position: CENTER; -fx-background-color: #FFE4C4;" />
+                <ScrollBar layoutX="215.0" layoutY="-13.0" orientation="VERTICAL" prefHeight="233.0" prefWidth="23.0" />
+            </children>
+        </AnchorPane>
     </center>
+    <top>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="105.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <Text fill="WHITE" layoutX="161.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for the host to start the game..." wrappingWidth="301.7864990234375">
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Text>
+                <Text fill="#f40202" layoutX="130.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You Joined the Game Lobby!" wrappingWidth="354.3856506347656">
+                    <font>
+                        <Font name="Berlin Sans FB Bold" size="24.0" />
+                    </font>
+                </Text>
+                <Text fill="WHITE" layoutX="225.0" layoutY="93.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Connected players:" wrappingWidth="128.17034912109375">
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Text>
+            </children>
+        </AnchorPane>
+    </top>
+    <left>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="278.0" prefWidth="149.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="28.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../pictures/waiting.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </left>
+    <right>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="278.0" prefWidth="175.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="70.0" fitWidth="62.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../pictures/AIcon.jpeg" />
+                    </image>
+                </ImageView>
+                <ImageView fitHeight="69.0" fitWidth="57.0" layoutX="94.0" layoutY="187.0">
+                    <image>
+                        <Image url="@../pictures/CIcon.jpeg" />
+                    </image>
+                </ImageView>
+                <ImageView fitHeight="71.0" fitWidth="63.0" layoutX="56.0" layoutY="100.0">
+                    <image>
+                        <Image url="@../pictures/BIcon.jpeg" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </right>
     <bottom>
-        <VBox alignment="CENTER" spacing="10">
-            <Label fx:id="viewErrorLabel" textFill="red" />
-            <Button fx:id="goBackButton" onAction="#returnToGuestMenu" text="Go Back">
-            <VBox.margin>
-               <Insets bottom="10.0" />
-            </VBox.margin></Button>
-        </VBox>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="67.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="goBackButton" layoutX="265.0" layoutY="-4.0" mnemonicParsing="false" onAction="#returnToGuestMenu" text="Exit">
+                    <font>
+                        <Font name="Berlin Sans FB" size="19.0" />
+                    </font>
+                </Button>
+            </children>
+        </AnchorPane>
     </bottom>
 </BorderPane>
