@@ -1,10 +1,10 @@
 package bookscrabble.client.view;
 
+import bookscrabble.client.misc.MyLogger;
+import bookscrabble.client.viewModel.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,10 +21,6 @@ import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import bookscrabble.client.misc.MyLogger;
-import bookscrabble.client.viewModel.ViewModel;
 
 public class MainWindowController implements Observer, Initializable {
     static ViewModel vm;
@@ -38,7 +34,7 @@ public class MainWindowController implements Observer, Initializable {
     @FXML
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
-    public volatile String externalIP = "";
+    public static volatile StringBuilder externalIP = new StringBuilder();
     //private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
     @Override
     public void update(Observable o, Object arg) 
@@ -177,17 +173,22 @@ public class MainWindowController implements Observer, Initializable {
     }
 
     public void getMyIPAddress() { // Method to get the external IP of the user on a seperated thread
-        while (externalIP.equals(""))
+        int counter = 0;
+        while (externalIP.length() == 0 && counter < 100)
         {
             URL url;
             BufferedReader reader;
             try {
                 url = new URL("https://api.ipify.org/?format=text");
                 reader = new BufferedReader(new InputStreamReader(url.openStream()));
-                externalIP = reader.readLine();
+                externalIP.append(reader.readLine());
                 reader.close();
             } catch (IOException e) {
-                //MyLogger.logError("Problem with returning my IP address: " + e.getMessage());
+                counter++;
+                if (counter == 99) {
+                    MyLogger.logError("Problem with returning my IP address: " + e.getMessage());
+                    break;
+                }
             }
         }
     }
