@@ -6,6 +6,7 @@ import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.GameModel;
 import bookscrabble.client.viewModel.ViewModel;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,6 +36,10 @@ public class MainApplication extends Application { //Used to run the game in a G
         stage.setTitle("SCRABBLE GAME");
         stage.setScene(scene);
         stage.setResizable(true);
+        stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
 
         mwc = fxmlLoader.getController();
         mwc.setViewModel(vm);

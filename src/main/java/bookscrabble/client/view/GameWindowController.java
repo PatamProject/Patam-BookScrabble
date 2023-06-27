@@ -54,7 +54,7 @@ public class GameWindowController implements Observer , Initializable {
     private double initialX, initialY;
     private StringProperty myTilesProperty = new SimpleStringProperty(), myBoardProperty = new SimpleStringProperty();
     private MapProperty<String, Integer> myPlayersAndScores = new SimpleMapProperty<>();
-    private String myTiles , myTilesTest , myStringBoard , letterUpdate;
+    private String myStringBoard , letterUpdate;
     private String[] myBoard;
     private int rowUpdate, colUpdate;
 
@@ -64,13 +64,14 @@ public class GameWindowController implements Observer , Initializable {
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
         if(vm != null)
             MainWindowController.vm = vm;
-        //TODO: Add bindings to update the game
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) { // Method to set all bindings
+        if(vm == null)
+            vm = MainWindowController.vm;
         String path = location.getFile();
-        if (path.endsWith("GameWindow")) {
+        if (path.endsWith("GameWindow.fxml")) {
             myTilesProperty.bindBidirectional(vm.myTiles);
             myBoardProperty.bindBidirectional(vm.board);
         }
@@ -84,9 +85,7 @@ public class GameWindowController implements Observer , Initializable {
 
     public void displayAll()
     {
-        getMyTiles();
-        myTilesTest = "A B C D E F G";
-        playerScreenDisplayer.completeBoard(gridPane,hBox,myTilesTest);
+        playerScreenDisplayer.completeBoard(gridPane,hBox,myTilesProperty.get());
     }
 
     public void displayUpdateBoard()
@@ -105,7 +104,6 @@ public class GameWindowController implements Observer , Initializable {
         }
     }
 
-    public void getMyTiles() {  myTiles = myTilesProperty.get(); } // Prints the current value of myTilesProperty
     public void getMyBoard() {
         myStringBoard = myTilesProperty.get();
         myBoard = myStringBoard.split("&");

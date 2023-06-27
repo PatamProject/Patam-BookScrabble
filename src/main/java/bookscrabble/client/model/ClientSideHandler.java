@@ -131,9 +131,7 @@ public class ClientSideHandler implements RequestHandler{
                 isGameRunning = true;
                 RunClient.exit = true; //Close the manu to allow the user to play the game
                 //Game started in ClientCommunication
-                 try {
-                    throw new Exception("gameStarted");
-                } catch (Exception e) {}
+                ClientModel.getClientModel().startGame();
             });
 
             put("!endGame", (String[] args)->{

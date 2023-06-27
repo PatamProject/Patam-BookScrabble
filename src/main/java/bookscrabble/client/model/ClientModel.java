@@ -57,20 +57,20 @@ public class ClientModel extends Observable{
         return true;
     }
 
+    public void startGame() //Called when the game starts
+    {
+        setChanged();
+        notifyObservers("gameStarted");
+    }
+
     public synchronized void disconnectedFromHost(String msg) //Called when the client is disconnected from the host
     {
         String knownExeptions = "gameStarted, endGame, Disconnected from host!";
-        String arg = "endGame";
         if(knownExeptions.contains(msg)) //Known exceptions
-        {
-            if(msg.equals("gameStarted"))
-                arg = "gameStarted";
-
             lastMsgReceivedFromClient = msg;
-        }
-
+        
         setChanged();
-        notifyObservers(arg);
+        notifyObservers("endGame");
         if(isConnectedToHost != true)
             return;
 

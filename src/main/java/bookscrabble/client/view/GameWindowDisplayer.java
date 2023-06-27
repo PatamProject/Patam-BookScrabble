@@ -1,5 +1,6 @@
 package bookscrabble.client.view;
 
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -25,7 +26,11 @@ public class GameWindowDisplayer {
     public void completeBoard(GridPane gridPane ,HBox hBox, String myTiles)
     {
         this.gridPane = gridPane;
-        this.myTiles = myTiles;
+        char[] tmpArr = myTiles.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (char c : tmpArr)
+            sb.append(c).append(" ");
+        this.myTiles = sb.toString().trim();
         for (int i = 0; i < 225; i++) {
             Node node = gridPane.getChildren().get(i);
             Rectangle rec = (Rectangle) node;

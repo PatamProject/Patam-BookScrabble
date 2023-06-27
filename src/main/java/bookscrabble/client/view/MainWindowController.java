@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import bookscrabble.client.misc.MyLogger;
 import bookscrabble.client.viewModel.ViewModel;
@@ -38,14 +39,14 @@ public class MainWindowController implements Observer, Initializable {
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
     public volatile String externalIP = "";
-
+    private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
     @Override
     public void update(Observable o, Object arg) 
     {
         if(arg != null && arg.equals("endGame"))
             switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
         else if(arg != null && arg.equals("gameStarted"))
-            gameStarted();
+            isGameStarted.set(true);
     }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
@@ -102,7 +103,7 @@ public class MainWindowController implements Observer, Initializable {
     @FXML // Showing the HostMenu
     private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); vm.isHost.set(true);}
     @FXML // Showing the GuestMenu
-    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); vm.isHost.set(false);}
+    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); vm.isHost.set(false); }
     @FXML // Showing MainMenu
     private void returnToWelcomePage(ActionEvent event) {switchRoot("Main");}
 
@@ -207,6 +208,13 @@ public class MainWindowController implements Observer, Initializable {
         playersTextArea.setText("Starting game...\n");
         //Waiting for an update from viewModel that the game has started successfully
         vm.sendStartGameRequest();
+        while(isGameStarted.get() == false)
+        {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {}
+        }
+        gameStarted();
     }
 
     private void gameStarted()
@@ -214,7 +222,7 @@ public class MainWindowController implements Observer, Initializable {
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
         gwc.displayAll();
-        gwc.setViewModel(vm);
+        //gwc.setViewModel(vm);
         vm.addObserver(gwc);
         vm.isGameRunning.set(true);
     }
