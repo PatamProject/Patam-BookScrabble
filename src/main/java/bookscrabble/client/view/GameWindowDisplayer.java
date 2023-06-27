@@ -17,8 +17,10 @@ import javafx.stage.Screen;
 
 import java.io.IOException;
 
+import bookscrabble.client.misc.MyLogger;
+
 public class GameWindowDisplayer {
-    private final int GRID_SIZE = 15, SQUARE_SIZE = 55;
+    private final int GRID_SIZE = 15, SQUARE_SIZE = 55, MAX_TILE_SIZE = 7;
     private int rowNode=0, colNode=0;
     private String myTiles;
     private GridPane gridPane;
@@ -55,18 +57,21 @@ public class GameWindowDisplayer {
 
     private void insertImage(HBox hBox)
     {
-        String tileArr[] = myTiles.split(" ");
-        for(int i=0;i<7;i++)
+        String[] tileArr = myTiles.split(" ");
+        for(int i=0;i<MAX_TILE_SIZE;i++)
         {
-            String imageTile = tileArr[i].concat("tile.png");
-            String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
-            ClassLoader classLoader = getClass().getClassLoader();
-            Image image = new Image(classLoader.getResourceAsStream(imagePath));
-            StackPane stackPane = (StackPane) hBox.getChildren().get(i);
-            Group group = (Group) stackPane.getChildren().get(0);
-            ImageView imageView = (ImageView) group.getChildren().get(1);
-            imageView.setImage(image);
-            group.setId(tileArr[i]);
+            try {
+                String imageTile = tileArr[i].concat("tile.png");
+                String imagePath = "/bookscrabble/pictures/tiles/"+ imageTile;
+                Image image = new Image(getClass().getResourceAsStream(imagePath));
+                StackPane stackPane = (StackPane) hBox.getChildren().get(i);
+                Group group = (Group) stackPane.getChildren().get(0);
+                ImageView imageView = (ImageView) group.getChildren().get(1);
+                imageView.setImage(image);
+                group.setId(tileArr[i]);
+            } catch (Exception e) {
+                MyLogger.logError("Error with insertImage(): " + e.getMessage());
+            }
         }
     }
 
