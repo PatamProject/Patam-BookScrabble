@@ -1,5 +1,6 @@
 package bookscrabble.client.view;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -41,12 +42,12 @@ public class MainWindowController implements Observer, Initializable {
         if(arg != null && arg.equals("playerUpdateMessage"))
         {
             if(playersTextArea != null)
-                playersTextArea.appendText(vm.lobbyMessage.get() + playerJoinedMsg);
+                Platform.runLater(() -> playersTextArea.appendText(vm.lobbyMessage.get() + playerJoinedMsg));
         }
         else if(arg != null && arg.equals("endGame"))
         {
             if(playersTextArea != null)
-                playersTextArea.appendText("Game ended!\n");
+                Platform.runLater(() -> playersTextArea.appendText("Game ended!\n"));
             if(vm.isHost.get())
             {
                 switchRoot("HostMenu");
@@ -56,7 +57,7 @@ public class MainWindowController implements Observer, Initializable {
         }
         else if(arg != null && arg.equals("gameStarted")) 
         {
-            gameStarted();
+            Platform.runLater(() -> gameStarted());
         }
     }
 

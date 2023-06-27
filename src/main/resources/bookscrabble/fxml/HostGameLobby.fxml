@@ -1,43 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
     <top>
-        <Label style="-fx-font-size: 18px;" text="You created the game lobby!" BorderPane.alignment="TOP_CENTER">
-            <BorderPane.margin>
-                <Insets top="20.0" />
-            </BorderPane.margin></Label>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="130.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <Text fill="RED" layoutX="124.0" layoutY="29.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You created the game lobby!" wrappingWidth="352.25982666015625">
+                    <font>
+                        <Font name="Berlin Sans FB Bold" size="25.0" />
+                    </font>
+                </Text>
+                <Text fill="WHITE" layoutX="143.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Start the game if 2-4 players are connected." wrappingWidth="325.05859375">
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Text>
+                <Label fx:id="myIP" textFill="WHITE" layoutX="197.0" layoutY="82.0" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="15.0" />
+                    </font>
+                </Label>
+                <Label fx:id="myPort" textFill="WHITE" layoutX="197.0" layoutY="106.0" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="15.0" />
+                    </font>
+                </Label>
+                <Text fill="WHITE" layoutX="222.0" layoutY="135.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Connected players:" wrappingWidth="119.770263671875">
+                    <font>
+                        <Font name="Berlin Sans FB" size="15.0" />
+                    </font>
+                </Text>
+            </children>
+        </AnchorPane>
     </top>
     <center>
-        <VBox alignment="CENTER" spacing="10">
-            <Label style="-fx-font-size: 16px;" text="Start the game if 2-4 players are connected.">
-                <VBox.margin>
-                    <Insets />
-                </VBox.margin></Label>
-            <Label style="-fx-font-size: 14px;" text="Connected players:" />
-            <TextArea fx:id="playersTextArea" editable="false" prefHeight="200" prefWidth="400.0">
-                <VBox.margin>
-                    <Insets bottom="70.0" left="20.0" right="20.0" />
-                </VBox.margin></TextArea>
-        </VBox>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <TextArea fx:id="playersTextArea" editable="false" layoutX="-18.0" layoutY="1.0" prefHeight="200" prefWidth="200.0">
+                    <style>-fx-background-color: #FFE4C4;</style>
+                </TextArea>
+                <ScrollBar layoutX="167.0" layoutY="1.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="15.0" />
+            </children>
+        </AnchorPane>
     </center>
     <bottom>
-        <VBox alignment="CENTER" spacing="10">
-        <Label fx:id="viewErrorLabel" textFill="red" />
-         <Button fx:id="startButton" onAction="#startGameButtonClicked" text="Start" />
-         <Button fx:id="goBackButton" onAction="#returnToHostMenu" text="Go Back">
-                <VBox.margin>
-                    <Insets bottom="20.0" />
-                </VBox.margin></Button>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-        </VBox>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="67.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="viewErrorLabel" textFill="red" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Label>
+                <Button fx:id="startButton" layoutX="315.0" layoutY="19.0" mnemonicParsing="false" onAction="#startGameButtonClicked" text="Start Game">
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Button>
+                <Button fx:id="goBackButton" layoutX="156.0" layoutY="19.0" mnemonicParsing="false" onAction="#returnToHostMenu" prefHeight="30.0" prefWidth="97.0" text="Exit">
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Button>
+            </children>
+        </AnchorPane>
     </bottom>
+    <left>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="150.0" fitWidth="150.0" layoutX="27.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../pictures/waiting.png" />
+                    </image>
+                    <viewport>
+                        <Rectangle2D width="150.0" />
+                    </viewport>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </left>
+    <right>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="150.0" fitWidth="194.0" layoutX="12.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../pictures/loadingImage.jpg" />
+                    </image>
+                    <viewport>
+                        <Rectangle2D height="150.0" width="150.0" />
+                    </viewport>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </right>
 </BorderPane>

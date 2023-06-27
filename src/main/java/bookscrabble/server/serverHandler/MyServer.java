@@ -32,7 +32,7 @@ public class MyServer extends Observable{
         this.clientHandler = ch;
         this.port = port;
         stopServer = false;
-        timeout = 360;
+        this.timeout = 360;
     }
 
     public void start()

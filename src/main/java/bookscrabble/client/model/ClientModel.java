@@ -50,7 +50,7 @@ public class ClientModel extends Observable{
         return true;
     }
 
-    public void disconnectedFromHost(String msg) //Called when the client is disconnected from the host
+    public synchronized void disconnectedFromHost(String msg) //Called when the client is disconnected from the host
     {
         String knownExeptions = "gameStarted, endGame, Disconnected from host!";
         String arg = "endGame";
@@ -65,10 +65,14 @@ public class ClientModel extends Observable{
             lastMsgReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
         else
             lastMsgReceivedFromClient = "Failed to connect to host";
+        
+        if(isConnectedToHost == true)
+        {
+            setChanged();
+            notifyObservers(arg);
+            close();
+        }
         isConnectedToHost = false;
-        setChanged();
-        notifyObservers(arg);
-        close();
     }
     
     public void close() //Close method for ClientModel

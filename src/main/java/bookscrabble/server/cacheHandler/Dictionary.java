@@ -1,6 +1,5 @@
 package bookscrabble.server.cacheHandler;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -33,8 +32,7 @@ public class Dictionary
 
         try {
             for (String fileName : dictionaryFileNames) {
-                File file = new File(fileName);
-                Scanner reader = new Scanner(file); // Declaring Scanner
+                Scanner reader = new Scanner(getClass().getResourceAsStream(fileName)); // Declaring Scanner
                 while (reader.hasNextLine()) {
                     String line = reader.nextLine();
                     line = line.trim();

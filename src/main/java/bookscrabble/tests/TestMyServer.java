@@ -7,17 +7,16 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-import bookscrabble.server.serverHandler.BookScrabbleHandler;
-import bookscrabble.server.serverHandler.MyServer;
 
 public class TestMyServer {
-    static int port = 5556;
+    static int port = 5555;
     static int queryCount = 0, challengeCount = 0;
     public static void main(String[] args) {
-        MyServer server = new MyServer(port, new BookScrabbleHandler());
-        server.start();
+        // MyServer server = new MyServer(port, new BookScrabbleHandler());
+        // server.start();
+
         try {
-            File file = new File("bookscrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "bookscrabble" + File.separator + "TestMyServer" + File.separator + "wordsToTest.txt");
+            File file = new File("Patam-BookScrabble" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "bookscrabble" + File.separator + "TestMyServer" + File.separator + "wordsToTest.txt");
             Scanner fileScanner = new Scanner(file);
             String[] moreWordsToTest ={"gbud","Bilibobo","speeding","","queue","boy!"};
             try {
@@ -45,7 +44,7 @@ public class TestMyServer {
             System.out.println("Error: " + e.getMessage());
         }
         
-        server.close();
+        //server.close();
         System.out.println("Query count: " + queryCount);
             if(queryCount != 220)
                 System.out.println("Error: wrong query count");

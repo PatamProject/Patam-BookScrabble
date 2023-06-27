@@ -1,5 +1,6 @@
 package bookscrabble.server;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -106,7 +107,15 @@ public class App extends Application implements Observer{
         stopButton.setDisable(false);
     }
 
-    public static void write(String text){textArea.appendText(text + "\n");}
+    public static void write(String text)
+    {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+              textArea.appendText(text + "\n");
+            }
+          });
+    }
 
     private void stopServer() {
         if(myServer != null && myServer.isAlive())
