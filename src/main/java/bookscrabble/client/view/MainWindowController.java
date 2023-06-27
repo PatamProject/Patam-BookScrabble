@@ -94,13 +94,7 @@ public class MainWindowController implements Observer, Initializable {
             });
 
             for (String player : vm.playersAndScoresMap.keySet())
-                vm.lobbyMessage.set(player + " joined the lobby!");  
-            //playersTextArea.textProperty().bind(playersTextArea.textProperty().concat(vm.lobbyMessage));
-            // if(playersTextArea != null)
-            // {
-            //     for (String player : vm.playersAndScoresMap.keySet())
-            //         write(player + " joined the lobby!");         
-            // }
+                vm.lobbyMessage.set(player + " joined the lobby!\n");  
         }
 
         if (path.endsWith("HostGameLobby.fxml")) {

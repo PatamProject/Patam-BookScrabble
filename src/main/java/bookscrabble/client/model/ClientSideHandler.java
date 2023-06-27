@@ -104,7 +104,7 @@ public class ClientSideHandler implements RequestHandler{
             { //args[0] = new player
                 MyLogger.playerJoined(args[0]); //This function is for notification only
                 game.addPlayers(args[0]);
-                game.setPlayerUpdateMessage(args[0] + " joined the lobby!");
+                game.setPlayerUpdateMessage(args[0] + " joined the lobby!\n");
             });
     
             //A player left the game
@@ -112,7 +112,7 @@ public class ClientSideHandler implements RequestHandler{
             { //args[0] = leaving player
                 MyLogger.playerLeft(args[0]); //This function is for notification only
                 game.removePlayer(args[0]);
-                game.setPlayerUpdateMessage(args[0] + " left the lobby!");
+                game.setPlayerUpdateMessage(args[0] + " left the lobby!\n");
             });
 
             //Game started, tiles are sent to each player individually
