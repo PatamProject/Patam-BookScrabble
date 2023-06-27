@@ -1,0 +1,53 @@
+BookScrabble Project/
+├─BookScrabble/
+│	├─ src/main/
+│	│	├─ java/
+│	│	│	└─ project/
+│	│	│		├─ client/
+│	│	│		│	├─ model/
+│	│	│		│	│	├─ ConnectionModel.java
+│	│	│		│	│	├─ DataModel.java
+│	│	│		│	│	└─ ServerResponseModel.java
+│	│	│		│	├─ view/
+│	│	│		│	│	├─ ConnectionView.java
+│	│	│		│	│	├─ DataView.java
+│	│	│		│	│	└─ ServerResponseView.java
+│	│	│		│	├─ viewModel/
+│	│	│		│	│	├─ ConnectionViewModel.java
+│	│	│		│	│	├─ DataViewModel.java
+│	│	│		│	│	└─ ServerResponseViewModel.java
+│	│	│		│	└─ RunClient.java	
+│	│	│		└─ server/
+│	│	│			├─ assets/
+│	│	│			│	├─ Board.java
+│	│	│			│	├─ Game.java
+│	│	│			│	├─ Player.java
+│	│	│			│	├─ Rack.java
+│	│	│			│	├─ Tile.java
+│	│	│			│	└─ Word.java
+│	│	│			├─ cacheHandler/
+│	│	│			│	├─ BloomFilter.java
+│	│	│			│	├─ CacheManager.java
+│	│	│			│	├─ CacheReplacementPolicy.java
+│	│	│			│	├─ Dictionary.java
+│	│	│			│	├─ DictionaryManager.java
+│	│	│			│	├─ IOSearcher.java
+│	│	│			│	├─ LFU.java
+│	│	│			│	└─ LRU.java
+│	│	│			├─ serverHandler/
+│	│	│			│	├─ BookScrabbleHandler.java
+│	│	│			│	├─ ClientHandler.java
+│	│	│			│	├─ GameHandler.java
+│	│	│			│	├─ MyServer.java
+│	│	│			│	└─ ServerManager.java	
+│	│	│			├─ ServerMain.java
+│	│	│			└─ serverConnectionProtocol.txt					
+│	│	└─ module-info.java		
+│	└─ resources/
+├─ test/
+├─ target
+│	├─ classes/
+│	└─ testClasses/ 	
+├─ pom.xml
+├─ README.md
+└─ .gitignore
