@@ -103,6 +103,7 @@ public class ClientSideHandler implements RequestHandler{
             put("!join", (String[] args) -> 
             { //args[0] = new player
                 MyLogger.playerJoined(args[0]); //This function is for notification only
+                game.addPlayers(args[0]);
                 game.setPlayerUpdateMessage(args[0]);
             });
     
@@ -110,12 +111,14 @@ public class ClientSideHandler implements RequestHandler{
             put("!leave", (String[] args) -> 
             { //args[0] = leaving player
                 MyLogger.playerLeft(args[0]); //This function is for notification only
+                game.removePlayer(args[0]);
                 game.setPlayerUpdateMessage(args[0]);
             });
 
             //Game started, tiles are sent to each player individually
             put("!startGame", (String[] args) -> 
             { //args[0] = tiles, args[1] = player1, args[2] = player2, ...
+                game.playersAndScores.clear(); //Clear the players and scores
                 game.myTiles = args[0]; //Updated the tiles    
                 //Add players by order
                 String[] players = new String[args.length - 1];

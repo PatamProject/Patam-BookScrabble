@@ -26,6 +26,7 @@ public class ViewModel extends Observable implements Observer {
 
     //Lobby info
     public StringProperty lobbyMessage;
+    public final String playerJoinedMsg = " has joined the lobby!\n" , playerLeftMsg = " has left the lobby!\n";
 
     //Related to word placement
     public BooleanProperty wasLastWordValid;

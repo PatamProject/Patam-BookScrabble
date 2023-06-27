@@ -3,6 +3,8 @@ package bookscrabble.client.view;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -36,7 +38,6 @@ public class MainWindowController implements Observer, Initializable {
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
     public volatile String externalIP = "";
-    private final String playerJoinedMsg = " has joined the lobby!\n";
 
     @Override
     public void update(Observable o, Object arg) 
@@ -79,7 +80,7 @@ public class MainWindowController implements Observer, Initializable {
             if(playersTextArea != null)
             {
                 for (String player : vm.playersAndScoresMap.keySet())
-                    vm.lobbyMessage.set(player + playerJoinedMsg);         
+                    vm.lobbyMessage.set(player + vm.playerJoinedMsg);         
             }
         }
 
@@ -205,16 +206,17 @@ public class MainWindowController implements Observer, Initializable {
         }
         playersTextArea.setText("Starting game...\n");
         //Waiting for an update from viewModel that the game has started successfully
+        vm.sendStartGameRequest();
     }
 
     private void gameStarted()
     {
-        vm.sendStartGameRequest();
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
         gwc.displayAll();
         gwc.setViewModel(vm);
         vm.addObserver(gwc);
+        vm.isGameRunning.set(true);
     }
 
     public static void switchRoot(String r) { // Switching between different roots
