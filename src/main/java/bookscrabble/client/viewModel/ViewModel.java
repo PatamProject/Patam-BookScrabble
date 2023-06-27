@@ -73,11 +73,7 @@ public class ViewModel extends Observable implements Observer {
                 myScore.set(gameModel.getMyScore().toString());
                 gameErrorMessage.set(gameModel.getErrorMessage());
                 if(arg != null && arg.equals("playerUpdateMessage"))
-                {
-                    lobbyMessage.set(gameModel.getPlayerUpdateMessage());
-                    setChanged();
-                    notifyObservers("playerUpdateMessage");
-                }
+                    lobbyMessage.set(gameModel.getPlayerUpdateMessage());   
             }
         }
         if (o.equals(clientModel)) {
@@ -85,6 +81,7 @@ public class ViewModel extends Observable implements Observer {
             {
                 isConnectedToHost.set(false);
                 clientErrorMessage.set("Game ended!");
+                lobbyMessage.set("Game ended!");
                 setChanged();
                 notifyObservers("endGame");
             }
@@ -116,10 +113,10 @@ public class ViewModel extends Observable implements Observer {
             MyHostServer.getHostServer().start(Integer.parseInt(hostPort.get()), Integer.parseInt(BsPort.get()), BsIP.get());
     }
     public void sendStartGameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame");}
-    public void sendEndgameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame");}
+    public void sendEndgameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame"); clear();}
 
     //Player options
-    public void sendLeaveRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave");}
+    public void sendLeaveRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave"); clear();}
     public void sendSkipTurnRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn");} //'Q':'word,row,col,isVertical'
     public void sendWordPlacementRequest(String word, int row, int col, boolean isVertical)
     {
@@ -133,6 +130,18 @@ public class ViewModel extends Observable implements Observer {
     public void sendChallengeRequest()
     {
         ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&C:" + lastWord + "," + row + "," + col + "," + isVertical);
+    }
+
+    private void clear()
+    {
+        board.set("");
+        currentPlayerName.set("");
+        myTiles.set("");
+        myScore.set("");
+        playersAndScoresMap.set(null);
+        gameErrorMessage.set("");
+        lobbyMessage.set("");
+        isGameRunning.set(false);
     }
 
 /* 

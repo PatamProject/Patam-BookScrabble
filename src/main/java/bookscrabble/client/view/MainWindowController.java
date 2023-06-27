@@ -35,25 +35,16 @@ public class MainWindowController implements Observer, Initializable {
     @FXML
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
-    private final String playerJoinedMsg = " has joined the lobby!\n";
     public volatile String externalIP = "";
+    private final String playerJoinedMsg = " has joined the lobby!\n";
 
     @Override
     public void update(Observable o, Object arg) 
     {
-        if(arg != null && arg.equals("playerUpdateMessage"))
-        {
-            if(playersTextArea != null)
-                Platform.runLater(() -> playersTextArea.appendText(vm.lobbyMessage.get() + playerJoinedMsg));
-        }
-        else if(arg != null && arg.equals("endGame"))
-        {
-            if(playersTextArea != null)
-                Platform.runLater(() -> playersTextArea.appendText("Game ended!\n"));
+        if(arg != null && arg.equals("endGame"))
             switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
-        }
         else if(arg != null && arg.equals("gameStarted"))
-            Platform.runLater(() -> gameStarted());
+            gameStarted();
     }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
@@ -72,6 +63,8 @@ public class MainWindowController implements Observer, Initializable {
             modelErrorLabel.textProperty().bind(vm.gameErrorMessage);
             modelErrorLabel.textProperty().bind(vm.clientErrorMessage);
             isConnectedToGame.bind(vm.isConnectedToHost);
+            if(viewErrorLabel != null)
+                viewErrorLabel.setText("");
         }
 
         if(path.endsWith("HostMenu.fxml")) // If FXML file is HostMenu.fxml
@@ -82,10 +75,11 @@ public class MainWindowController implements Observer, Initializable {
 
         if(path.endsWith("GuestGameLobby.fxml") || path.endsWith("HostGameLobby.fxml"))
         {
-            for (String player : vm.playersAndScoresMap.keySet()) {
-                vm.lobbyMessage.set(player);
-                this.update(vm, "playerUpdateMessage");
-                //playersTextArea.appendText(player + playerJoinedMsg);  
+            playersTextArea.textProperty().bind(vm.lobbyMessage.concat("\n"));
+            if(playersTextArea != null)
+            {
+                for (String player : vm.playersAndScoresMap.keySet())
+                    vm.lobbyMessage.set(player + playerJoinedMsg);         
             }
         }
 
@@ -165,7 +159,7 @@ public class MainWindowController implements Observer, Initializable {
             }
         } // Waiting for the connection to be established
         viewErrorLabel.setText(successMessage);
-        while(vm.playersAndScoresMap.size() == 0) // Waiting for the host to send the player list
+        while(vm.playersAndScoresMap != null && vm.playersAndScoresMap.size() == 0) // Waiting for the host to send the player list
         {
             try {
                 Thread.sleep(100);

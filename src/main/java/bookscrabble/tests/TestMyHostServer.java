@@ -21,7 +21,7 @@ public class TestMyHostServer {
         simulateClientInteraction(hostServer, "Client3");
 
         // Close the server
-        hostServer.close();
+        hostServer.tryClose();
     }
 
     private static void simulateClientInteraction(MyHostServer hostServer, String clientName) {
