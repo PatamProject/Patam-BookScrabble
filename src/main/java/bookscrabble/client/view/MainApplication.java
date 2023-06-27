@@ -39,6 +39,7 @@ public class MainApplication extends Application { //Used to run the game in a G
         mwc = fxmlLoader.getController();
         mwc.setViewModel(vm);
         vm.addObserver(mwc);
+        new Thread(()->{mwc.getMyIPAddress();}).start();
 
         stage.show();
     }
@@ -54,8 +55,6 @@ public class MainApplication extends Application { //Used to run the game in a G
     }
 
     public static void setRoot(String fxml) throws IOException {scene.setRoot(loadFXML(fxml));}
-    public static String getRoot() {
-        return fxmlLoader.getLocation().getPath();
-    }
+    public static String getRoot() {return fxmlLoader.getLocation().getPath();}
     public static FXMLLoader getFxmlLoader() {return fxmlLoader;}
 }

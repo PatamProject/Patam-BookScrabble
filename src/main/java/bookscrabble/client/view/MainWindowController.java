@@ -12,7 +12,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
@@ -29,12 +31,12 @@ public class MainWindowController implements Observer, Initializable {
     @FXML
     public TextField nameTextField, hostIpTextField, hostPortTextField, serverIpTextField, serverPortTextField;
     @FXML
-    public Label modelErrorLabel, viewErrorLabel, messageLabel;
+    public Label modelErrorLabel, viewErrorLabel, messageLabel, myPort, myIP;
     @FXML
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
-
     private final String playerJoinedMsg = " has joined the lobby!\n";
+    public volatile String externalIP = "";
 
     @Override
     public void update(Observable o, Object arg) 
@@ -48,17 +50,10 @@ public class MainWindowController implements Observer, Initializable {
         {
             if(playersTextArea != null)
                 Platform.runLater(() -> playersTextArea.appendText("Game ended!\n"));
-            if(vm.isHost.get())
-            {
-                switchRoot("HostMenu");
-            }
-            else
-                switchRoot("GuestMenu"); 
+            switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
         }
-        else if(arg != null && arg.equals("gameStarted")) 
-        {
+        else if(arg != null && arg.equals("gameStarted"))
             Platform.runLater(() -> gameStarted());
-        }
     }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
@@ -93,6 +88,12 @@ public class MainWindowController implements Observer, Initializable {
                 //playersTextArea.appendText(player + playerJoinedMsg);  
             }
         }
+
+        if (path.endsWith("HostGameLobby.fxml")) {
+            //externalIP = getMyIPAddress();
+            myIP.setText("Your IP is: " + externalIP);
+            myPort.setText("Your port is: " + vm.hostPort.get());
+        }
     }
 
     @FXML // Closing the app
@@ -124,9 +125,7 @@ public class MainWindowController implements Observer, Initializable {
             vm.setBsPort();
             sendInitialInfoToModel();
             if(tryToConnect("Failed to create game lobby. Please try again.", "Game lobby created successfully.")) // If the connection is established
-            {
                 switchRoot("HostGameLobby");
-            }
         }
     }
 
@@ -141,15 +140,13 @@ public class MainWindowController implements Observer, Initializable {
             messageLabel.setText("Connecting to host...");
             sendInitialInfoToModel();
             if(tryToConnect("Failed to connect to host. Please try again.", "Connected to host successfully.")) // If the connection is established
-            {
                 switchRoot("GuestGameLobby");
-            }
         }
     }
 
     private boolean tryToConnect(String failedMessage, String successMessage) { // Method to establish a connection with a host or with myHostServer
         vm.startHostServer(); // Starting the host server (only works if the user is a host)
-        vm.createClient(); // Cre ating a client and sending a join request to host or server
+        vm.createClient(); // Creating a client and sending a join request to host or server
         int timeOutCounter = 0;
         while(!vm.isConnectedToHost.get())
         {
@@ -175,6 +172,22 @@ public class MainWindowController implements Observer, Initializable {
             } catch (InterruptedException e) {}
         } 
         return true;
+    }
+
+    public void getMyIPAddress() { // Method to get the external IP of the user on a seperated thread
+        while (externalIP.equals(""))
+        {
+            URL url;
+            BufferedReader reader;
+            try {
+                url = new URL("https://api.ipify.org/?format=text");
+                reader = new BufferedReader(new InputStreamReader(url.openStream()));
+                externalIP = reader.readLine();
+                reader.close();
+            } catch (IOException e) {
+                //MyLogger.logError("Problem with returning my IP address: " + e.getMessage());
+            }
+        }
     }
 
     @FXML // Leaving the gameLobby and disconnecting from the game
@@ -229,19 +242,13 @@ public class MainWindowController implements Observer, Initializable {
     {
         String nameRegex = "^.{0,10}$", portRegex = "^\\d{1,5}$", ipRegex = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
         if(isHost)
-            if(isTextFieldLegal(nameRegex, 15 ,nameTextField) && 
-            isTextFieldLegal(portRegex, 5 ,hostPortTextField, serverPortTextField) && 
-            isTextFieldLegal(ipRegex, 15 , serverIpTextField))
-                return true;
-            else
-                return false;
+            return isTextFieldLegal(nameRegex, 15, nameTextField) &&
+                    isTextFieldLegal(portRegex, 5, hostPortTextField, serverPortTextField) &&
+                    isTextFieldLegal(ipRegex, 15, serverIpTextField);
         else
-            if(isTextFieldLegal(nameRegex, 15 ,nameTextField) && 
-            isTextFieldLegal(portRegex, 5 ,hostPortTextField) && 
-            isTextFieldLegal(ipRegex, 15 , hostIpTextField))
-                return true;
-            else
-                return false;
+            return isTextFieldLegal(nameRegex, 15, nameTextField) &&
+                    isTextFieldLegal(portRegex, 5, hostPortTextField) &&
+                    isTextFieldLegal(ipRegex, 15, hostIpTextField);
     }
 
     private boolean isTextFieldLegal(String regex, int maxInputLength ,TextField...inputs)
@@ -256,17 +263,15 @@ public class MainWindowController implements Observer, Initializable {
 
             if(input.getText().length() > maxInputLength)
             {
-                viewErrorLabel.setText("Please only write up to " + maxInputLength + "characters.");
+                viewErrorLabel.setText("Please only write up to " + maxInputLength + " characters.");
                 return false;
             }
 
             if(!input.getText().matches(regex))
             {
                 if(input.equals(serverIpTextField) || input.equals(hostIpTextField))
-                {
                     if(input.getText().equals("localhost"))
                         return true;
-                }
                 viewErrorLabel.setText("Please fill in all fields correctly.");
                 return false;
             }

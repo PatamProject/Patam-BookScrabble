@@ -22,6 +22,21 @@
                         <Font name="Berlin Sans FB Bold" size="32.0" />
                     </font>
                 </Text>
+                <Label fx:id="modelErrorLabel" textFill="red" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Label>
+                <Label fx:id="messageLabel" textFill="white" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Label>
+                <Label fx:id="viewErrorLabel" textFill="red" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Label>
             </children>
         </AnchorPane>
     </top>
@@ -75,9 +90,6 @@
                         <Font name="Berlin Sans FB" size="23.0" />
                     </font>
                 </Button>
-                <Label fx:id="modelErrorLabel" textFill="#f80101">
-                    <graphic> <Label fx:id="messageLabel" textFill="white"> </Label></graphic></Label>
-                <Label fx:id="viewErrorLabel" textFill="#f80101" />
             </children>
         </AnchorPane>
     </bottom>

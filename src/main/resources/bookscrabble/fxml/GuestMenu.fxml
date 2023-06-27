@@ -19,11 +19,26 @@
                         <Font name="Berlin Sans FB Bold" size="27.0" />
                     </font>
                 </Text>
-                <Text fill="WHITE" layoutX="151.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="please fill this imformation:" textAlignment="CENTER" wrappingWidth="274.19549560546875">
+                <Text fill="WHITE" layoutX="151.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Please fill this information:" textAlignment="CENTER" wrappingWidth="274.19549560546875">
                     <font>
                         <Font name="Berlin Sans FB" size="20.0" />
                     </font>
                 </Text>
+                <Label fx:id="modelErrorLabel" textFill="red" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Label>
+                <Label fx:id="messageLabel" textFill="white" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Label>
+                <Label fx:id="viewErrorLabel" textFill="red" >
+                    <font>
+                        <Font name="Berlin Sans FB" size="16.0" />
+                    </font>
+                </Label>
             </children>
         </AnchorPane>
     </top>
@@ -70,9 +85,6 @@
                         <Font name="Berlin Sans FB" size="16.0" />
                     </font>
                 </Button>
-                <Label fx:id="modelErrorLabel" textFill="red">
-                    <graphic> <Label fx:id="messageLabel" textFill="white"> </Label></graphic></Label>
-                <Label fx:id="viewErrorLabel" textFill="red" />
             </children>
         </AnchorPane>
     </bottom>
