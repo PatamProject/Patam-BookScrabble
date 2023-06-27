@@ -1,6 +1,6 @@
 module bookscrabble {
     requires transitive javafx.controls;
-    requires javafx.fxml;
+    requires transitive javafx.fxml;
 
     opens bookscrabble.client.view to javafx.fxml;
     exports bookscrabble.client;

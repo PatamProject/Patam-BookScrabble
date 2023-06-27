@@ -25,6 +25,8 @@ public class ViewModel extends Observable implements Observer {
     public StringProperty myName, hostIP, BsIP, clientErrorMessage;
     public StringProperty hostPort, BsPort;
 
+    public StringProperty lobbyMessage;
+
     //Related to word placement
     public BooleanProperty wasLastWordValid;
     public String lastWord;
@@ -51,6 +53,7 @@ public class ViewModel extends Observable implements Observer {
         clientErrorMessage = new SimpleStringProperty();
         playersAndScoresMap = new SimpleMapProperty<>();
         isGameRunning = new SimpleBooleanProperty();
+        lobbyMessage = new SimpleStringProperty();
     }
 
     @Override
@@ -70,7 +73,8 @@ public class ViewModel extends Observable implements Observer {
                 myScore.set(gameModel.getMyScore().toString());
                 gameErrorMessage.set(gameModel.getErrorMessage());
                 if(arg != null && arg.equals("playerUpdateMessage"))
-                    MainWindowController.write(gameModel.getPlayerUpdateMessage());   
+                    lobbyMessage.set(gameModel.getPlayerUpdateMessage());
+                  
             }
         }
         if (o.equals(clientModel)) {
@@ -78,7 +82,7 @@ public class ViewModel extends Observable implements Observer {
             {
                 isConnectedToHost.set(false);
                 clientErrorMessage.set("Game ended!");
-                MainWindowController.write("Game ended!");
+                lobbyMessage.set("Game ended!");
                 setChanged();
                 notifyObservers("endGame");
             }

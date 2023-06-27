@@ -35,7 +35,8 @@ public class MainWindowController implements Observer, Initializable {
     @FXML
     public Label modelErrorLabel, viewErrorLabel, messageLabel, myPort, myIP;
     @FXML
-    public static TextArea playersTextArea;
+    public TextArea playersTextArea;
+
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
     public static volatile StringBuilder externalIP = new StringBuilder();
     //private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
@@ -83,14 +84,23 @@ public class MainWindowController implements Observer, Initializable {
                     });
             });
             //Whenever vm.lobbyMessage is changed, the playersTextArea is appended with the new message
-            playersTextArea.textProperty().set("Welcome to the game lobby!\n");
+            playersTextArea.textProperty().set("Welcome to the lobby!\n");
+            vm.lobbyMessage.addListener((observable, oldValue, newValue) -> {
+                if(newValue != null)
+                    Platform.runLater(() -> {
+                        if(playersTextArea != null)
+                            playersTextArea.appendText(newValue);
+                    });
+            });
 
+            for (String player : vm.playersAndScoresMap.keySet())
+                vm.lobbyMessage.set(player + " joined the lobby!");  
             //playersTextArea.textProperty().bind(playersTextArea.textProperty().concat(vm.lobbyMessage));
-            if(playersTextArea != null)
-            {
-                for (String player : vm.playersAndScoresMap.keySet())
-                    write(player + " joined the lobby!");         
-            }
+            // if(playersTextArea != null)
+            // {
+            //     for (String player : vm.playersAndScoresMap.keySet())
+            //         write(player + " joined the lobby!");         
+            // }
         }
 
         if (path.endsWith("HostGameLobby.fxml")) {
@@ -109,9 +119,9 @@ public class MainWindowController implements Observer, Initializable {
     @FXML // Showing the ModeMenu
     public void chooseModeMenu(ActionEvent event) {switchRoot("ClientMode");}
     @FXML // Showing the HostMenu
-    private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); vm.isHost.set(true);}
+    private void hostButtonClicked(ActionEvent event) {vm.isHost.set(true); switchRoot("HostMenu"); }
     @FXML // Showing the GuestMenu
-    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); vm.isHost.set(false); }
+    private void guestButtonClicked(ActionEvent event) { vm.isHost.set(false); switchRoot("GuestMenu");}
     @FXML // Showing MainMenu
     private void returnToWelcomePage(ActionEvent event) {switchRoot("Main");}
 
@@ -239,16 +249,6 @@ public class MainWindowController implements Observer, Initializable {
         } catch (IOException e) {
             MyLogger.logError(e.getMessage());
         }
-    }
-
-    public static void write(String text)
-    {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-              playersTextArea.appendText(text + "\n");
-            }
-          });
     }
   
     private void sendInitialInfoToModel() { // Method to update the model with the user input
