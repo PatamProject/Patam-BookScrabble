@@ -4,9 +4,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollBar?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bookscrabble.client.view.MainWindowController">
 <center>
@@ -75,12 +78,12 @@
 <bottom>
     <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="67.0" prefWidth="600.0" BorderPane.alignment="CENTER">
         <children>
-            <Label fx:id="viewErrorLabel" textFill="red" >
+            <Label fx:id="viewErrorLabel" layoutX="102.0" layoutY="-10.0" prefHeight="19.0" prefWidth="381.0" textFill="red">
                 <font>
                     <Font name="Berlin Sans FB" size="16.0" />
                 </font>
             </Label>
-            <Button fx:id="goBackButton" layoutX="265.0" layoutY="-4.0" mnemonicParsing="false" onAction="#returnToGuestMenu" text="Exit">
+            <Button fx:id="goBackButton" layoutX="265.0" layoutY="16.0" mnemonicParsing="false" onAction="#returnToGuestMenu" text="Exit">
                 <font>
                     <Font name="Berlin Sans FB" size="19.0" />
                 </font>

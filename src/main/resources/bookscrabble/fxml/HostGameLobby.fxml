@@ -61,10 +61,13 @@
     <bottom>
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="67.0" prefWidth="600.0" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="viewErrorLabel" textFill="red">
+                <Label fx:id="viewErrorLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="32.0" layoutY="-10.0" prefHeight="19.0" prefWidth="512.0" textAlignment="CENTER" textFill="red">
                     <font>
                         <Font name="Berlin Sans FB" size="16.0" />
                     </font>
+               <opaqueInsets>
+                  <Insets bottom="15.0" />
+               </opaqueInsets>
                 </Label>
                 <Button fx:id="startButton" layoutX="315.0" layoutY="19.0" mnemonicParsing="false" onAction="#startGameButtonClicked" text="Start Game">
                     <font>
