@@ -91,11 +91,7 @@ public class ViewModel extends Observable implements Observer {
         }
 
         if(arg != null && arg.equals("gameStarted"))
-        {
-            isGameRunning.set(true);
-            // setChanged();
-            // notifyObservers("gameStarted");
-        }
+            isGameRunning.set(true);  
     }
 
     //Updates from View -> Model//

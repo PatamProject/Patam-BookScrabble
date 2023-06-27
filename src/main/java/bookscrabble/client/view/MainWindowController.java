@@ -45,8 +45,6 @@ public class MainWindowController implements Observer, Initializable {
     {
         if(arg != null && arg.equals("endGame"))
             switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
-        // else if(arg != null && arg.equals("gameStarted"))
-        //     isGameStarted.set(true); 
     }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
@@ -216,13 +214,6 @@ public class MainWindowController implements Observer, Initializable {
         playersTextArea.setText("Starting game...\n");
         //Waiting for an update from viewModel that the game has started successfully
         vm.sendStartGameRequest();
-        // while(isGameStarted.get() == false)
-        // {
-        //     try {
-        //         Thread.sleep(100);
-        //     } catch (InterruptedException e) {}
-        // }
-        // gameStarted();
     }
 
     private void gameStarted()
@@ -230,7 +221,7 @@ public class MainWindowController implements Observer, Initializable {
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
         gwc.displayAll();
-        //gwc.setViewModel(vm);
+        //gwc.setViewModel(vm); //Happens when loading the fxml
         vm.addObserver(gwc);
         vm.isGameRunning.set(true);
     }
