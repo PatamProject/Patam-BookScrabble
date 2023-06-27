@@ -75,7 +75,7 @@ public class MainWindowController implements Observer, Initializable {
 
         if(path.endsWith("GuestGameLobby.fxml") || path.endsWith("HostGameLobby.fxml"))
         {
-            playersTextArea.textProperty().bind(vm.lobbyMessage.concat("\n"));
+            //playersTextArea.textProperty().bind(playersTextArea.textProperty().concat(vm.lobbyMessage));
             if(playersTextArea != null)
             {
                 for (String player : vm.playersAndScoresMap.keySet())
