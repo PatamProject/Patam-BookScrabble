@@ -39,14 +39,14 @@ public class MainWindowController implements Observer, Initializable {
     public TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
     public volatile String externalIP = "";
-    private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
+    //private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
     @Override
     public void update(Observable o, Object arg) 
     {
         if(arg != null && arg.equals("endGame"))
             switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
-        else if(arg != null && arg.equals("gameStarted"))
-            isGameStarted.set(true);
+        // else if(arg != null && arg.equals("gameStarted"))
+        //     isGameStarted.set(true); 
     }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
@@ -77,6 +77,14 @@ public class MainWindowController implements Observer, Initializable {
 
         if(path.endsWith("GuestGameLobby.fxml") || path.endsWith("HostGameLobby.fxml"))
         {
+            //Binding vm.isGameRunning to gameStarted() method
+            vm.isGameRunning.addListener((observable, oldValue, newValue) -> {
+                if(newValue)
+                    Platform.runLater(() -> {
+                        //isGameStarted.set(true); 
+                        gameStarted();
+                    });
+            });
             //playersTextArea.textProperty().bind(playersTextArea.textProperty().concat(vm.lobbyMessage));
             if(playersTextArea != null)
             {
@@ -208,13 +216,13 @@ public class MainWindowController implements Observer, Initializable {
         playersTextArea.setText("Starting game...\n");
         //Waiting for an update from viewModel that the game has started successfully
         vm.sendStartGameRequest();
-        while(isGameStarted.get() == false)
-        {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {}
-        }
-        gameStarted();
+        // while(isGameStarted.get() == false)
+        // {
+        //     try {
+        //         Thread.sleep(100);
+        //     } catch (InterruptedException e) {}
+        // }
+        // gameStarted();
     }
 
     private void gameStarted()
