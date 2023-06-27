@@ -10,6 +10,7 @@ import bookscrabble.client.model.ClientCommunications;
 import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.GameModel;
 import bookscrabble.client.model.MyHostServer;
+import bookscrabble.client.view.MainWindowController;
 
 public class ViewModel extends Observable implements Observer {
     ClientModel clientModel; //Model representation for client info
@@ -23,10 +24,6 @@ public class ViewModel extends Observable implements Observer {
     public BooleanProperty isHost;
     public StringProperty myName, hostIP, BsIP, clientErrorMessage;
     public StringProperty hostPort, BsPort;
-
-    //Lobby info
-    public StringProperty lobbyMessage;
-    public final String playerJoinedMsg = " has joined the lobby!\n" , playerLeftMsg = " has left the lobby!\n";
 
     //Related to word placement
     public BooleanProperty wasLastWordValid;
@@ -53,7 +50,6 @@ public class ViewModel extends Observable implements Observer {
         this.gameErrorMessage = new SimpleStringProperty();
         clientErrorMessage = new SimpleStringProperty();
         playersAndScoresMap = new SimpleMapProperty<>();
-        lobbyMessage = new SimpleStringProperty();
         isGameRunning = new SimpleBooleanProperty();
     }
 
@@ -74,7 +70,7 @@ public class ViewModel extends Observable implements Observer {
                 myScore.set(gameModel.getMyScore().toString());
                 gameErrorMessage.set(gameModel.getErrorMessage());
                 if(arg != null && arg.equals("playerUpdateMessage"))
-                    lobbyMessage.set(gameModel.getPlayerUpdateMessage());   
+                    MainWindowController.write(gameModel.getPlayerUpdateMessage());   
             }
         }
         if (o.equals(clientModel)) {
@@ -82,7 +78,7 @@ public class ViewModel extends Observable implements Observer {
             {
                 isConnectedToHost.set(false);
                 clientErrorMessage.set("Game ended!");
-                lobbyMessage.set("Game ended!");
+                MainWindowController.write("Game ended!");
                 setChanged();
                 notifyObservers("endGame");
             }
@@ -137,7 +133,6 @@ public class ViewModel extends Observable implements Observer {
         myScore.set("");
         playersAndScoresMap.set(null);
         gameErrorMessage.set("");
-        lobbyMessage.set("");
         isGameRunning.set(false);
     }
 

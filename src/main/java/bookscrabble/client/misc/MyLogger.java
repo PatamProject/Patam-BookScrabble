@@ -1,6 +1,7 @@
 package bookscrabble.client.misc;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,33 +12,43 @@ import bookscrabble.client.model.ClientModel;
 
 public class MyLogger { // A class to print to the CMD
     private static Scanner myScanner = new Scanner(System.in);
-    private static PrintWriter myWriter;
+    private static PrintWriter myWriter = getWriter();
+    private String path = "/bookscrabble/logs/log.txt";
 
     public MyLogger(){}
 
-//    private static PrintWriter initWriter()
-//    {
-//        PrintWriter writer = null;
-//        String baseDirectory = Paths.get("").toAbsolutePath().toString();
-//        Path filePath = Paths.get(baseDirectory,"Patam-BookScrabble", "src", "main", "resources", "bookscrabble", "logs", "log.txt");
-//        File logFile = filePath.toFile();   //Patam-BookScrabble\src\main\resources\bookscrabble\logs\log.txt
-//        if(logFile.exists())
-//            logFile.delete();
-//
-//        try {
-//            logFile.createNewFile();
-//            writer = new PrintWriter(logFile);
-//        } catch (Exception e) {
-//            System.out.println("Failed to create log file! " + e.getMessage());
-//        }
-//        return writer;
-//    }
+    private boolean initWriter()
+    {
+        try {
+            myWriter = new PrintWriter(getClass().getResource(path).getFile());
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+    // private PrintWriter initWriter() //getClass().getResourceAsStream("/bookscrabble/logs/log.txt")
+    // {
+    //     myWriter = new PrintWriter(getClass().getResource(path).getFile());
+    //     String baseDirectory = Paths.get("").toAbsolutePath().toString();
+    //     Path filePath = Paths.get(baseDirectory,"Patam-BookScrabble", "src", "main", "resources", "bookscrabble", "logs", "log.txt");
+    //     File logFile = filePath.toFile();   //Patam-BookScrabble\src\main\resources\bookscrabble\logs\log.txt
+    //     if(logFile.exists())
+    //         logFile.delete();
+        
+    //     try {
+    //         logFile.createNewFile();
+    //         writer = new PrintWriter(logFile);
+    //     } catch (Exception e) {
+    //         System.out.println("Failed to create log file! " + e.getMessage());
+    //     }
+    //     return writer;
+    // }
 
     public static synchronized void println(String message)
     {
         System.out.println(message);
         System.out.flush();
-        if (getWriter() != null)
+        if(getWriter() != null)
             getWriter().println(message);
     }
 
@@ -45,15 +56,15 @@ public class MyLogger { // A class to print to the CMD
     {
         System.out.print(message);
         System.out.flush();
-        if (getWriter() != null)
+        if(getWriter() != null)
             getWriter().println(message);
     }
 
     public static synchronized void logError(String errorMessage)
     {
         System.err.println(errorMessage);
-        System.out.flush();
-        if (getWriter() != null)
+        System.out.flush(); 
+        if(getWriter() != null)
             getWriter().println("ERROR:" + errorMessage);
     }
 
@@ -161,8 +172,8 @@ public class MyLogger { // A class to print to the CMD
 
     private static PrintWriter getWriter()
     {
-//        if(myWriter == null)
-//            myWriter = initWriter();
+        // if(myWriter == null)
+        //     myWriter = initWriter();
         return myWriter;
     }
     

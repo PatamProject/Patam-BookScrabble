@@ -22,6 +22,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
+import bookscrabble.client.misc.MyLogger;
+import bookscrabble.client.viewModel.ViewModel;
+
 public class MainWindowController implements Observer, Initializable {
     static ViewModel vm;
     GameWindowController gwc;
@@ -32,7 +35,7 @@ public class MainWindowController implements Observer, Initializable {
     @FXML
     public Label modelErrorLabel, viewErrorLabel, messageLabel, myPort, myIP;
     @FXML
-    public TextArea playersTextArea;
+    public static TextArea playersTextArea;
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
     public static volatile StringBuilder externalIP = new StringBuilder();
     //private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
@@ -79,11 +82,14 @@ public class MainWindowController implements Observer, Initializable {
                         gameStarted();
                     });
             });
+            //Whenever vm.lobbyMessage is changed, the playersTextArea is appended with the new message
+            playersTextArea.textProperty().set("Welcome to the game lobby!\n");
+
             //playersTextArea.textProperty().bind(playersTextArea.textProperty().concat(vm.lobbyMessage));
             if(playersTextArea != null)
             {
                 for (String player : vm.playersAndScoresMap.keySet())
-                    vm.lobbyMessage.set(player + vm.playerJoinedMsg);         
+                    write(player + " joined the lobby!");         
             }
         }
 
@@ -233,6 +239,16 @@ public class MainWindowController implements Observer, Initializable {
         } catch (IOException e) {
             MyLogger.logError(e.getMessage());
         }
+    }
+
+    public static void write(String text)
+    {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+              playersTextArea.appendText(text + "\n");
+            }
+          });
     }
   
     private void sendInitialInfoToModel() { // Method to update the model with the user input

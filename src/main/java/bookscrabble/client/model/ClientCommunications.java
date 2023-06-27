@@ -28,8 +28,7 @@ public class ClientCommunications{
         requestHandler = new ClientSideHandler(outToHost);
         inFromHost = new Scanner(toHostSocket.getInputStream());
     }
-
-    
+  
     public void start() throws Exception {
         Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
         @Override
