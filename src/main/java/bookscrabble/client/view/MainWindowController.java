@@ -45,7 +45,12 @@ public class MainWindowController implements Observer, Initializable {
     public void update(Observable o, Object arg) 
     {
         if(arg != null && arg.equals("endGame"))
-            switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
+        {
+            try {
+                Thread.sleep(1500); // Allow user to read message
+                switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
+            } catch (Exception e) {}
+        }
     }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
@@ -212,6 +217,7 @@ public class MainWindowController implements Observer, Initializable {
 
     @FXML // Leaving the gameLobby and closing the game
     public void returnToHostMenu(ActionEvent event) {
+        ClientModel.isGameRunning = true; // Closes the lobby for all other players
         vm.sendEndgameRequest();
         hostButtonClicked(event);
     }

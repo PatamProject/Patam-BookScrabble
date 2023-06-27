@@ -109,12 +109,12 @@ public class ViewModel extends Observable implements Observer {
         if(isHost.get()) //If I am the host
             MyHostServer.getHostServer().start(Integer.parseInt(hostPort.get()), Integer.parseInt(BsPort.get()), BsIP.get());
     }
-    public void sendStartGameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame");}
-    public void sendEndgameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame"); clear();}
+    public void sendStartGameRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame"));}
+    public void sendEndgameRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame")); clear();}
 
     //Player options
-    public void sendLeaveRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave"); clear();}
-    public void sendSkipTurnRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn");} //'Q':'word,row,col,isVertical'
+    public void sendLeaveRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave")); clear();}
+    public void sendSkipTurnRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn"));} //'Q':'word,row,col,isVertical'
     public void sendWordPlacementRequest(String word, int row, int col, boolean isVertical)
     {
         lastWord = word;

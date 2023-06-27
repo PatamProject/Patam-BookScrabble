@@ -109,9 +109,10 @@ public class ClientCommunications{
         requestHandler.close();
     }
 
-    public static void sendAMessage(int id, String message) { // A method that sends a message to the host
+    public static boolean sendAMessage(int id, String message) { // A method that sends a message to the host
         outToHost.println(id + ":" + message); //Adds the ID to the beginning of the message
         outToHost.flush();
+        return true;
     }
 
     public void gameStarted()
