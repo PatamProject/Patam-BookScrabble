@@ -211,12 +211,16 @@ public class MainWindowController implements Observer, Initializable {
 
     @FXML // Leaving the gameLobby and disconnecting from the game
     public void returnToGuestMenu(ActionEvent event) {
+        if(playersTextArea != null)
+            playersTextArea.clear();
         vm.sendLeaveRequest();
         guestButtonClicked(event);
     }
 
     @FXML // Leaving the gameLobby and closing the game
     public void returnToHostMenu(ActionEvent event) {
+        if(playersTextArea != null)
+            playersTextArea.clear();
         ClientModel.isGameRunning = true; // Closes the lobby for all other players
         vm.sendEndgameRequest();
         hostButtonClicked(event);
