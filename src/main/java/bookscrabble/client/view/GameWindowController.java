@@ -1,6 +1,7 @@
 package bookscrabble.client.view;
 
 import bookscrabble.client.viewModel.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -309,5 +310,7 @@ public class GameWindowController implements Observer , Initializable {
     public void exitButtonClicked(ActionEvent event) {
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
+        Platform.exit();
+        System.exit(0);
     }
 }
