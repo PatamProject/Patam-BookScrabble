@@ -11,6 +11,7 @@ public class ClientModel extends Observable{
     int hostPort, BsPort;
     public boolean isConnectedToHost = false;
     boolean isHost = false;
+    public static boolean isGameRunning = false;
     String lastMsgReceivedFromClient;
 
     public static ClientModel getClientModel() //Singleton
@@ -92,8 +93,7 @@ public class ClientModel extends Observable{
         myConnectionToHost = null;
         myHostServer = null;
         isConnectedToHost = false;
-
-        //createClient(isHost, hostIP, hostPort, myName);
+        isGameRunning = false;
     }
 
     //setters

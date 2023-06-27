@@ -1,6 +1,7 @@
 package bookscrabble.client.view;
 
 import bookscrabble.client.misc.MyLogger;
+import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.viewModel.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -229,6 +230,7 @@ public class MainWindowController implements Observer, Initializable {
 
     private void gameStarted()
     {
+        ClientModel.isGameRunning = true;
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
         gwc.displayAll();

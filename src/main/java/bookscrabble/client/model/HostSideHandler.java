@@ -93,6 +93,8 @@ public class HostSideHandler implements RequestHandler{
                 if(args[0].equals(ClientModel.getMyName()) || game.getPlayersAmount() < 2) //Is the host
                 {
                     String winner = game.getWinner();
+                    if(winner.equals(""))
+                        return; //In the lobby and so no winner is needed
                     MyHostServer.updateAll("!endGame:" + winner, null);
                     throw new RuntimeException("endGame");
                 }
