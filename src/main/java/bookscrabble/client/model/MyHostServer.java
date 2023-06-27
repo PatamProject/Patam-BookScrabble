@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import bookscrabble.client.misc.Error_Codes;
 import bookscrabble.client.misc.MyLogger;
@@ -18,12 +19,14 @@ public class MyHostServer{
     private HostSideHandler requestHandler;
     HashMap<String, Socket> connectedClients; // HashMap to keep track of connected clients by name
     ExecutorService threadPool;
+    private ServerSocket hostSocket;
     private int hostPort, bookScrabblePort; // Ports
     private String BookScrabbleServerIP; // IP
     private volatile Integer playerCount = 0; //Will be given as an ID to the player, we allow it to go above MAX_CLIENTS because we only check if it's 0 or not
     private volatile boolean stopHost = false;
     public volatile boolean isGameRunning = false;
     private final int MAX_CLIENTS = 4;
+    private AtomicBoolean lock = new AtomicBoolean(false);
  
     public static MyHostServer getHostServer() //singleton design
     {
@@ -42,6 +45,7 @@ public class MyHostServer{
     }
 
     public void start(int hostPort, int bsPort, String bs_IP) {
+        stopHost = false;
         this.hostPort = hostPort;
         bookScrabblePort = bsPort;
         if(bs_IP.equals("localhost"))
@@ -54,18 +58,34 @@ public class MyHostServer{
             MyLogger.println("Host did not start! \nUse '!start' to try again or change BookScrabble server IP and or port.");
             return;
         }
-        //Connected to BS server    
-        new Thread(()-> {
+
+        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
+        @Override
+        public void uncaughtException(Thread th, Throwable e){
+            try {
+                if(e.getMessage().equals("endGame")) //Game ended
+                {
+                    stopHost = true;
+                    tryClose();
+                }
+            } catch (Exception e2) {}
+        }};
+   
+        Thread t = new Thread(()-> {
             try {
                 run();
             } catch (Exception e) {
+                tryClose();
                 throw new RuntimeException(e);
             }
-        }).start();
+        });
+        t.setUncaughtExceptionHandler(h);
+        t.start();
+        
     }
 
     public void run() throws Exception {
-        ServerSocket hostSocket = new ServerSocket(hostPort,MAX_CLIENTS);
+        hostSocket = new ServerSocket(hostPort,MAX_CLIENTS);
         MyLogger.println("Host is listening on port " + hostPort);
         while (!stopHost) {
             try {
@@ -74,22 +94,14 @@ public class MyHostServer{
                 MyLogger.println("A new client has connected: " + ip + ":" + clientSocket.getPort());
                 threadPool.execute(() -> handleClientConnection(clientSocket)); //Handle client in a separate thread
             } catch (SocketTimeoutException e) {
-                MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
+                if(e.getMessage().equals("endGame")) //Game ended
+                    break;
+                else    
+                    MyLogger.println("Socket exception in MyHostServer: " + e.getMessage());
                 //Host is still listening
             }
         }
-
-        // Close all client connections
-        String myName = ClientModel.getMyName();
-        for (int i = 0; i < connectedClients.keySet().size(); i++) {
-            Socket client = connectedClients.get(connectedClients.keySet().toArray()[i]);
-            if(!connectedClients.keySet().toArray()[i].equals(myName))
-                closeConnection(client, new PrintWriter(client.getOutputStream()), new Scanner(client.getInputStream()));
-        }
-        connectedClients.get(myName).close();
-        connectedClients.clear();
-        if(hostSocket != null)
-            hostSocket.close();
+        tryClose();
     }
 
     private void handleClientConnection(Socket clientSocket) //Runs in a separate thread
@@ -184,6 +196,11 @@ public class MyHostServer{
                     throwError(Error_Codes.UNKNOWN_CMD, out);
                 
             } catch (Exception e) { //Client disconnected
+                if(e.getMessage() != null && e.getMessage().equals("endGame"))
+                    try {
+                        if(hostSocket != null)
+                            hostSocket.close();
+                    } catch (IOException e1) {}
                 closeConnection(clientSocket, out, in); //Remove client from the HashMap
                 return;
             }
@@ -303,10 +320,35 @@ public class MyHostServer{
 
     public String[] getConnectedClients(){return connectedClients.keySet().toArray(new String[connectedClients.size()]);}
 
-    public void close() // A method to close the hostServer
+    public synchronized void tryClose()
+    {
+        if (!lock.get()) {
+            synchronized (this) {
+                if (!lock.get()) {
+                    close();
+                    lock.set(true);
+                }
+            }
+        }
+    }
+
+    public synchronized void close() // A method to close the hostServer
     {
         MyLogger.println("Stopping host...");
         stopHost = true;
         playerCount = 0;
+
+        try {
+            String myName = ClientModel.getMyName();
+            for (int i = 0; i < connectedClients.keySet().size(); i++) {
+                Socket client = connectedClients.get(connectedClients.keySet().toArray()[i]);
+                if(!connectedClients.keySet().toArray()[i].equals(myName))
+                    closeConnection(client, new PrintWriter(client.getOutputStream()), new Scanner(client.getInputStream()));
+            }
+            connectedClients.get(myName).close();
+            connectedClients.clear();
+            if(hostSocket != null)
+                hostSocket.close();
+        } catch (Exception e) {}
     } 
 }

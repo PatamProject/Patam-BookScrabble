@@ -94,6 +94,7 @@ public class HostSideHandler implements RequestHandler{
                 {
                     String winner = game.getWinner();
                     MyHostServer.updateAll("!endGame:" + winner, null);
+                    throw new RuntimeException("endGame");
                 }
                 else //Not the host
                     out.println(Error_Codes.ACCESS_DENIED); //unauthorized

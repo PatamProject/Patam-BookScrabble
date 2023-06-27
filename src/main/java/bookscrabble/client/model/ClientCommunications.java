@@ -35,6 +35,7 @@ public class ClientCommunications{
         @Override
         public void uncaughtException(Thread th, Throwable e){
             try {
+                close();
                 if(isGameRunningInTerminal)
                     RunClient.disconnectedFromHost(); 
                 else 

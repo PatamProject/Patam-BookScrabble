@@ -30,14 +30,21 @@ public class ClientModel extends Observable{
         else //isHost = true
             myHostServer = getMyHostServer(); //Create host-side
         
-        isConnectedToHost = createClientCommunications(hostIP, hostPort);    
+        isConnectedToHost = createClientCommunications(hostIP, hostPort);  
+        if(!isConnectedToHost)
+            if(isHost)
+                lastMsgReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
+            else
+                lastMsgReceivedFromClient = "Failed to connect to host";  
         setChanged();
         notifyObservers();
     }
 
     public boolean createClientCommunications(String hostIP, int hostPort)
     {
+
         try {
+            Thread.sleep(1000);
             myConnectionToHost = new ClientCommunications(hostIP, hostPort); //Create client-side and connect to host-side
             myConnectionToHost.start();
             try {
@@ -61,26 +68,32 @@ public class ClientModel extends Observable{
 
             lastMsgReceivedFromClient = msg;
         }
-        else if(isHost)
-            lastMsgReceivedFromClient = "Failed to connect to BookScrabble Server"; //Set error message to show in GUI
-        else
-            lastMsgReceivedFromClient = "Failed to connect to host";
-        
-        if(isConnectedToHost == true)
-        {
-            setChanged();
-            notifyObservers(arg);
-            close();
-        }
+
+        setChanged();
+        notifyObservers(arg);
+        if(isConnectedToHost != true)
+            return;
+
         isConnectedToHost = false;
+        clear();
     }
     
-    public void close() //Close method for ClientModel
+    public synchronized void close() //Close method for ClientModel
     {
         if(myHostServer != null)
-            myHostServer.close();
+            myHostServer.tryClose();
         if(myConnectionToHost != null)    
             myConnectionToHost.close();
+    }
+
+    public synchronized void clear()
+    {
+        close();
+        myConnectionToHost = null;
+        myHostServer = null;
+        isConnectedToHost = false;
+
+        //createClient(isHost, hostIP, hostPort, myName);
     }
 
     //setters

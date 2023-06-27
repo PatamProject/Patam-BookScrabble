@@ -36,21 +36,21 @@ public class MyLogger { // A class to print to the CMD
     {
         System.out.println(message);
         System.out.flush();
-        //getWriter().println(message);
+        getWriter().println(message);
     }
 
     public static synchronized void print(String message)
     {
         System.out.print(message);
         System.out.flush();
-        //getWriter().println(message);
+        getWriter().println(message);
     }
 
     public static synchronized void logError(String errorMessage)
     {
         System.err.println(errorMessage);
         System.out.flush(); 
-        //getWriter().println("ERROR:" + errorMessage);
+        getWriter().println("ERROR:" + errorMessage);
     }
     public static void printBoard(String input) 
     { // Example: AB-C&D--E
