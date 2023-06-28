@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -50,9 +51,11 @@ public class GameWindowController implements Observer , Initializable {
     private String myTiles , myStringBoard , letterUpdate;
     private String[] myBoard;
     private int rowUpdate, colUpdate;
-
+    private ArrayList<Tuple<String,Integer,Integer>> tilesBuffer = new ArrayList<>(); 
     private  List<String> nameList;
     private  List<Integer> scoreList;
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    public static final int MAX_BOARD_SIZE = 15;
 
     @Override
     public void update(Observable o, Object arg) {} // Empty update method
@@ -334,18 +337,29 @@ public class GameWindowController implements Observer , Initializable {
 
     @FXML
     public void doneButtonClicked(ActionEvent event) { // Sends user attempt for word placement
-        //UpdateBoard(letterUpdate,rowUpdate,colUpdate);
-        //vm.sendWordPlacementRequest(); //TODO: Commented section for communication with the model
+        if(vm.sendWordPlacementRequest(tilesBuffer, false) == false || AreTileInTheSameRowCol() == false)
+        {
+            alert.setTitle("Illegal Word Placement");
+            alert.setHeaderText(null);
+            alert.setContentText("The tiles you placed are invalid, please try again");
+            alert.showAndWait();
+        }
     }
 
     @FXML
     public void challengeButtonClicked(ActionEvent event) { // Challenge
-        //vm.sendChallengeRequest(); //TODO: Commented section for communication with the model
+        if(vm.sendWordPlacementRequest(tilesBuffer, true) == false || AreTileInTheSameRowCol() == false)
+        {
+            alert.setTitle("Illegal Word Placement");
+            alert.setHeaderText(null);
+            alert.setContentText("The tiles you placed are invalid, please try again");
+            alert.showAndWait();
+        }
     }
 
     @FXML
     public void skipTurnButtonClicked(ActionEvent event) { // Skip the user turn
-        //vm.sendSkipTurnRequest(); //TODO: Commented section for communication with the model
+        vm.sendSkipTurnRequest();
     }
 
     @FXML
@@ -359,4 +373,38 @@ public class GameWindowController implements Observer , Initializable {
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
     }
+
+    public void tilePlaced(String letter, Integer row, Integer col)
+    {
+        if(letter == null || letter.length() != 1 || !letter.matches("[a-zA-Z]")) //only one valid tile
+            return;
+        else if(row < 0 || row > MAX_BOARD_SIZE - 1 || col < 0 || col > MAX_BOARD_SIZE - 1) //valid row and col
+            return;
+
+        tilesBuffer.add(new Tuple<String,Integer,Integer>(letter, row, col));
+    }
+
+    private boolean AreTileInTheSameRowCol()
+    {
+        if(tilesBuffer.isEmpty())
+            return false;
+        else if(tilesBuffer.size() == 1)
+            return true;
+
+        boolean sameRow = true;
+        boolean sameCol = true;
+        int row = tilesBuffer.get(0).getSecond();
+        int col = tilesBuffer.get(0).getThird();
+
+        for(int i = 1; i < tilesBuffer.size(); i++)
+        {
+            if(tilesBuffer.get(i).getSecond() != row)
+                sameRow = false;
+            if(tilesBuffer.get(i).getThird() != col)
+                sameCol = false;
+        }
+
+        return sameRow || sameCol;
+    }
+
 }

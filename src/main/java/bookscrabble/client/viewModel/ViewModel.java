@@ -3,6 +3,7 @@ package bookscrabble.client.viewModel;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -10,7 +11,9 @@ import bookscrabble.client.model.ClientCommunications;
 import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.GameModel;
 import bookscrabble.client.model.MyHostServer;
+import bookscrabble.client.view.GameWindowController;
 import bookscrabble.client.view.MainWindowController;
+import bookscrabble.client.view.Tuple;
 
 public class ViewModel extends Observable implements Observer {
     ClientModel clientModel; //Model representation for client info
@@ -114,77 +117,100 @@ public class ViewModel extends Observable implements Observer {
 
     //Player options
     public void sendLeaveRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave")); clear();}
-    public void sendSkipTurnRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn"));} //'Q':'word,row,col,isVertical'
-    public void sendWordPlacementRequest(String playerSentBoard, boolean isChallange)
+    public void sendSkipTurnRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn"));} 
+    public boolean sendWordPlacementRequest(ArrayList<Tuple<String, Integer, Integer>> tiles , boolean isChallange)
     {
-        final int BOARD_SIZE = 15;
-        StringBuilder word = new StringBuilder();
-        String[] oldBoard = board.get().split("&");
-        String[] newBoard = playerSentBoard.split("&");
-        int tmpRow = -1, tmpCol = -1;
-
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if(oldBoard[i].charAt(j) != newBoard[i].charAt(j))
-                {
-                    if(tmpRow == -1 && tmpCol == -1) //First new tile is found
-                    {
-                        tmpRow = i;
-                        tmpCol = j;
-                    }
-                    word.append(newBoard[i].charAt(j));
-                }
+        final int BOARD_SIZE = GameWindowController.MAX_BOARD_SIZE;
+        String[] tmpBoard = board.get().split("&");
+        int tmpRow = BOARD_SIZE, tmpCol = BOARD_SIZE; //Used to find the actual row, col of the word
+        boolean isVertical = false;
+        for (Tuple<String, Integer, Integer> tile : tiles) { //We want to find the first tile placed (minimum row & col). All tiles are in the same row or col
+            if(tmpBoard[tile.getSecond()].charAt(tile.getThird()) != '-')
+                return false; //If the tile is already occupied
+            else //We insert the tile to the board tmporarily
+            {
+                StringBuilder sb = new StringBuilder(tmpBoard[tile.getSecond()]);
+                sb.setCharAt(tile.getThird(), tile.getFirst().charAt(0));
+                tmpBoard[tile.getSecond()] = sb.toString();
             }
-        }
 
-        /*
-         public Word fromStringToWord(String pName, final String tiles, final int row,final int col,final boolean vertical)
-    { //A word is created from the tiles taken from the player and from the board respectively 
-        Player p = players.get(pName);
-        if(p == null)
-            return null;
+            if(tile.getSecond() < tmpRow)
+                tmpRow = tile.getSecond();
+            if(tile.getThird() < tmpCol)
+                tmpCol = tile.getThird();    
+        }
         
-        int tmpRow = row, tmpCol = col;
-        Tile tile;
-        ArrayList<Tile> tilesArr = new ArrayList<>();
-        Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
-        for (int i = 0; i < tiles.length(); i++)
-        {
-            if(tilesOnBoard[tmpRow][tmpCol] != null && tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
-            {
-                tilesArr.add(null); //Word on board, do not take
-                //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
-            }
-            else
-            {
-                tile = p.getRack().takeTileFromRack(tiles.charAt(i)); 
-                if(tilesOnBoard[tmpRow][tmpCol] == null && tile != null) //Tile is on the rack
-                    tilesArr.add(tile);
-                else //Can't find tile / tile placed on another tile
-                    return null; 
-            }
-                
-            //Adjust tmpRow and tmpCol according to vertical
-            if(vertical)
-                tmpRow++;
-            else
-                tmpCol++;
+        for (Tuple<String, Integer, Integer> tile : tiles) { //We want to find the orientation of the word
+            if(tile.getSecond() != tmpRow)
+                isVertical = true;
         }
-        Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
-        return new Word(wordTiles, row, col, vertical);
-    }
-          
-         */
-        // lastWord = word;
-        // this.row = row;
-        // this.col = col;
-        // this.isVertical = isVertical;
-        //ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&Q:" + word + "," + row + "," + col + "," + isVertical);
-    }
-
-    public void sendChallengeRequest()
-    {
-        //ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&C:" + lastWord + "," + row + "," + col + "," + isVertical);
+        
+        String word;
+        int startIndex = 0, endIndex = BOARD_SIZE - 1;
+        if(isVertical) //(col is the same for all)
+        {
+            for (int i = tmpRow; i >= 0 && i < BOARD_SIZE;i--) //We find the starting index of the word
+            {
+                if(tmpRow == 0) 
+                    break;
+                else
+                {
+                    if(tmpBoard[i].charAt(tmpCol) != '-')
+                        startIndex = i;
+                    else
+                        break;
+                }    
+            }  
+            
+            for (int i = tmpRow; i >= 0 && i < BOARD_SIZE;i++) //We find the ending index of the word
+            {
+                if(tmpRow == BOARD_SIZE - 1) 
+                    break;
+                else
+                {
+                    if(tmpBoard[i].charAt(tmpCol) != '-')
+                        endIndex = i;
+                    else
+                        break;
+                }    
+            }       
+        }
+        else //(row is the same for all)
+        {
+            for (int i = tmpCol; i >= 0 && i < BOARD_SIZE;i--) //We find the starting index of the word
+            {
+                if(tmpCol == 0) 
+                    break;
+                else
+                {
+                    if(tmpBoard[tmpRow].charAt(i) != '-')
+                        startIndex = i;
+                    else
+                        break;
+                }    
+            }  
+            
+            for (int i = tmpCol; i >= 0 && i < BOARD_SIZE;i++) //We find the ending index of the word
+            {
+                if(tmpCol == BOARD_SIZE - 1) 
+                    break;
+                else
+                {
+                    if(tmpBoard[tmpRow].charAt(i) != '-')
+                        endIndex = i;
+                    else
+                        break;
+                }    
+            }
+        }
+        word = tmpBoard[tmpRow].substring(startIndex, endIndex + 1);
+        String QorC = isChallange ? "C" : "Q";
+        lastWord = word;
+        row = tmpRow;
+        col = tmpCol;
+        this.isVertical = isVertical;
+        if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&"+ QorC +":" + word + "," + row + "," + col + "," + isVertical)); //'Q':'word,row,col,isVertical'
+        return true;
     }
 
     private void clear()
@@ -193,7 +219,7 @@ public class ViewModel extends Observable implements Observer {
         currentPlayerName.set("");
         myTiles.set("");
         myScore.set("");
-        playersAndScoresMap.set(null);
+        playersAndScoresMap.clear();
         gameErrorMessage.set("");
         isGameRunning.set(false);
     }
