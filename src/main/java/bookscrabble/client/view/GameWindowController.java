@@ -358,6 +358,12 @@ public class GameWindowController implements Observer , Initializable {
     }
 
     @FXML
+    public void onMouseClicked(ActionEvent event)
+    {
+        //TODO: OFEK!
+    }
+
+    @FXML
     public void skipTurnButtonClicked(ActionEvent event) { // Skip the user turn
         vm.sendSkipTurnRequest();
     }
