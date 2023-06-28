@@ -1,7 +1,6 @@
 package bookscrabble.client.view;
 
 import bookscrabble.client.viewModel.ViewModel;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +10,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
@@ -37,27 +38,28 @@ public class GameWindowController implements Observer , Initializable {
     GridPane gridPane;
     @FXML
     HBox hBox;
+
+    @FXML
+    GridPane playersTable;
+
     //    @FXML
 //    TableView<?> tableView;
 //    @FXML
 //    TableColumn<String,String> nameList;
 //    @FXML
 //    TableColumn<String,Integer> scoreList;
-    @FXML
-    private TableView<?> tableView;
-    @FXML
-    private TableColumn<?,?> nameList;
-    @FXML
-    private TableColumn<?,?> scoreList;
 
     private List<Group> alreadyDrag = new ArrayList<>();
     private Group draggedGroup=null;
     private double initialX, initialY;
     private StringProperty myTilesProperty = new SimpleStringProperty(), myBoardProperty = new SimpleStringProperty();
     private MapProperty<String, Integer> myPlayersAndScores = new SimpleMapProperty<>();
-    private String myStringBoard , letterUpdate;
+    private String myTiles , myStringBoard , letterUpdate;
     private String[] myBoard;
     private int rowUpdate, colUpdate;
+
+    private  List<String> nameList;
+    private  List<Integer> scoreList;
 
     @Override
     public void update(Observable o, Object arg) {} // Empty update method
@@ -77,16 +79,89 @@ public class GameWindowController implements Observer , Initializable {
             myBoardProperty.bindBidirectional(vm.board);
         }
         myPlayersAndScores.bindBidirectional(vm.playersAndScoresMap);
-
-//        nameList.setCellValueFactory(new PropertyValueFactory<>("key"));
-//        scoreList.setCellValueFactory(new PropertyValueFactory<>("value"));
-//        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(vm.playersAndScoresMap.entrySet());
-//        tableView.setItems(FXCollections.observableArrayList(entryList));
     }
 
     public void displayAll()
     {
         playerScreenDisplayer.completeBoard(gridPane,hBox,myTilesProperty.get());
+    }
+
+    public void updateDisplayAll() // Called all the update function to show the player the update screen.
+    {
+        displayUpdateList();
+        displayUpdateBoard();
+    }
+
+    private void UpdateStringBoard(String letter, int row, int col) // Send the update to all players
+    {
+        boolean stop=false;
+        for(int i=0;i<15&& !stop;i++)
+        {
+            String line[] = myBoard[i].split(" ");
+            for(int j=0;j<15 && !stop;j++)
+            {
+                if(row == i && col == j)
+                {
+                    line[j] = letter;
+                    stop=true;
+                }
+                String newLine = String.join(" " ,line);
+                myBoard[i] = newLine;
+            }
+        }
+    }
+
+//    private void UpdatePropertyBoard(String letter, int row, int col) // Send the update to all players
+//    {
+//        getMyBoard();
+//        boolean stop=false;
+//        String newBoard = new String();
+//        for(int i=0;i<15&& !stop;i++)
+//        {
+//            String line[] = myBoard[i].split(" ");
+//            for(int j=0;j<15 && !stop;j++)
+//            {
+//                if(row == i && col == j)
+//                {
+//                    line[j] = letter;
+//                    stop=true;
+//                }
+//                newBoard.concat(line[j]);
+//                newBoard.concat(" ");
+//            }
+//            newBoard.concat("&");
+//        }
+//        myBoardProperty.set(newBoard);
+//    }
+
+    public void displayUpdateList() // display on screen the new lists.
+    {
+        getMyNameScore();
+        int index;
+        for(int i=2;i<8;i++)
+        {
+            index = i-2;
+            TextField textField = (TextField) playersTable.getChildren().get(i);
+            if((i%2)==0)
+                textField.setText(nameList.get(index));
+            else
+                textField.setText(Integer.toString(scoreList.get(index)));
+        }
+    }
+
+    public void getMyBoard() {
+        myStringBoard = myTilesProperty.get();
+        myBoard = myStringBoard.split("&");
+    }
+
+    public void getMyTiles() {  myTiles = myTilesProperty.get(); } // Prints the current value of myTilesProperty
+
+    private void getMyNameScore() // Update the list of name & score.
+    {
+        Map<String,Integer> mapNameScore = myPlayersAndScores.get();
+        nameList = new ArrayList<>(mapNameScore.keySet());
+        scoreList = new ArrayList<>(mapNameScore.values());
+        //List<String> stringScoreList = scoreList.stream().map(String::valueOf).collect(Collectors.toList());
     }
 
     public void displayUpdateBoard()
@@ -99,18 +174,34 @@ public class GameWindowController implements Observer , Initializable {
             {
                 if(!line[col].equals("-"))
                 {
-                    putTileOnBoard(line[col],row,col);
+                    putTileOnBoardToOthers(line[col],row,col);
                 }
             }
         }
     }
 
-    public void getMyBoard() {
-        myStringBoard = myTilesProperty.get();
-        myBoard = myStringBoard.split("&");
-    }
+//    public void updateNewTile() // Put new tile inside the rack.
+//    {
+//        String oldTiles = myTiles;
+//        getMyTiles(); // Update myTiles to new Tiles
+//        for(int i=0;i<7;i++)
+//        {
+//            StackPane stackPane = (StackPane) hBox.getChildren().get(i);
+//            if(stackPane.getChildren().isEmpty())
+//            {
+//                Rectangle rectangle = new Rectangle(55,55);
+//                String imageTile = letter.concat("tile.png");
+//                String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
+//                ClassLoader classLoader = getClass().getClassLoader();
+//                Image image = new Image(classLoader.getResourceAsStream(imagePath));
+//                ImageView imageView = new ImageView(image);
+//                Group group = new Group(rectangle,imageView);
+//                stackPane.getChildren().add(group);
+//            }
+//        }
+//    }
 
-    public void onMouseClicked(MouseEvent event) // Runs when the mouse is clicked, saves which group the mouse clicked on, and saves the X Y position of the click
+    public void onMousePressed(MouseEvent event) // Runs when the mouse is pressed, saves which group the mouse clicked on, and saves the X Y position of the click
     {
         initialX = event.getSceneX();
         initialY = event.getSceneY();
@@ -160,20 +251,13 @@ public class GameWindowController implements Observer , Initializable {
                     final int row = indexRow;
                     final int col = indexCol;
                     Node removeNode = getNode(indexRow, indexCol);
-                    if(removeNode instanceof Rectangle)
-                    {
-                        if(!checkRemoveRectangle(removeNode))
-                        {
-                            System.out.println("Cant remove this rectangle");
-                            break;
-                        }
-                    }
                     copyCords(draggedGroup,removeNode);
                     removeFromFather(draggedGroup , indexRow , indexCol);
                     letterUpdate = draggedGroup.getId();
                     rowUpdate = indexRow;
                     colUpdate = indexCol;
-                    draggedGroup.setId("group:"+indexRow+":"+indexCol);
+                    ImageView imageView = (ImageView) draggedGroup.getChildren().get(1);
+                    UpdateStringBoard(imageView.getId() , indexRow , indexCol);
                     gridPane.add(draggedGroup,row,col);
                     stop = true;
                 }
@@ -184,12 +268,6 @@ public class GameWindowController implements Observer , Initializable {
         }
         alreadyDrag.add(draggedGroup);
         draggedGroup = null;
-    }
-
-    private boolean checkRemoveRectangle(Node removeNode)
-    {
-        Rectangle rectangle = (Rectangle) removeNode;
-        return !removeNode.getId().equals("UnRemovable");
     }
 
     private void removeFromFather(Group draggedGroup , int row , int col) // Remove the group from its father
@@ -238,30 +316,7 @@ public class GameWindowController implements Observer , Initializable {
         return null;
     }
 
-    private void UpdateBoard(String letter, int row, int col)
-    {
-        getMyBoard();
-        boolean stop=false;
-        String newBoard = "";
-        for(int i=0;i<15&& !stop;i++)
-        {
-            String[] line = myBoard[i].split(" ");
-            for(int j=0;j<15 && !stop;j++)
-            {
-                if(row == i && col == j)
-                {
-                    line[j] = letter;
-                    stop=true;
-                }
-                newBoard.concat(line[j]);
-                newBoard.concat(" ");
-            }
-            newBoard.concat("&");
-        }
-        myBoardProperty.set(newBoard);
-    }
-
-    private void putTileOnBoard(String letter, int row, int col)
+    private void putTileOnBoardToOthers(String letter, int row, int col)
     {
         Rectangle rectangle = (Rectangle) getNode(row,col);
         String imageTile = letter.concat("tile.png");
@@ -286,8 +341,8 @@ public class GameWindowController implements Observer , Initializable {
 
     @FXML
     public void doneButtonClicked(ActionEvent event) { // Sends user attempt for word placement
-        UpdateBoard(letterUpdate,rowUpdate,colUpdate);
-        //vm.sendWordPlacementRequest(); //TODO: Commented section for communication with the model
+        //UpdateBoard(letterUpdate,rowUpdate,colUpdate);
+        //vm.sendWordPlacementRequest(String myBoard, boolean isChallenge); //TODO: Commented section for communication with the model
     }
 
     @FXML
@@ -310,7 +365,5 @@ public class GameWindowController implements Observer , Initializable {
     public void exitButtonClicked(ActionEvent event) {
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
-        Platform.exit();
-        System.exit(0);
     }
 }

@@ -115,13 +115,51 @@ public class ViewModel extends Observable implements Observer {
     //Player options
     public void sendLeaveRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave")); clear();}
     public void sendSkipTurnRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn"));} //'Q':'word,row,col,isVertical'
-    public void sendWordPlacementRequest(String word, int row, int col, boolean isVertical)
+    public void sendWordPlacementRequest(String newBoard, boolean isChallange)
     {
-        lastWord = word;
-        this.row = row;
-        this.col = col;
-        this.isVertical = isVertical;
-        ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&Q:" + word + "," + row + "," + col + "," + isVertical);
+        /*
+         public Word fromStringToWord(String pName, final String tiles, final int row,final int col,final boolean vertical)
+    { //A word is created from the tiles taken from the player and from the board respectively 
+        Player p = players.get(pName);
+        if(p == null)
+            return null;
+        
+        int tmpRow = row, tmpCol = col;
+        Tile tile;
+        ArrayList<Tile> tilesArr = new ArrayList<>();
+        Tile[][] tilesOnBoard = board.getTiles(); //copy of board tiles. Be careful to not create extra tiles!
+        for (int i = 0; i < tiles.length(); i++)
+        {
+            if(tilesOnBoard[tmpRow][tmpCol] != null && tiles.charAt(i) == tilesOnBoard[tmpRow][tmpCol].letter) //Tile is on the board
+            {
+                tilesArr.add(null); //Word on board, do not take
+                //tilesOnBoard[tmpRow][tmpCol] if doesnt work?
+            }
+            else
+            {
+                tile = p.getRack().takeTileFromRack(tiles.charAt(i)); 
+                if(tilesOnBoard[tmpRow][tmpCol] == null && tile != null) //Tile is on the rack
+                    tilesArr.add(tile);
+                else //Can't find tile / tile placed on another tile
+                    return null; 
+            }
+                
+            //Adjust tmpRow and tmpCol according to vertical
+            if(vertical)
+                tmpRow++;
+            else
+                tmpCol++;
+        }
+        Tile[] wordTiles = tilesArr.toArray(new Tile[tilesArr.size()]);
+        return new Word(wordTiles, row, col, vertical);
+    }
+          
+         */
+        // lastWord = word;
+        // this.row = row;
+        // this.col = col;
+        // this.isVertical = isVertical;
+        //ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&Q:" + word + "," + row + "," + col + "," + isVertical);
     }
 
     public void sendChallengeRequest()
