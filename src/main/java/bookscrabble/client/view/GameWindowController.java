@@ -1,6 +1,7 @@
 package bookscrabble.client.view;
 
 import bookscrabble.client.viewModel.ViewModel;
+import bookscrabble.server.cacheHandler.CacheReplacementPolicy;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +9,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -20,11 +20,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.nio.Buffer;
 import java.util.*;
 
 import static bookscrabble.client.view.MainWindowController.switchRoot;
 
 public class GameWindowController implements Observer , Initializable {
+    private static final int MAX_BOARD_SIZE = 15;
     static ViewModel vm;
     MainWindowController mwc;
     private GameWindowDisplayer playerScreenDisplayer = new GameWindowDisplayer();
@@ -53,6 +55,8 @@ public class GameWindowController implements Observer , Initializable {
 
     private  List<String> nameList;
     private  List<Integer> scoreList;
+    private List<Tuple<String, Integer, Integer>> tilesBuffer;
+    private Map<Group,Tuple<String, Integer, Integer>> tupleMap = new HashMap<>();
 
     @Override
     public void update(Observable o, Object arg) {} // Empty update method
@@ -90,42 +94,18 @@ public class GameWindowController implements Observer , Initializable {
         boolean stop=false;
         for(int i=0;i<15&& !stop;i++)
         {
-            String line[] = myBoard[i].split(" ");
+            char line[] = myBoard[i].toCharArray();
             for(int j=0;j<15 && !stop;j++)
             {
                 if(row == i && col == j)
                 {
-                    line[j] = letter;
+                    line[j] = letter.charAt(0);
                     stop=true;
                 }
-                String newLine = String.join(" " ,line);
-                myBoard[i] = newLine;
+                myBoard[i] = String.valueOf(line);
             }
         }
     }
-
-//    private void UpdatePropertyBoard(String letter, int row, int col) // Send the update to all players
-//    {
-//        getMyBoard();
-//        boolean stop=false;
-//        String newBoard = new String();
-//        for(int i=0;i<15&& !stop;i++)
-//        {
-//            String line[] = myBoard[i].split(" ");
-//            for(int j=0;j<15 && !stop;j++)
-//            {
-//                if(row == i && col == j)
-//                {
-//                    line[j] = letter;
-//                    stop=true;
-//                }
-//                newBoard.concat(line[j]);
-//                newBoard.concat(" ");
-//            }
-//            newBoard.concat("&");
-//        }
-//        myBoardProperty.set(newBoard);
-//    }
 
     public void displayUpdateList() // display on screen the new lists.
     {
@@ -162,15 +142,26 @@ public class GameWindowController implements Observer , Initializable {
         getMyBoard();
         for(int row=0;row<15;row++)
         {
-            String[] line = myBoard[row].split(" ");
+            char line[] = myBoard[row].toCharArray();
             for(int col=0;col<15;col++)
             {
-                if(!line[col].equals("-"))
+                if(!Character.toString(line[col]).equals("-"))
                 {
-                    putTileOnBoardToOthers(line[col],row,col);
+                    putTileOnBoardToOthers(Character.toString(line[col]),row,col);
                 }
             }
         }
+    }
+
+    public void tilePlacedTuple(String letter , int row , int col)
+    {
+        if(letter == null || letter.length() != 1 || !letter.matches("[a-zA-Z]")) //only one valid tile
+        return;
+        else if(row < 0 || row > MAX_BOARD_SIZE - 1 || col < 0 || col > MAX_BOARD_SIZE - 1) //valid row and col
+        return;
+        Tuple<String,Integer,Integer> tuple = new Tuple<>(letter, row, col);
+        tilesBuffer.add(tuple);
+        tupleMap.put(draggedGroup , tuple);
     }
 
 //    public void updateNewTile() // Put new tile inside the rack.
@@ -194,11 +185,32 @@ public class GameWindowController implements Observer , Initializable {
 //        }
 //    }
 
+    public void onMouseClicked(MouseEvent event) // Runs when the mouse is pressed, saves which group the mouse clicked on, and saves the X Y position of the click
+    {
+        if(event.getSource() instanceof Group) {
+            Group clickedGroup = (Group) event.getSource();
+            alreadyDrag.remove(clickedGroup);
+            String id[] = clickedGroup.getId().split(" ");
+            int index = Integer.parseInt(id[1]);
+            StackPane stackPane = (StackPane) hBox.getChildren().get(index);
+            stackPane.getChildren().add(clickedGroup);
+            clickedGroup.setManaged(true);
+            removeTileFromTuple(clickedGroup);
+        }
+    }
+
+    private void removeTileFromTuple(Group clickedGroup)
+    {
+        Tuple<String,Integer,Integer> tuple = tupleMap.get(clickedGroup);
+        tupleMap.remove(clickedGroup);
+        tilesBuffer.remove(tuple);
+    }
+
     public void onMousePressed(MouseEvent event) // Runs when the mouse is pressed, saves which group the mouse clicked on, and saves the X Y position of the click
     {
+        draggedGroup = (Group) event.getSource();
         initialX = event.getSceneX();
         initialY = event.getSceneY();
-        draggedGroup = (Group) event.getSource();
         if(!alreadyDrag.contains(draggedGroup))
             draggedGroup.setManaged(false);
     }
@@ -250,7 +262,9 @@ public class GameWindowController implements Observer , Initializable {
                     rowUpdate = indexRow;
                     colUpdate = indexCol;
                     ImageView imageView = (ImageView) draggedGroup.getChildren().get(1);
-                    UpdateStringBoard(imageView.getId() , indexRow , indexCol);
+                    //UpdateStringBoard(imageView.getId() , indexRow , indexCol);
+                    String id[] = draggedGroup.getId().split(" ");
+                    tilePlacedTuple(id[1],indexRow,indexCol);
                     gridPane.add(draggedGroup,row,col);
                     stop = true;
                 }
@@ -278,14 +292,14 @@ public class GameWindowController implements Observer , Initializable {
         }
     }
 
-    private void copyCords(Group draggedGroup, Node infoSquare) // Copy the cords from the removed rectangle the dropped group.
+    private void copyCords(Group destination, Node source) // Copy the cords from the removed rectangle the dropped group.
     {
-        draggedGroup.setTranslateX(infoSquare.getTranslateX());
-        draggedGroup.setTranslateY(infoSquare.getTranslateY());
-        draggedGroup.setLayoutX(infoSquare.getLayoutX());
-        draggedGroup.setLayoutY(infoSquare.getLayoutY());
-        draggedGroup.setScaleX(infoSquare.getScaleX());
-        draggedGroup.setScaleY(infoSquare.getScaleY());
+        destination.setTranslateX(source.getTranslateX());
+        destination.setTranslateY(source.getTranslateY());
+        destination.setLayoutX(source.getLayoutX());
+        destination.setLayoutY(source.getLayoutY());
+        destination.setScaleX(source.getScaleX());
+        destination.setScaleY(source.getScaleY());
     }
 
     private Node getNode(int rowIndex, int columnIndex) { // Return the Node that need to be removed.

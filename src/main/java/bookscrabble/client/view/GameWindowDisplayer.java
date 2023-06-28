@@ -80,7 +80,7 @@ public class GameWindowDisplayer {
                 imageView.setFitHeight(rectHeight);
 
                 imageView.setId(tileArr[i]);
-                group.setId(tileArr[i]);
+                group.setId(tileArr[i] +" "+Integer.toString(i));
             } catch (Exception e) {
                 MyLogger.logError("Error with insertImage(): " + e.getMessage());
             }
