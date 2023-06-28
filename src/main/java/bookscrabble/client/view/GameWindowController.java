@@ -42,13 +42,6 @@ public class GameWindowController implements Observer , Initializable {
     @FXML
     GridPane playersTable;
 
-    //    @FXML
-//    TableView<?> tableView;
-//    @FXML
-//    TableColumn<String,String> nameList;
-//    @FXML
-//    TableColumn<String,Integer> scoreList;
-
     private List<Group> alreadyDrag = new ArrayList<>();
     private Group draggedGroup=null;
     private double initialX, initialY;
@@ -342,7 +335,7 @@ public class GameWindowController implements Observer , Initializable {
     @FXML
     public void doneButtonClicked(ActionEvent event) { // Sends user attempt for word placement
         //UpdateBoard(letterUpdate,rowUpdate,colUpdate);
-        //vm.sendWordPlacementRequest(String myBoard, boolean isChallenge); //TODO: Commented section for communication with the model
+        //vm.sendWordPlacementRequest(); //TODO: Commented section for communication with the model
     }
 
     @FXML

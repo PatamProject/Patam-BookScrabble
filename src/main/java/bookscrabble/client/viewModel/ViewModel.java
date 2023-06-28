@@ -115,8 +115,28 @@ public class ViewModel extends Observable implements Observer {
     //Player options
     public void sendLeaveRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave")); clear();}
     public void sendSkipTurnRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn"));} //'Q':'word,row,col,isVertical'
-    public void sendWordPlacementRequest(String newBoard, boolean isChallange)
+    public void sendWordPlacementRequest(String playerSentBoard, boolean isChallange)
     {
+        final int BOARD_SIZE = 15;
+        StringBuilder word = new StringBuilder();
+        String[] oldBoard = board.get().split("&");
+        String[] newBoard = playerSentBoard.split("&");
+        int tmpRow = -1, tmpCol = -1;
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if(oldBoard[i].charAt(j) != newBoard[i].charAt(j))
+                {
+                    if(tmpRow == -1 && tmpCol == -1) //First new tile is found
+                    {
+                        tmpRow = i;
+                        tmpCol = j;
+                    }
+                    word.append(newBoard[i].charAt(j));
+                }
+            }
+        }
+
         /*
          public Word fromStringToWord(String pName, final String tiles, final int row,final int col,final boolean vertical)
     { //A word is created from the tiles taken from the player and from the board respectively 
@@ -164,7 +184,7 @@ public class ViewModel extends Observable implements Observer {
 
     public void sendChallengeRequest()
     {
-        ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&C:" + lastWord + "," + row + "," + col + "," + isVertical);
+        //ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&C:" + lastWord + "," + row + "," + col + "," + isVertical);
     }
 
     private void clear()
