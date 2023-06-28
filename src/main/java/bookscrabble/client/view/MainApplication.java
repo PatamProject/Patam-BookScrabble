@@ -44,7 +44,7 @@ public class MainApplication extends Application { //Used to run the game in a G
         mwc = fxmlLoader.getController();
         mwc.setViewModel(vm);
         vm.addObserver(mwc);
-        new Thread(()->{mwc.getMyIPAddress();}).start();
+        new Thread(()-> mwc.getMyIPAddress()).start();
 
         stage.show();
     }

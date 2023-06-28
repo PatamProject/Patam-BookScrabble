@@ -332,7 +332,7 @@ public class MyHostServer{
         }
     }
 
-    public synchronized void close() // A method to close the hostServer
+    private void close() // A method to close the hostServer
     {
         MyLogger.println("Stopping host...");
         stopHost = true;

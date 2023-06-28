@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.MyHostServer;
 
 public class GameManager{
@@ -88,7 +89,7 @@ public class GameManager{
             players.remove(pName);
             playersOrder.remove(pName);
         }
-        if(players.size() <= 1) {
+        if(ClientModel.isGameRunning && players.size() <= 1) {
             MyHostServer.getHostServer().isGameRunning = false;
             return false;
         }
@@ -104,8 +105,14 @@ public class GameManager{
                 if(p.getRack().size() < winner.getRack().size())
                     winner = p;
         }
-        MyHostServer.getHostServer().isGameRunning = false;
-        return winner.getName();
+        if(ClientModel.isGameRunning)
+        {
+            ClientModel.isGameRunning = false;
+            MyHostServer.getHostServer().isGameRunning = false;
+            return winner.getName();
+        }
+        else
+            return "";
     }
     
     public Word fromStringToWord(String pName, final String tiles, final int row,final int col,final boolean vertical)

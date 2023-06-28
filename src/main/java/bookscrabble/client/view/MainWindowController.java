@@ -1,10 +1,11 @@
 package bookscrabble.client.view;
 
+import bookscrabble.client.misc.MyLogger;
+import bookscrabble.client.model.ClientModel;
+import bookscrabble.client.viewModel.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,7 +22,6 @@ import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import bookscrabble.client.misc.MyLogger;
 import bookscrabble.client.viewModel.ViewModel;
@@ -37,14 +37,20 @@ public class MainWindowController implements Observer, Initializable {
     public Label modelErrorLabel, viewErrorLabel, messageLabel, myPort, myIP;
     @FXML
     public TextArea playersTextArea;
+
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
-    public volatile String externalIP = "";
+    public static volatile StringBuilder externalIP = new StringBuilder();
     //private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
     @Override
     public void update(Observable o, Object arg) 
     {
         if(arg != null && arg.equals("endGame"))
-            switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
+        {
+            try {
+                Thread.sleep(1500); // Allow user to read message
+                switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
+            } catch (Exception e) {}
+        }
     }
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
@@ -83,12 +89,18 @@ public class MainWindowController implements Observer, Initializable {
                         gameStarted();
                     });
             });
-            //playersTextArea.textProperty().bind(playersTextArea.textProperty().concat(vm.lobbyMessage));
-            if(playersTextArea != null)
-            {
-                for (String player : vm.playersAndScoresMap.keySet())
-                    vm.lobbyMessage.set(player + vm.playerJoinedMsg);         
-            }
+            //Whenever vm.lobbyMessage is changed, the playersTextArea is appended with the new message
+            playersTextArea.textProperty().set("Welcome to the lobby!\n");
+            vm.lobbyMessage.addListener((observable, oldValue, newValue) -> {
+                if(newValue != null)
+                    Platform.runLater(() -> {
+                        if(playersTextArea != null)
+                            playersTextArea.appendText(newValue);
+                    });
+            });
+
+            for (String player : vm.playersAndScoresMap.keySet())
+                vm.lobbyMessage.set(player + " joined the lobby!\n");  
         }
 
         if (path.endsWith("HostGameLobby.fxml")) {
@@ -107,9 +119,9 @@ public class MainWindowController implements Observer, Initializable {
     @FXML // Showing the ModeMenu
     public void chooseModeMenu(ActionEvent event) {switchRoot("ClientMode");}
     @FXML // Showing the HostMenu
-    private void hostButtonClicked(ActionEvent event) {switchRoot("HostMenu"); vm.isHost.set(true);}
+    private void hostButtonClicked(ActionEvent event) {vm.isHost.set(true); switchRoot("HostMenu"); }
     @FXML // Showing the GuestMenu
-    private void guestButtonClicked(ActionEvent event) {switchRoot("GuestMenu"); vm.isHost.set(false); }
+    private void guestButtonClicked(ActionEvent event) { vm.isHost.set(false); switchRoot("GuestMenu");}
     @FXML // Showing MainMenu
     private void returnToWelcomePage(ActionEvent event) {switchRoot("Main");}
 
@@ -177,29 +189,39 @@ public class MainWindowController implements Observer, Initializable {
     }
 
     public void getMyIPAddress() { // Method to get the external IP of the user on a seperated thread
-        while (externalIP.equals(""))
+        int counter = 0;
+        while (externalIP.length() == 0 && counter < 100)
         {
             URL url;
             BufferedReader reader;
             try {
                 url = new URL("https://api.ipify.org/?format=text");
                 reader = new BufferedReader(new InputStreamReader(url.openStream()));
-                externalIP = reader.readLine();
+                externalIP.append(reader.readLine());
                 reader.close();
             } catch (IOException e) {
-                //MyLogger.logError("Problem with returning my IP address: " + e.getMessage());
+                counter++;
+                if (counter == 99) {
+                    MyLogger.logError("Problem with returning my IP address: " + e.getMessage());
+                    break;
+                }
             }
         }
     }
 
     @FXML // Leaving the gameLobby and disconnecting from the game
     public void returnToGuestMenu(ActionEvent event) {
+        if(playersTextArea != null)
+            playersTextArea.clear();
         vm.sendLeaveRequest();
         guestButtonClicked(event);
     }
 
     @FXML // Leaving the gameLobby and closing the game
     public void returnToHostMenu(ActionEvent event) {
+        if(playersTextArea != null)
+            playersTextArea.clear();
+        ClientModel.isGameRunning = true; // Closes the lobby for all other players
         vm.sendEndgameRequest();
         hostButtonClicked(event);
     }
@@ -218,6 +240,7 @@ public class MainWindowController implements Observer, Initializable {
 
     private void gameStarted()
     {
+        ClientModel.isGameRunning = true;
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
         gwc.displayAll();

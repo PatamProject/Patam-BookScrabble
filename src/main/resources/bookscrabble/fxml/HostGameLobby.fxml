@@ -27,7 +27,7 @@
                         <Font name="Berlin Sans FB" size="16.0" />
                     </font>
                 </Text>
-                <Label fx:id="myIP" alignment="CENTER" contentDisplay="CENTER" layoutX="180.0" layoutY="69.0" prefHeight="18.0" textFill="WHITE">
+                <Label fx:id="myIP" alignment="CENTER" contentDisplay="CENTER" layoutX="189.0" layoutY="72.0" prefHeight="18.0" prefWidth="186.0" textFill="WHITE">
                     <font>
                         <Font name="Berlin Sans FB" size="15.0" />
                     </font>
@@ -35,7 +35,7 @@
                   <Insets bottom="8.0" />
                </opaqueInsets>
                 </Label>
-                <Label fx:id="myPort" alignment="CENTER" contentDisplay="CENTER" layoutX="192.0" layoutY="94.0" prefHeight="18.0" textFill="WHITE">
+                <Label fx:id="myPort" alignment="CENTER" contentDisplay="CENTER" layoutX="189.0" layoutY="90.0" prefHeight="18.0" prefWidth="186.0" textFill="WHITE">
                     <font>
                         <Font name="Berlin Sans FB" size="15.0" />
                     </font>
@@ -61,10 +61,13 @@
     <bottom>
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="67.0" prefWidth="600.0" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="viewErrorLabel" textFill="red">
+                <Label fx:id="viewErrorLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="32.0" layoutY="-10.0" prefHeight="19.0" prefWidth="512.0" textAlignment="CENTER" textFill="red">
                     <font>
                         <Font name="Berlin Sans FB" size="16.0" />
                     </font>
+               <opaqueInsets>
+                  <Insets bottom="15.0" />
+               </opaqueInsets>
                 </Label>
                 <Button fx:id="startButton" layoutX="315.0" layoutY="19.0" mnemonicParsing="false" onAction="#startGameButtonClicked" text="Start Game">
                     <font>

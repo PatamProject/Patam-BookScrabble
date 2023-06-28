@@ -3,6 +3,7 @@ package bookscrabble.client.viewModel;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -10,6 +11,9 @@ import bookscrabble.client.model.ClientCommunications;
 import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.GameModel;
 import bookscrabble.client.model.MyHostServer;
+import bookscrabble.client.view.GameWindowController;
+import bookscrabble.client.view.MainWindowController;
+import bookscrabble.client.view.Tuple;
 
 public class ViewModel extends Observable implements Observer {
     ClientModel clientModel; //Model representation for client info
@@ -24,9 +28,7 @@ public class ViewModel extends Observable implements Observer {
     public StringProperty myName, hostIP, BsIP, clientErrorMessage;
     public StringProperty hostPort, BsPort;
 
-    //Lobby info
     public StringProperty lobbyMessage;
-    public final String playerJoinedMsg = " has joined the lobby!\n" , playerLeftMsg = " has left the lobby!\n";
 
     //Related to word placement
     public BooleanProperty wasLastWordValid;
@@ -53,8 +55,8 @@ public class ViewModel extends Observable implements Observer {
         this.gameErrorMessage = new SimpleStringProperty();
         clientErrorMessage = new SimpleStringProperty();
         playersAndScoresMap = new SimpleMapProperty<>();
-        lobbyMessage = new SimpleStringProperty();
         isGameRunning = new SimpleBooleanProperty();
+        lobbyMessage = new SimpleStringProperty();
     }
 
     @Override
@@ -74,7 +76,8 @@ public class ViewModel extends Observable implements Observer {
                 myScore.set(gameModel.getMyScore().toString());
                 gameErrorMessage.set(gameModel.getErrorMessage());
                 if(arg != null && arg.equals("playerUpdateMessage"))
-                    lobbyMessage.set(gameModel.getPlayerUpdateMessage());   
+                    lobbyMessage.set(gameModel.getPlayerUpdateMessage());
+                  
             }
         }
         if (o.equals(clientModel)) {
@@ -109,24 +112,105 @@ public class ViewModel extends Observable implements Observer {
         if(isHost.get()) //If I am the host
             MyHostServer.getHostServer().start(Integer.parseInt(hostPort.get()), Integer.parseInt(BsPort.get()), BsIP.get());
     }
-    public void sendStartGameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame");}
-    public void sendEndgameRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame"); clear();}
+    public void sendStartGameRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&startGame"));}
+    public void sendEndgameRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&endGame")); clear();}
 
     //Player options
-    public void sendLeaveRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave"); clear();}
-    public void sendSkipTurnRequest() {ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn");} //'Q':'word,row,col,isVertical'
-    public void sendWordPlacementRequest(String word, int row, int col, boolean isVertical)
+    public void sendLeaveRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&leave")); clear();}
+    public void sendSkipTurnRequest() {if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&skipTurn"));} 
+    public boolean sendWordPlacementRequest(ArrayList<Tuple<String, Integer, Integer>> tiles , boolean isChallange)
     {
-        lastWord = word;
-        this.row = row;
-        this.col = col;
-        this.isVertical = isVertical;
-        ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&Q:" + word + "," + row + "," + col + "," + isVertical);
-    }
+        final int BOARD_SIZE = GameWindowController.MAX_BOARD_SIZE;
+        String[] tmpBoard = board.get().split("&");
+        int tmpRow = BOARD_SIZE, tmpCol = BOARD_SIZE; //Used to find the actual row, col of the word
+        boolean isVertical = false;
+        for (Tuple<String, Integer, Integer> tile : tiles) { //We want to find the first tile placed (minimum row & col). All tiles are in the same row or col
+            if(tmpBoard[tile.getSecond()].charAt(tile.getThird()) != '-')
+                return false; //If the tile is already occupied
+            else //We insert the tile to the board tmporarily
+            {
+                StringBuilder sb = new StringBuilder(tmpBoard[tile.getSecond()]);
+                sb.setCharAt(tile.getThird(), tile.getFirst().charAt(0));
+                tmpBoard[tile.getSecond()] = sb.toString();
+            }
 
-    public void sendChallengeRequest()
-    {
-        ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&C:" + lastWord + "," + row + "," + col + "," + isVertical);
+            if(tile.getSecond() < tmpRow)
+                tmpRow = tile.getSecond();
+            if(tile.getThird() < tmpCol)
+                tmpCol = tile.getThird();    
+        }
+        
+        for (Tuple<String, Integer, Integer> tile : tiles) { //We want to find the orientation of the word
+            if(tile.getSecond() != tmpRow)
+                isVertical = true;
+        }
+        
+        String word;
+        int startIndex = 0, endIndex = BOARD_SIZE - 1;
+        if(isVertical) //(col is the same for all)
+        {
+            for (int i = tmpRow; i >= 0 && i < BOARD_SIZE;i--) //We find the starting index of the word
+            {
+                if(tmpRow == 0) 
+                    break;
+                else
+                {
+                    if(tmpBoard[i].charAt(tmpCol) != '-')
+                        startIndex = i;
+                    else
+                        break;
+                }    
+            }  
+            
+            for (int i = tmpRow; i >= 0 && i < BOARD_SIZE;i++) //We find the ending index of the word
+            {
+                if(tmpRow == BOARD_SIZE - 1) 
+                    break;
+                else
+                {
+                    if(tmpBoard[i].charAt(tmpCol) != '-')
+                        endIndex = i;
+                    else
+                        break;
+                }    
+            }       
+        }
+        else //(row is the same for all)
+        {
+            for (int i = tmpCol; i >= 0 && i < BOARD_SIZE;i--) //We find the starting index of the word
+            {
+                if(tmpCol == 0) 
+                    break;
+                else
+                {
+                    if(tmpBoard[tmpRow].charAt(i) != '-')
+                        startIndex = i;
+                    else
+                        break;
+                }    
+            }  
+            
+            for (int i = tmpCol; i >= 0 && i < BOARD_SIZE;i++) //We find the ending index of the word
+            {
+                if(tmpCol == BOARD_SIZE - 1) 
+                    break;
+                else
+                {
+                    if(tmpBoard[tmpRow].charAt(i) != '-')
+                        endIndex = i;
+                    else
+                        break;
+                }    
+            }
+        }
+        word = tmpBoard[tmpRow].substring(startIndex, endIndex + 1);
+        String QorC = isChallange ? "C" : "Q";
+        lastWord = word;
+        row = tmpRow;
+        col = tmpCol;
+        this.isVertical = isVertical;
+        if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&"+ QorC +":" + word + "," + row + "," + col + "," + isVertical)); //'Q':'word,row,col,isVertical'
+        return true;
     }
 
     private void clear()
@@ -135,9 +219,8 @@ public class ViewModel extends Observable implements Observer {
         currentPlayerName.set("");
         myTiles.set("");
         myScore.set("");
-        playersAndScoresMap.set(null);
+        playersAndScoresMap.clear();
         gameErrorMessage.set("");
-        lobbyMessage.set("");
         isGameRunning.set(false);
     }
 
