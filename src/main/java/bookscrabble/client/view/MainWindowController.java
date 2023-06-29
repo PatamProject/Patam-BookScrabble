@@ -246,6 +246,7 @@ public class MainWindowController implements Observer, Initializable {
         //gwc.setViewModel(vm); //Happens when loading the fxml
         vm.addObserver(gwc);
         vm.isGameRunning.set(true);
+        gwc.insertImage(); //Inserts tiles to the rack for the first time
     }
 
     public static void switchRoot(String r) { // Switching between different roots

@@ -429,14 +429,17 @@
       </AnchorPane>
    </left>
    <right>
-      <TableView maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="203.0" prefWidth="183.0" BorderPane.alignment="CENTER">
+   <TableView fx:id="table" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="203.0" prefWidth="183.0" BorderPane.alignment="CENTER">
          <columns>
-            <TableColumn prefWidth="92.79992520809174" text="Name" />
-            <TableColumn prefWidth="88.00012969970703" text="Score" />
+            <TableColumn fx:id="nameColumn" prefWidth="92.79992520809174" text="Name" />
+            <TableColumn fx:id="scoreColumn" prefWidth="88.00012969970703" text="Score" />
          </columns>
          <BorderPane.margin>
-            <Insets right="5.0" />
+            <Insets right="10.0" />
          </BorderPane.margin>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
    </right>
    <top>

@@ -105,8 +105,9 @@ public class GameManager{
 
         for(Player p : players.values()) {
             if(p.getScore() >= maxScore)
-                winner.append(p.getName()).append(" ");    
+                winner.append(p.getName()).append("&");    
         }
+        winner.deleteCharAt(winner.length()-1); //Remove last '&'
 
         if(ClientModel.isGameRunning)
         {

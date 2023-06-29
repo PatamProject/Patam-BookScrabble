@@ -46,7 +46,7 @@ public class ClientCommunications{
             try {
                 run();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                ClientModel.getClientModel().disconnectedFromHost(e.getMessage());
             }
         });
         t.setUncaughtExceptionHandler(h);

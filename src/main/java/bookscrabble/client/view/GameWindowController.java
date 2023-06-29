@@ -4,6 +4,8 @@ import bookscrabble.client.misc.MyLogger;
 import bookscrabble.client.viewModel.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,7 +13,10 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -42,6 +47,12 @@ public class GameWindowController implements Observer , Initializable {
     GridPane playersTable;
     @FXML
     TextArea textBox;
+    @FXML
+    TableView<PlayerAndScore> table;
+    @FXML
+    TableColumn<PlayerAndScore, String> nameColumn;
+    @FXML
+    TableColumn<PlayerAndScore, Integer> scoreColumn;
 
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     private List<Group> dropOnBoard = new ArrayList<>();
@@ -99,11 +110,34 @@ public class GameWindowController implements Observer , Initializable {
                         textBox.appendText(vm.lobbyMessage.getValue());
                 });
             });
+
+            vm.wasLastWordValid.addListener((observable, oldValue, newValue) -> {
+                if(newValue != null)
+                    Platform.runLater(() -> {
+                        if(!vm.wasLastWordValid.getValue())
+                        {
+                            alert.setContentText("The word you entered is not valid! You can challenge it if you want!");
+                            alert.showAndWait();
+                        }
+                });
+            });
         }
 
         if (path.endsWith("EndGame.fxml")) {
             winnerText.setText(vm.lobbyMessage.getValue());
         }
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<PlayerAndScore, String>("nameColumn"));
+        scoreColumn.setCellValueFactory(new PropertyValueFactory<PlayerAndScore, Integer>("scoreColumn"));
+        table.setItems(initialData());
+    }
+
+    private ObservableList<PlayerAndScore> initialData() {
+        ArrayList<PlayerAndScore> arr = new ArrayList<>();
+        for (String s : myPlayersAndScores.keySet()) {
+            arr.add(new PlayerAndScore(s, myPlayersAndScores.get(s)));
+        }
+        return FXCollections.observableArrayList(arr);
     }
 
     private String[] getBoard() {return vm.board.get().split("&");}

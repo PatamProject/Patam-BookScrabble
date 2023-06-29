@@ -37,6 +37,7 @@ public class ViewModel extends Observable implements Observer {
     public Integer row = 0;
     public Integer col = 0;
     public boolean isVertical;
+    public boolean wasLastWordaChallenge;
 
     public ViewModel(GameModel gameModel, ClientModel clientModel) { //Ctor
         this.clientModel = clientModel;
@@ -51,7 +52,7 @@ public class ViewModel extends Observable implements Observer {
         this.hostPort = new SimpleStringProperty();
         this.BsIP = new SimpleStringProperty();
         this.BsPort = new SimpleStringProperty();
-        this.wasLastWordValid = new SimpleBooleanProperty();
+        this.wasLastWordValid = new SimpleBooleanProperty(false);
         this.isConnectedToHost = new SimpleBooleanProperty();
         this.gameErrorMessage = new SimpleStringProperty();
         clientErrorMessage = new SimpleStringProperty();
@@ -64,12 +65,21 @@ public class ViewModel extends Observable implements Observer {
     public void update(Observable o, Object arg) { //Receiving updates from the class observables
         if (o.equals(gameModel)) {
             if(arg != null && arg.equals("isLegal")) //failedWordPlacement
+            {
                 wasLastWordValid.set(false);
+                lobbyMessage.set("Word placement is not legal!");
+                wasLastWordValid.set(false);
+            }
             else // True / null
             {
                 if(arg != null && arg.equals("isLegal")) //successfulWordPlacement
+                {
                     wasLastWordValid.set(true);
+                    lobbyMessage.set("Word placement is legal! Score updated!");
+                    wasLastWordValid.set(true);
+                }
 
+                
                 board.set(gameModel.getBoard());
                 currentPlayerName.set(gameModel.getCurrentPlayersName());
                 myTiles.set(gameModel.getMyTiles());
@@ -210,6 +220,7 @@ public class ViewModel extends Observable implements Observer {
         row = tmpRow;
         col = tmpCol;
         this.isVertical = isVertical;
+        wasLastWordaChallenge = isChallange;
         if(ClientCommunications.sendAMessage(clientModel.getMyConnectionToHost().getMyID(),myName.get() + "&"+ QorC +":" + word + "," + row + "," + col + "," + isVertical)); //'Q':'word,row,col,isVertical'
         return true;
     }
