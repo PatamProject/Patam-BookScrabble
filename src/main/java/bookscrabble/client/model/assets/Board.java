@@ -6,10 +6,10 @@ public class Board {
     Tile[][] tiles = new Tile[SIZE][SIZE];
     static final int SIZE = 15;
     static int num_Of_Tiles_Placed = 0;
-    final int 
+    public static final int 
     NO_BONUS = 0, DOUBLE_LETTER_BONUS = 1, TRIPLE_LETTER_BONUS = 2, DOUBLE_WORD_BONUS = 3, TRIPLE_WORD_BONUS = 4, 
     CENTER = 5, S_LEFT = 6, S_RIGHT = 7, S_UP = 8, S_DOWN = 9; //flags
-    final int[][] bonusMatrix = //a copy of the board used to calculate bonus points
+    public static final int[][] bonusMatrix = //a copy of the board used to calculate bonus points
     {{4,0,0,1,0,0,0,4,0,0,0,1,0,0,4}, 
      {0,3,0,0,0,2,0,0,0,2,0,0,0,3,0},
      {0,0,3,0,0,0,1,0,1,0,0,0,3,0,0},

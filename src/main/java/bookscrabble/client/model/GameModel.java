@@ -24,6 +24,8 @@ public class GameModel extends Observable {
     private GameModel() { //Ctor
         playersOrder = new LinkedList<>(); //Will be updated by startGame
         this.playersAndScores = new HashMap<>();
+        //Empty board
+        board = "---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------&---------------";
     }
 
     public void setBoard(String board) { //Updates the string representation of the board
