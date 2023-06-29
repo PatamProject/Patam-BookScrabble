@@ -243,7 +243,6 @@ public class MainWindowController implements Observer, Initializable {
         ClientModel.isGameRunning = true;
         switchRoot("GameWindow");
         gwc = MainApplication.getFxmlLoader().getController();
-        gwc.displayAll();
         //gwc.setViewModel(vm); //Happens when loading the fxml
         vm.addObserver(gwc);
         vm.isGameRunning.set(true);
