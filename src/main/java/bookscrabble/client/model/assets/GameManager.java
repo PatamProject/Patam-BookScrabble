@@ -97,19 +97,22 @@ public class GameManager{
     }
 
     public String getWinner() { //The winner is the player with the highest score
-        Player winner = players.values().iterator().next();
+        StringBuilder winner = new StringBuilder();
+        Integer maxScore = 0;
+        for(Player p : players.values())
+            if(p.getScore() >= maxScore)
+                maxScore = p.getScore();
+
         for(Player p : players.values()) {
-            if(p.getScore() > winner.getScore())
-                winner = p;
-            else if(p.getScore().equals(winner.getScore()))
-                if(p.getRack().size() < winner.getRack().size())
-                    winner = p;
+            if(p.getScore() >= maxScore)
+                winner.append(p.getName()).append(" ");    
         }
+
         if(ClientModel.isGameRunning)
         {
             ClientModel.isGameRunning = false;
             MyHostServer.getHostServer().isGameRunning = false;
-            return winner.getName();
+            return winner.toString();
         }
         else
             return "";

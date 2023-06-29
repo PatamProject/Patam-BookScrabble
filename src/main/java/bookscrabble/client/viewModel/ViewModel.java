@@ -224,6 +224,12 @@ public class ViewModel extends Observable implements Observer {
         isGameRunning.set(false);
     }
 
+    public void close()
+    {
+        clientModel.disconnectedFromHost("endGame");
+        gameModel.close();
+    }
+
 /* 
     //Updates from View -> Model//
 

@@ -1,7 +1,7 @@
 package bookscrabble.client.view;
 
 import bookscrabble.client.viewModel.ViewModel;
-import bookscrabble.server.cacheHandler.CacheReplacementPolicy;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +10,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -18,10 +19,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.nio.Buffer;
 import java.util.*;
 
 import static bookscrabble.client.view.MainWindowController.switchRoot;
@@ -32,7 +33,7 @@ public class GameWindowController implements Observer , Initializable {
     MainWindowController mwc;
     private GameWindowDisplayer playerScreenDisplayer = new GameWindowDisplayer();
     @FXML
-    public TableView scoreTable;
+    public Text winnerText;
     @FXML
     public Button skipTurn, done, challenge, Quit, mainMenu, exit;
     @FXML
@@ -80,7 +81,24 @@ public class GameWindowController implements Observer , Initializable {
         if (path.endsWith("GameWindow.fxml")) {
             myTilesProperty.bindBidirectional(vm.myTiles);
             myBoardProperty.bindBidirectional(vm.board);
+
+            vm.playersAndScoresMap.addListener((observable, oldValue, newValue) -> {
+                if(newValue != null)
+                    Platform.runLater(() -> {
+                        if(vm.playersAndScoresMap.getValue().size() < 2)
+                            vm.lobbyMessage.setValue("Game stopped, not enough players!");
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {}
+                            quitButtonClicked(new ActionEvent());
+                    });
+            });
         }
+
+        if (path.endsWith("EndGame.fxml")) {
+            winnerText.setText(vm.lobbyMessage.getValue());
+        }
+
         myPlayersAndScores.bindBidirectional(vm.playersAndScoresMap);
     }
 
