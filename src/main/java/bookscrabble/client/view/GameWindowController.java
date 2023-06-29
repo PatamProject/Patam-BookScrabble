@@ -46,7 +46,7 @@ public class GameWindowController implements Observer , Initializable {
     @FXML
     GridPane playersTable;
     @FXML
-    TextArea textBox;
+    TextArea textArea;
     @FXML
     TableView<PlayerAndScore> table;
     @FXML
@@ -82,11 +82,13 @@ public class GameWindowController implements Observer , Initializable {
                 if(newValue != null)
                     Platform.runLater(() -> {
                         if(vm.playersAndScoresMap.getValue().size() < 2)
+                        {
                             vm.lobbyMessage.setValue("Game stopped, not enough players!");
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {}
                             quitButtonClicked(new ActionEvent());
+                        }
                 });
             });
 
@@ -97,19 +99,23 @@ public class GameWindowController implements Observer , Initializable {
                 });
             });
 
-            vm.myTiles.addListener((observable, oldValue, newValue) -> {
+            vm.myTiles.addListener((observable, oldValue, newValue) -> { //New tiles
                 if(newValue != null)
                     Platform.runLater(() -> {
                         insertImage();
                 });
             });
 
+            textArea.textProperty().set("The game has started!\n");
             vm.lobbyMessage.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
                     Platform.runLater(() -> {
-                        textBox.appendText(vm.lobbyMessage.getValue());
+                        textArea.appendText(vm.lobbyMessage.getValue());
                 });
             });
+
+            for (String player : vm.playersAndScoresMap.keySet())
+                vm.lobbyMessage.set(player + " has joined the game!\n");
 
             vm.wasLastWordValid.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
@@ -134,9 +140,10 @@ public class GameWindowController implements Observer , Initializable {
 
     private ObservableList<PlayerAndScore> initialData() {
         ArrayList<PlayerAndScore> arr = new ArrayList<>();
-        for (String s : myPlayersAndScores.keySet()) {
+        for (String s : myPlayersAndScores.keySet())
             arr.add(new PlayerAndScore(s, myPlayersAndScores.get(s)));
-        }
+        
+        arr.sort(Comparator.comparingInt(PlayerAndScore::getScoreColumn).reversed());
         return FXCollections.observableArrayList(arr);
     }
 
@@ -199,18 +206,19 @@ public class GameWindowController implements Observer , Initializable {
             else //Return tile from board to myRack 
                 clearMyTilesFromBoard(clickedNode,false);
         }
-        else if(event.getSource() instanceof Rectangle) //If a place on the board is clicked
+        else if(event.getSource() instanceof Rectangle) //If a rectangle on the board is clicked
         {
             if(chosenGroup == null)
                 return;
 
-            Rectangle rectangle = ( Rectangle) event.getSource();
+            Rectangle rectangle = (Rectangle) event.getSource();
             int row = GridPane.getRowIndex(rectangle);
             int col = GridPane.getColumnIndex(rectangle);
 
             chosenGroup.setManaged(false);
+            Group toRemove = chosenGroup;
             copyCords(chosenGroup,rectangle);
-            removeFromFather(chosenGroup);
+            removeImageFromRack(toRemove);
             gridPane.add(chosenGroup,row,col);
             dropOnBoard.add(chosenGroup);
             String id[] = chosenGroup.getId().split(" ");
@@ -218,13 +226,13 @@ public class GameWindowController implements Observer , Initializable {
         }
     }
 
-    private void removeFromFather(Group draggedGroup) // Remove the group from its father
+    private void removeImageFromRack(Group draggedGroup)
     {
         for (int i = 0; i < 7; i++) {
             StackPane stackPane = (StackPane) myRack.getChildren().get(i);
             if (!stackPane.getChildren().isEmpty()) {
                 if (stackPane.getChildren().get(0).equals(draggedGroup)) {
-                    stackPane.getChildren().remove(draggedGroup);
+                    draggedGroup.getChildren().remove(1); //Remove the image from the group
                     break;
                 }
             }
@@ -264,14 +272,18 @@ public class GameWindowController implements Observer , Initializable {
 
     private void putTileOnBoard(String letter, int row, int col)
     {
-        Rectangle rectangle = (Rectangle) getNode(row,col);
-        String imageTile = letter.concat("tile.png");
-        String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
-        Image image = new Image(imagePath);
-        ImagePattern imagePattern = new ImagePattern(image);
-        if (rectangle != null) {
-            rectangle.setFill(imagePattern);
-            rectangle.setId("UnRemovable");
+        try {
+            Rectangle rectangle = (Rectangle) getNode(row,col);
+            String imageTile = letter.concat("tile.png");
+            String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
+            Image image = new Image(imagePath);
+            ImagePattern imagePattern = new ImagePattern(image);
+            if (rectangle != null) {
+                rectangle.setFill(imagePattern);
+                rectangle.setId("UnRemovable");
+            }
+        } catch (Exception e) {
+            MyLogger.logError("Error with putTileOnBoard(): " + e.getMessage());
         }
     }
 

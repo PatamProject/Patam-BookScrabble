@@ -92,7 +92,7 @@ public class MainWindowController implements Observer, Initializable {
             //Whenever vm.lobbyMessage is changed, the playersTextArea is appended with the new message
             playersTextArea.textProperty().set("Welcome to the lobby!\n");
             vm.lobbyMessage.addListener((observable, oldValue, newValue) -> {
-                if(newValue != null)
+                if(newValue != null && newValue != oldValue)
                     Platform.runLater(() -> {
                         if(playersTextArea != null)
                             playersTextArea.appendText(newValue);

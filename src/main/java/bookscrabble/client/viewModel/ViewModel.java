@@ -79,7 +79,6 @@ public class ViewModel extends Observable implements Observer {
                     wasLastWordValid.set(true);
                 }
 
-                
                 board.set(gameModel.getBoard());
                 currentPlayerName.set(gameModel.getCurrentPlayersName());
                 myTiles.set(gameModel.getMyTiles());
