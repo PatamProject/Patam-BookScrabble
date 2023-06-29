@@ -378,7 +378,7 @@
                   </StackPane>
                   <StackPane maxHeight="40.0" maxWidth="40.0" minHeight="40.0" minWidth="40.0" prefHeight="40.0" prefWidth="40.0">
                      <children>
-                        <Group onMouseClicked="#onMouseClicked" onMouseDragged="#onMouseDragged">
+                        <Group onMouseClicked="#onMouseClicked">
                            <children>
                               <Rectangle fx:id="place7" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="37.0" />
                               <ImageView fitHeight="30.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true" />
