@@ -57,12 +57,7 @@ public class GameWindowController implements Observer , Initializable {
     private ArrayList<Tuple<String,Integer,Integer>> tilesBuffer = new ArrayList<>(); 
     private  List<String> nameList;
     private  List<Integer> scoreList;
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    public static final int MAX_BOARD_SIZE = 15;
 
-    private  List<String> nameList;
-    private  List<Integer> scoreList;
-    private ArrayList<Tuple<String, Integer, Integer>> tilesBuffer;
     private Map<Group,Tuple<String, Integer, Integer>> tupleMap = new HashMap<>();
 
     @Override
@@ -442,38 +437,4 @@ public class GameWindowController implements Observer , Initializable {
         Stage stage = (Stage) exit.getScene().getWindow();
         stage.close();
     }
-
-    public void tilePlaced(String letter, Integer row, Integer col)
-    {
-        if(letter == null || letter.length() != 1 || !letter.matches("[a-zA-Z]")) //only one valid tile
-            return;
-        else if(row < 0 || row > MAX_BOARD_SIZE - 1 || col < 0 || col > MAX_BOARD_SIZE - 1) //valid row and col
-            return;
-
-        tilesBuffer.add(new Tuple<String,Integer,Integer>(letter, row, col));
-    }
-
-    private boolean AreTileInTheSameRowCol()
-    {
-        if(tilesBuffer.isEmpty())
-            return false;
-        else if(tilesBuffer.size() == 1)
-            return true;
-
-        boolean sameRow = true;
-        boolean sameCol = true;
-        int row = tilesBuffer.get(0).getSecond();
-        int col = tilesBuffer.get(0).getThird();
-
-        for(int i = 1; i < tilesBuffer.size(); i++)
-        {
-            if(tilesBuffer.get(i).getSecond() != row)
-                sameRow = false;
-            if(tilesBuffer.get(i).getThird() != col)
-                sameCol = false;
-        }
-
-        return sameRow || sameCol;
-    }
-
 }
