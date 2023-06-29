@@ -196,6 +196,7 @@ public class GameWindowController implements Observer , Initializable {
                 stackPane.getChildren().add(clickedNode);
                 clickedNode.setManaged(true);
                 //removeTileFromTuple(clickedNode);
+                dropOnBoard.remove(clickedNode);
             }
         }
         else if(event.getSource() instanceof Rectangle)
