@@ -26,34 +26,35 @@ public class GameWindowDisplayer {
     private String myTiles;
     private GridPane gridPane;
 
-    public void completeBoard(GridPane gridPane ,HBox hBox, String myTiles)
+    public void completeBoard(GridPane gridPane ,HBox myRack, String myTiles)
     {
         this.gridPane = gridPane;
+        this.myTiles = String.join(" ",myTiles.split(""));
         char[] tmpArr = myTiles.toCharArray();
-        StringBuilder sb = new StringBuilder();
-        for (char c : tmpArr)
-            sb.append(c).append(" ");
-        this.myTiles = sb.toString().trim();
-        for (int i = 0; i < 225; i++) {
-            Node node = gridPane.getChildren().get(i);
-            Rectangle rec = (Rectangle) node;
-            GridPane.setRowIndex(node, rowNode);
-            GridPane.setColumnIndex(node, colNode);
-            colNode++;
-            if (colNode == 15) {
-                colNode = 0;
-                rowNode++;
-            }
-            rec.setWidth(SQUARE_SIZE);
-            rec.setHeight(SQUARE_SIZE);
-            GridPane.setHgrow(rec, Priority.ALWAYS);
-            GridPane.setVgrow(rec, Priority.ALWAYS);
-        }
-        gridPane.setPrefSize(SQUARE_SIZE * GRID_SIZE, SQUARE_SIZE * GRID_SIZE);
-        gridPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        gridPane.autosize();
-        finishBoard(gridPane);
-        insertImage(hBox);
+//        StringBuilder sb = new StringBuilder();
+//        for (char c : tmpArr)
+//            sb.append(c).append(" ");
+//        this.myTiles = sb.toString().trim();
+//        for (int i = 0; i < 225; i++) {
+//            Node node = gridPane.getChildren().get(i);
+//            Rectangle rec = (Rectangle) node;
+//            GridPane.setRowIndex(node, rowNode);
+//            GridPane.setColumnIndex(node, colNode);
+//            colNode++;
+//            if (colNode == 15) {
+//                colNode = 0;
+//                rowNode++;
+//            }
+//            rec.setWidth(SQUARE_SIZE);
+//            rec.setHeight(SQUARE_SIZE);
+//            GridPane.setHgrow(rec, Priority.ALWAYS);
+//            GridPane.setVgrow(rec, Priority.ALWAYS);
+//        }
+//        gridPane.setPrefSize(SQUARE_SIZE * GRID_SIZE, SQUARE_SIZE * GRID_SIZE);
+//        gridPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+//        gridPane.autosize();
+//        finishBoard(gridPane);
+        insertImage(myRack);
     }
 
     private void insertImage(HBox hBox)

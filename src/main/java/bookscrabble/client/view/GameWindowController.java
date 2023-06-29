@@ -1,7 +1,6 @@
 package bookscrabble.client.view;
 
 import bookscrabble.client.viewModel.ViewModel;
-import bookscrabble.server.cacheHandler.CacheReplacementPolicy;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,17 +10,16 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.nio.Buffer;
 import java.util.*;
 
 import static bookscrabble.client.view.MainWindowController.switchRoot;
@@ -32,21 +30,19 @@ public class GameWindowController implements Observer , Initializable {
     MainWindowController mwc;
     private GameWindowDisplayer playerScreenDisplayer = new GameWindowDisplayer();
     @FXML
-    public TableView scoreTable;
-    @FXML
     public Button skipTurn, done, challenge, Quit, mainMenu, exit;
     @FXML
     public Rectangle place1, place2, place3, place4, place5, place6, place7; //TODO: Ofek needs to change those names to something more understandable
     @FXML
     GridPane gridPane;
     @FXML
-    HBox hBox;
-
+    HBox myRack;
     @FXML
-    GridPane playersTable;
+    TableView playersTable;
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     private List<Group> alreadyDrag = new ArrayList<>();
-    private Group draggedGroup=null;
+    private List<Group> dropOnBoard = new ArrayList<>();
+    private Group draggedGroup=null , choosenGroup = null;
     private double initialX, initialY;
     private StringProperty myTilesProperty = new SimpleStringProperty(), myBoardProperty = new SimpleStringProperty();
     private MapProperty<String, Integer> myPlayersAndScores = new SimpleMapProperty<>();
@@ -73,7 +69,7 @@ public class GameWindowController implements Observer , Initializable {
             vm = MainWindowController.vm;
         String path = location.getFile();
         if (path.endsWith("GameWindow.fxml")) {
-            myTilesProperty.bindBidirectional(vm.myTiles);
+            //myTilesProperty.bindBidirectional(vm.myTiles);
             myBoardProperty.bindBidirectional(vm.board);
         }
         myPlayersAndScores.bindBidirectional(vm.playersAndScoresMap);
@@ -81,7 +77,7 @@ public class GameWindowController implements Observer , Initializable {
 
     public void displayAll()
     {
-        playerScreenDisplayer.completeBoard(gridPane,hBox,myTilesProperty.get());
+        playerScreenDisplayer.completeBoard(gridPane, myRack, vm.myTiles.get());
     }
 
     public void updateDisplayAll() // Called all the update function to show the player the update screen.
@@ -110,25 +106,23 @@ public class GameWindowController implements Observer , Initializable {
 
     public void displayUpdateList() // display on screen the new lists.
     {
-        getMyNameScore();
-        int index;
-        for(int i=2;i<8;i++)
-        {
-            index = i-2;
-            TextField textField = (TextField) playersTable.getChildren().get(i);
-            if((i%2)==0)
-                textField.setText(nameList.get(index));
-            else
-                textField.setText(Integer.toString(scoreList.get(index)));
-        }
+//        getMyNameScore();
+//        int index;
+//        for(int i=2;i<8;i++)
+//        {
+//            index = i-2;
+//            TextField textField = (TextField) playersTable.getChildren().get(i);
+//            if((i%2)==0)
+//                textField.setText(nameList.get(index));
+//            else
+//                textField.setText(Integer.toString(scoreList.get(index)));
+//        }
     }
 
     public void getMyBoard() {
         myStringBoard = myTilesProperty.get();
         myBoard = myStringBoard.split("&");
     }
-
-    public void getMyTiles() {  myTiles = myTilesProperty.get(); } // Prints the current value of myTilesProperty
 
     private void getMyNameScore() // Update the list of name & score.
     {
@@ -188,101 +182,46 @@ public class GameWindowController implements Observer , Initializable {
 
     public void onMouseClicked(MouseEvent event) // Runs when the mouse is pressed, saves which group the mouse clicked on, and saves the X Y position of the click
     {
-        if(event.getSource() instanceof Group) {
-            Group clickedGroup = (Group) event.getSource();
-            alreadyDrag.remove(clickedGroup);
-            String id[] = clickedGroup.getId().split(" ");
-            int index = Integer.parseInt(id[1]);
-            StackPane stackPane = (StackPane) hBox.getChildren().get(index);
-            stackPane.getChildren().add(clickedGroup);
-            clickedGroup.setManaged(true);
-            removeTileFromTuple(clickedGroup);
-        }
-    }
-
-    private void removeTileFromTuple(Group clickedGroup)
-    {
-        Tuple<String,Integer,Integer> tuple = tupleMap.get(clickedGroup);
-        tupleMap.remove(clickedGroup);
-        tilesBuffer.remove(tuple);
-    }
-
-    public void onMousePressed(MouseEvent event) // Runs when the mouse is pressed, saves which group the mouse clicked on, and saves the X Y position of the click
-    {
-        draggedGroup = (Group) event.getSource();
-        initialX = event.getSceneX();
-        initialY = event.getSceneY();
-        if(!alreadyDrag.contains(draggedGroup))
-            draggedGroup.setManaged(false);
-    }
-
-    public void onMouseDragged(MouseEvent event) // Runs when the mouse is dragged, drag the group on the map , and saves the X Y position of the drag
-    {
-        if(draggedGroup != null && !alreadyDrag.contains(draggedGroup))
+        if(event.getSource() instanceof Group)
         {
-            double offsetX = event.getSceneX() - initialX;
-            double offsetY = event.getSceneY() - initialY;
-
-            draggedGroup.setTranslateX(draggedGroup.getTranslateX() + offsetX);
-            draggedGroup.setTranslateY(draggedGroup.getTranslateY() + offsetY);
-
-            initialX = event.getSceneX();
-            initialY = event.getSceneY();
-        }
-    }
-
-    public void onMouseReleased(MouseEvent event) { // רRuns when the mouse is released, drops the group on the board and places it in the appropriate position according to X Y
-        if (draggedGroup != null && !alreadyDrag.contains(draggedGroup))
-        {
-            initialX = event.getSceneX();
-            initialY = event.getSceneY();
-
-            double releaseX = event.getSceneX();
-            double releaseY = event.getSceneY();
-
-            dropRectangle(releaseX, releaseY);
-        }
-    }
-
-    private void dropRectangle(double releaseX , double releaseY) // Put the group on the board.
-    {
-        boolean stop=false;
-        int indexRow = 0 , indexCol = 0 ;
-        for(int y = 4 ; y < 830 && !stop ; y+=55)
-        {
-            for(int x = 547 ; x < 1373 && !stop ; x+=55)
+            Group clickedNode = (Group) event.getSource();
+            if(!dropOnBoard.contains(clickedNode))
             {
-                if((releaseX >= x && releaseX < x+55) && (releaseY >= y && releaseY < y+55))
-                {
-                    final int row = indexRow;
-                    final int col = indexCol;
-                    Node removeNode = getNode(indexRow, indexCol);
-                    copyCords(draggedGroup,removeNode);
-                    removeFromFather(draggedGroup , indexRow , indexCol);
-                    letterUpdate = draggedGroup.getId();
-                    rowUpdate = indexRow;
-                    colUpdate = indexCol;
-                    ImageView imageView = (ImageView) draggedGroup.getChildren().get(1);
-                    //UpdateStringBoard(imageView.getId() , indexRow , indexCol);
-                    String id[] = draggedGroup.getId().split(" ");
-                    tilePlacedTuple(id[1],indexRow,indexCol);
-                    gridPane.add(draggedGroup,row,col);
-                    stop = true;
-                }
-                indexCol++;
+                choosenGroup = clickedNode;
             }
-            indexRow++;
-            indexCol=0;
+            else {
+                String id[] = clickedNode.getId().split(" ");
+                int index = Integer.parseInt(id[1]);
+                StackPane stackPane = (StackPane) myRack.getChildren().get(index);
+                stackPane.getChildren().add(clickedNode);
+                clickedNode.setManaged(true);
+                //removeTileFromTuple(clickedNode);
+            }
         }
-        alreadyDrag.add(draggedGroup);
-        draggedGroup = null;
+        else if(event.getSource() instanceof Rectangle)
+        {
+            if(choosenGroup == null)
+                return;
+
+            Rectangle rectangle = ( Rectangle) event.getSource();
+            int row = GridPane.getRowIndex(rectangle);
+            int col = GridPane.getColumnIndex(rectangle);
+
+            choosenGroup.setManaged(false);
+            copyCords(choosenGroup,rectangle);
+            removeFromFather(choosenGroup);
+            gridPane.add(choosenGroup,row,col);
+            dropOnBoard.add(choosenGroup);
+
+            String id[] = choosenGroup.getId().split(" ");
+            tilePlacedTuple(id[1],row,col);
+        }
     }
 
-    private void removeFromFather(Group draggedGroup , int row , int col) // Remove the group from its father
+    private void removeFromFather(Group draggedGroup) // Remove the group from its father
     {
-        if(draggedGroup.getParent() instanceof HBox) {
             for (int i = 0; i < 7; i++) {
-                StackPane stackPane = (StackPane) hBox.getChildren().get(i);
+                StackPane stackPane = (StackPane) myRack.getChildren().get(i);
                 if (!stackPane.getChildren().isEmpty()) {
                     if (stackPane.getChildren().get(0).equals(draggedGroup)) {
                         stackPane.getChildren().remove(draggedGroup);
@@ -290,7 +229,13 @@ public class GameWindowController implements Observer , Initializable {
                     }
                 }
             }
-        }
+    }
+
+    private void removeTileFromTuple(Group clickedGroup)
+    {
+        Tuple<String,Integer,Integer> tuple = tupleMap.get(clickedGroup);
+        tupleMap.remove(clickedGroup);
+        tilesBuffer.remove(tuple);
     }
 
     private void copyCords(Group destination, Node source) // Copy the cords from the removed rectangle the dropped group.
