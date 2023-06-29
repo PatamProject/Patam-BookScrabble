@@ -1,7 +1,6 @@
 package bookscrabble.client.view;
 
 import bookscrabble.client.viewModel.ViewModel;
-import bookscrabble.server.cacheHandler.CacheReplacementPolicy;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,7 +19,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.nio.Buffer;
 import java.util.*;
 
 import static bookscrabble.client.view.MainWindowController.switchRoot;
@@ -256,7 +254,7 @@ public class GameWindowController implements Observer , Initializable {
                     final int row = indexRow;
                     final int col = indexCol;
                     Node removeNode = getNode(indexRow, indexCol);
-                    copyCords(draggedGroup,removeNode);
+                    copyInfo(draggedGroup,removeNode);
                     removeFromFather(draggedGroup , indexRow , indexCol);
                     letterUpdate = draggedGroup.getId();
                     rowUpdate = indexRow;
@@ -264,7 +262,7 @@ public class GameWindowController implements Observer , Initializable {
                     ImageView imageView = (ImageView) draggedGroup.getChildren().get(1);
                     //UpdateStringBoard(imageView.getId() , indexRow , indexCol);
                     String id[] = draggedGroup.getId().split(" ");
-                    tilePlacedTuple(id[1],indexRow,indexCol);
+                    tilePlacedTuple(id[0],indexRow,indexCol);
                     gridPane.add(draggedGroup,row,col);
                     stop = true;
                 }
@@ -292,7 +290,7 @@ public class GameWindowController implements Observer , Initializable {
         }
     }
 
-    private void copyCords(Group destination, Node source) // Copy the cords from the removed rectangle the dropped group.
+    private void copyInfo(Group destination, Node source) // Copy the cords from the removed rectangle the dropped group.
     {
         destination.setTranslateX(source.getTranslateX());
         destination.setTranslateY(source.getTranslateY());
