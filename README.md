@@ -6,7 +6,7 @@ Please do not touch the master branch!
 
 
 Project Overview:
-The goal of this project is to develop a Book Scrabble game with a client-server architecture and Socket communications. The game allows players to search for words in a dictionary and challenge the existence of words in books. It incorporates caching mechanisms to optimize word queries and utilizes a Bloom filter for efficient word existence checks. The project includes both server-side and client-side implementations.
+The goal of this project is to develop a Book Scrabble game with a MVVM architecture and Socket communications. The game allows players to search for words in a dictionary and challenge the existence of words in books. It incorporates caching mechanisms to optimize word queries and utilizes a Bloom filter for efficient word existence checks. The project includes both server-side and client-side implementations.
 
 Server-side Implementation:
 The server-side implementation consists of several components:
