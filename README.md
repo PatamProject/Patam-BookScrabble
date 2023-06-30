@@ -5,6 +5,8 @@ Please do not touch the master branch!
 ![image](https://github.com/PatamProject/Patam-BookScrabble/assets/106737885/b0bd65fe-8ea8-45a3-bcee-91ebd95b6a2c)
 
 
+Video URL : https://youtu.be/pEO7jt0Quzs
+
 Project Overview:
 The project aims to develop a Book Scrabble game with a client-server architecture and Sockets communications. The game allows players to search for words in a dictionary and challenge the existence of words in books. It incorporates caching mechanisms to optimize word queries and utilizes a Bloom filter for efficient word existence checks. The project includes both server-side and client-side implementations. 
 
