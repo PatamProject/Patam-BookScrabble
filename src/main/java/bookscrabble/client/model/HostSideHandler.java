@@ -136,6 +136,7 @@ public class HostSideHandler implements RequestHandler{
             {
                 try { //Take tiles from bag
                     game.getPlayer(args[0]).getRack().takeTilesFromBag();
+                    game.getPlayer(args[0]).addScore(score);
                     String currentTiles = game.getPlayer(args[0]).getRack().toString(); //The current tiles of the player
                     game.nextTurn(); //next player's turn
                     out.println(commandName+":"+score + "," + currentTiles); //Send score and tiles to client
