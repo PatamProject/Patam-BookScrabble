@@ -171,6 +171,7 @@ public class GameWindowController implements Observer , Initializable {
                     imageView = new ImageView(image);
                     group = new Group(rectangle,imageView);
                     stackPane.getChildren().add(group);
+                    group.onMouseClickedProperty().set(event -> onMouseClicked(event));
                 }
                 else //Stackpane is not empty
                 {
