@@ -201,6 +201,7 @@ public class ViewModel extends Observable implements Observer {
                 sb.append(tmpBoard[i].charAt(tmpCol));
             }
             word = sb.toString();
+            tmpRow = startIndex;
         }
         else //(row is the same for all)
         {
@@ -230,6 +231,7 @@ public class ViewModel extends Observable implements Observer {
                 }    
             }
             word = tmpBoard[tmpRow].substring(startIndex, endIndex + 1); //Build the word
+            tmpCol = startIndex;
         }
         String QorC = isChallange ? "C" : "Q";
         lastWord = word;
