@@ -201,11 +201,15 @@ public class ViewModel extends Observable implements Observer {
             for (int i = startIndex; i <= endIndex; i++) {
                 sb.append(tmpBoard[i].charAt(tmpCol));
             }
-            word = sb.toString();
-            tmpRow = startIndex;
-            //The word was found so we dont allow the next if statement to run
-            isVertical = true;
-            isOneTile = false; 
+
+            if(sb.length() >= 2 || sb.toString().equals("I") || sb.toString().equals("A"))
+            {
+                word = sb.toString();
+                tmpRow = startIndex;
+                //The word was found so we dont allow the next if statement to run
+                isVertical = true;
+                isOneTile = false; 
+            }
         }
 
         if(!isVertical || isOneTile) //(row is the same for all)

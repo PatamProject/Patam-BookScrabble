@@ -155,6 +155,9 @@ public class GameWindowController implements Observer , Initializable {
                         }
                 });
             });
+
+            if(vm.currentPlayerName.get().equals(vm.myName.get()))
+                vm.lobbyMessage.set("It's your turn to play!\n");
         }
 
         if (path.endsWith("EndGame.fxml")) {
