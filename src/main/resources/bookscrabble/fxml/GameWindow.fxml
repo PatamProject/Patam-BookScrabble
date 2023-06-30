@@ -397,7 +397,7 @@
    <left>
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="426.0" prefWidth="190.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="textBox" editable="false" layoutY="114.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="190.0" />
+            <TextArea fx:id="textArea" editable="false" layoutY="114.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="190.0" />
             <Text fill="WHITE" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font: Berlin Sans FB;" text="Messages:" wrappingWidth="83.99999999999989">
                <font>
                   <Font size="18.0" />

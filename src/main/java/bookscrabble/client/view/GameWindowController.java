@@ -59,8 +59,6 @@ public class GameWindowController implements Observer , Initializable {
     private Group chosenGroup = null;
     private MapProperty<String, Integer> myPlayersAndScores = new SimpleMapProperty<>();
     private Map<Group,Tuple<String,Integer,Integer>> tilesBuffer = new HashMap<>();
-    private List<String> nameList;
-    private List<Integer> scoreList;
 
     @Override
     public void update(Observable o, Object arg) {} // Empty update method
@@ -216,9 +214,8 @@ public class GameWindowController implements Observer , Initializable {
             int col = GridPane.getColumnIndex(rectangle);
 
             chosenGroup.setManaged(false);
-            Group toRemove = chosenGroup;
             copyCords(chosenGroup,rectangle);
-            removeImageFromRack(toRemove);
+            getImageFromRack(chosenGroup);
             gridPane.add(chosenGroup,row,col);
             dropOnBoard.add(chosenGroup);
             String id[] = chosenGroup.getId().split(" ");
@@ -226,13 +223,14 @@ public class GameWindowController implements Observer , Initializable {
         }
     }
 
-    private void removeImageFromRack(Group draggedGroup)
+    private void getImageFromRack(final Group draggedGroup)
     {
         for (int i = 0; i < 7; i++) {
             StackPane stackPane = (StackPane) myRack.getChildren().get(i);
             if (!stackPane.getChildren().isEmpty()) {
                 if (stackPane.getChildren().get(0).equals(draggedGroup)) {
-                    draggedGroup.getChildren().remove(1); //Remove the image from the group
+                    Group tmp = (Group) stackPane.getChildren().get(0); 
+                    tmp.getChildren().remove(1);
                     break;
                 }
             }
