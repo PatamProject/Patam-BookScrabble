@@ -72,16 +72,15 @@ public class ClientModel extends Observable{
         
         if(isGameRunning)
         {
+            isGameRunning = false;
+            if(isConnectedToHost != true)
+                return;
+    
+            isConnectedToHost = false;
+            clear();
             setChanged();
             notifyObservers("endGame");
-            isGameRunning = false;
         }    
-        isGameRunning = false;
-        if(isConnectedToHost != true)
-            return;
-
-        isConnectedToHost = false;
-        clear();
     }
     
     public synchronized void close() //Close method for ClientModel
