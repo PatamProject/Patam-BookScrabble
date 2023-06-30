@@ -294,15 +294,6 @@ public class GameWindowController implements Observer , Initializable {
                 if (nodeColumnIndex != null && nodeRowIndex != null && nodeColumnIndex == columnIndex && nodeRowIndex == rowIndex)
                     return node;
             }
-            else if (node instanceof StackPane)
-            {
-                StackPane stackPane = (StackPane) node;
-                Node nodeRec = stackPane.getChildren().get(0);
-                Integer nodeColumnIndex = GridPane.getColumnIndex(nodeRec);
-                Integer nodeRowIndex = GridPane.getRowIndex(nodeRec);
-                if (nodeColumnIndex != null && nodeRowIndex != null && nodeColumnIndex == columnIndex && nodeRowIndex == rowIndex)
-                    return stackPane;
-            }
         }
         return null;
     }

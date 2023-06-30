@@ -145,6 +145,7 @@ public class ViewModel extends Observable implements Observer {
         String[] tmpBoard = board.get().split("&");
         int tmpRow = BOARD_SIZE, tmpCol = BOARD_SIZE; //Used to find the actual row, col of the word
         boolean isVertical = false;
+        boolean isOneTile = tiles.size() == 1;
         for (Tuple<String, Integer, Integer> tile : tiles) { //We want to find the first tile placed (minimum row & col). All tiles are in the same row or col
             if(tmpBoard[tile.getSecond()].charAt(tile.getThird()) != '-')
                 return false; //If the tile is already occupied
@@ -166,9 +167,9 @@ public class ViewModel extends Observable implements Observer {
                 isVertical = true;
         }
         
-        String word;
+        String word = null;
         int startIndex = 0, endIndex = BOARD_SIZE - 1;
-        if(isVertical) //(col is the same for all)
+        if(isVertical || isOneTile) //(col is the same for all)
         {
             for (int i = tmpRow; i >= 0 && i < BOARD_SIZE;i--) //We find the starting index of the word
             {
@@ -203,7 +204,8 @@ public class ViewModel extends Observable implements Observer {
             word = sb.toString();
             tmpRow = startIndex;
         }
-        else //(row is the same for all)
+
+        if(!isVertical || isOneTile) //(row is the same for all)
         {
             for (int i = tmpCol; i >= 0 && i < BOARD_SIZE;i--) //We find the starting index of the word
             {
