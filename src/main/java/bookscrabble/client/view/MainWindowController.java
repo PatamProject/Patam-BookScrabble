@@ -23,8 +23,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
-import bookscrabble.client.misc.MyLogger;
-import bookscrabble.client.viewModel.ViewModel;
 
 public class MainWindowController implements Observer, Initializable {
     static ViewModel vm;
@@ -46,11 +44,14 @@ public class MainWindowController implements Observer, Initializable {
     @Override
     public void update(Observable o, Object arg) 
     {
-        if(arg != null && arg.equals("endGame") && isDisabled == false)
+        if(arg != null && arg.equals("endGame"))
         {
             try {
                 Thread.sleep(1500); // Allow user to read message
-                switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
+                if(!isDisabled)
+                    switchRoot(vm.isHost.get() ? "HostMenu" : "GuestMenu");
+                else
+                    switchRoot("EndGame");    
             } catch (Exception e) {}
         }
     }
