@@ -245,7 +245,7 @@ public class GameWindowController implements Observer , Initializable {
                 return;
 
             Rectangle rectangle = (Rectangle) event.getSource();
-            if(rectangle.getId().equals("OnBoard")) //Used rectangle and should not be pressed
+            if(rectangle.getId() != null) //Used rectangle and should not be pressed
                 return;
 
             int row = GridPane.getRowIndex(rectangle);
