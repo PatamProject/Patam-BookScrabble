@@ -102,6 +102,7 @@ public class GameWindowController implements Observer , Initializable {
                 if(newValue != null)
                     Platform.runLater(() -> {
                         insertImage();
+                        tilesBuffer.clear();
                 });
             });
 
@@ -455,7 +456,6 @@ public class GameWindowController implements Observer , Initializable {
             alert.setContentText("The tiles you placed are invalid, please try again");
             alert.showAndWait();
         }
-        tilesBuffer.clear();
     }
 
     @FXML
