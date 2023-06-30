@@ -25,6 +25,7 @@ public class ViewModel extends Observable implements Observer {
     public StringProperty board, currentPlayerName, myTiles, gameErrorMessage;
     public StringProperty myScore;
     public MapProperty<String, Integer> playersAndScoresMap;
+    public StringProperty winner;
     //Client info
     public BooleanProperty isHost;
     public StringProperty myName, hostIP, BsIP, clientErrorMessage;
@@ -60,6 +61,7 @@ public class ViewModel extends Observable implements Observer {
         playersAndScoresMap = new SimpleMapProperty<>();
         isGameRunning = new SimpleBooleanProperty();
         lobbyMessage = new SimpleStringProperty();
+        winner = new SimpleStringProperty();
     }
 
     @Override
@@ -98,24 +100,26 @@ public class ViewModel extends Observable implements Observer {
                     lobbyMessage.set(gameModel.getPlayerUpdateMessage());
                     playersAndScoresMap.set(FXCollections.observableMap(gameModel.getPlayersAndScores()));
                 }
-                  
             }
         }
+
         if (o.equals(clientModel)) {
-            if(arg != null && arg.equals("endGame"))
-            {
-                isConnectedToHost.set(false);
-                clientErrorMessage.set("Game ended!");
-                lobbyMessage.set("Game ended!");
-                setChanged();
-                notifyObservers("endGame");
-            }
             isConnectedToHost.set(clientModel.isConnectedToHost);
             clientErrorMessage.set(clientModel.getErrorMessage());
         }
 
         if(arg != null && arg.equals("gameStarted"))
             isGameRunning.set(true); 
+
+        if(arg != null && arg.equals("endGame"))
+        {
+            isConnectedToHost.set(false);
+            clientErrorMessage.set("Game ended!");
+            lobbyMessage.set("Game ended!");
+            winner.set(gameModel.getWinner());
+            setChanged();
+            notifyObservers("endGame");
+        }    
     }
 
     //Updates from View -> Model//
@@ -252,6 +256,8 @@ public class ViewModel extends Observable implements Observer {
         return true;
     }
 
+    public String getWinner() {return gameModel.getWinner();}
+
     private void clear()
     {
         board.set("");
@@ -268,6 +274,7 @@ public class ViewModel extends Observable implements Observer {
         clientModel.disconnectedFromHost("endGame");
         gameModel.close();
     }
+
 
 /* 
     //Updates from View -> Model//

@@ -14,6 +14,7 @@ public class GameModel extends Observable {
     String board; //The game board as a string
     boolean isMyTurn;
     String lastErrorReceivedFromGame, playerUpdateMessage;
+    private String winner = "";
 
     public static GameModel getGameModel() { //Singleton
         if (myGameModel == null)
@@ -113,11 +114,18 @@ public class GameModel extends Observable {
         return lastErrorReceivedFromGame;
     }
 
-    public void setPlayerUpdateMessage(String message)
+    public void setPlayerUpdateMessage(String message, boolean isWinner)
     {
         playerUpdateMessage = message;
         setChanged();
-        notifyObservers("playerUpdateMessage");
+
+        if(isWinner)
+        {
+            winner = message;
+            notifyObservers("endGame");
+        }
+        else
+            notifyObservers("playerUpdateMessage");
     }
 
     //Getters
@@ -127,4 +135,5 @@ public class GameModel extends Observable {
     public String getCurrentPlayersName() {return playersOrder.peek();}
     public HashMap<String,Integer> getPlayersAndScores() {return playersAndScores;}
     public String getPlayerUpdateMessage() {return playerUpdateMessage;}
+    public String getWinner() {return winner;}  
 }

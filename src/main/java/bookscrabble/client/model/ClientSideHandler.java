@@ -104,7 +104,7 @@ public class ClientSideHandler implements RequestHandler{
             { //args[0] = new player
                 MyLogger.playerJoined(args[0]); //This function is for notification only
                 game.addPlayers(args[0]);
-                game.setPlayerUpdateMessage(args[0] + " joined the lobby!\n");
+                game.setPlayerUpdateMessage(args[0] + " joined the lobby!\n",false);
             });
     
             //A player left the game
@@ -112,7 +112,7 @@ public class ClientSideHandler implements RequestHandler{
             { //args[0] = leaving player
                 MyLogger.playerLeft(args[0]); //This function is for notification only
                 game.removePlayer(args[0]);
-                game.setPlayerUpdateMessage(args[0] + " left the lobby!\n");
+                game.setPlayerUpdateMessage(args[0] + " left the lobby!\n",false);
             });
 
             //Game started, tiles are sent to each player individually
@@ -138,7 +138,10 @@ public class ClientSideHandler implements RequestHandler{
                 if(isGameRunning == true)
                 {
                     MyLogger.gameEnded(args[0]);
-                    game.setPlayerUpdateMessage(args[0] + " won the game!\n");
+                    game.setPlayerUpdateMessage(args[0], true);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {}
                 }
                 isGameRunning = false;
                 try {
@@ -255,14 +258,14 @@ public class ClientSideHandler implements RequestHandler{
 
         if(ClientModel.getMyName().equals(args[0]))
         {
-            game.setPlayerUpdateMessage("You got " + Integer.parseInt(args[1]) + " points!\n");
+            game.setPlayerUpdateMessage("You got " + Integer.parseInt(args[1]) + " points!\n",false);
         }
         else
         {
             if(commandName.equals("C"))
-                game.setPlayerUpdateMessage("Player " + args[0] + " challenged a word placement and got " + Integer.parseInt(args[1]) + " points!\n");
+                game.setPlayerUpdateMessage("Player " + args[0] + " challenged a word placement and got " + Integer.parseInt(args[1]) + " points!\n",false);
             else
-                game.setPlayerUpdateMessage("Player " + args[0] + " placed a word and got " + Integer.parseInt(args[1]) + " points!\n");
+                game.setPlayerUpdateMessage("Player " + args[0] + " placed a word and got " + Integer.parseInt(args[1]) + " points!\n",false);
         }
         game.nextTurn(); //Next turn
     }

@@ -34,7 +34,7 @@ public class GameManager{
     
     private void initialRacks() throws Exception{ // Each player receives his initial rack
         for (String player : playersOrder)
-            players.get(player).getRack().takeTilesFromBag();
+            players.get(player).getRack().takeTilesFromBag();   
     }
 
     public void nextTurn() { // Switching turns and checks for conclusion of the game

@@ -70,8 +70,12 @@ public class ClientModel extends Observable{
         if(knownExeptions.contains(msg)) //Known exceptions
             lastMsgReceivedFromClient = msg;
         
-        setChanged();
-        notifyObservers("endGame");
+        if(isGameRunning)
+        {
+            setChanged();
+            notifyObservers("endGame");
+        }    
+        isGameRunning = false;
         if(isConnectedToHost != true)
             return;
 

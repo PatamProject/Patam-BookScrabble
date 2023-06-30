@@ -36,8 +36,6 @@ public class GameWindowController implements Observer , Initializable {
     static ViewModel vm;
     MainWindowController mwc;
     @FXML
-    public Text winnerText;
-    @FXML
     public Button skipTurn, done, challenge, Quit, mainMenu, exit;
     @FXML
     GridPane gridPane;
@@ -50,6 +48,8 @@ public class GameWindowController implements Observer , Initializable {
     @FXML
     TableView<PlayerAndScore> table;
     @FXML
+    Text winnerText;
+    @FXML
     TableColumn<PlayerAndScore, String> nameColumn;
     @FXML
     TableColumn<PlayerAndScore, Integer> scoreColumn;
@@ -60,9 +60,19 @@ public class GameWindowController implements Observer , Initializable {
     private MapProperty<String, Integer> myPlayersAndScores = new SimpleMapProperty<>();
     private Map<Group,Tuple<String,Integer,Integer>> tilesBuffer = new HashMap<>();
     public final String PICTURE_PATH = "/bookscrabble/pictures/tiles/", TILE_PNG = "tile.png";
+    private boolean quit = false;
 
     @Override
-    public void update(Observable o, Object arg) {} // Empty update method
+    public void update(Observable o, Object arg) {
+        if(arg != null && arg.equals("endGame"))
+        {
+            quit = true;
+            try {
+                Thread.sleep(1500); // Allow user to read message
+                switchRoot("EndGame");
+            } catch (Exception e) {}
+        }
+    } // Empty update method
 
     public void setViewModel(ViewModel vm) { //  Setter for the ViewModel
         if(vm != null)
@@ -86,7 +96,11 @@ public class GameWindowController implements Observer , Initializable {
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {}
-                            quitButtonClicked(new ActionEvent());
+                            if(!quit)
+                            {
+                                quit = true;
+                                quitButtonClicked(new ActionEvent());
+                            }
                         }
                 });
             });
@@ -94,6 +108,8 @@ public class GameWindowController implements Observer , Initializable {
             vm.board.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
                     Platform.runLater(() -> {
+                        if(quit)
+                            return;
                         displayUpdateBoard();
                 });
             });
@@ -101,6 +117,8 @@ public class GameWindowController implements Observer , Initializable {
             vm.myTiles.addListener((observable, oldValue, newValue) -> { //New tiles
                 if(newValue != null)
                     Platform.runLater(() -> {
+                        if(quit)
+                            return;
                         insertImage();
                         tilesBuffer.clear();
                 });
@@ -110,6 +128,8 @@ public class GameWindowController implements Observer , Initializable {
             vm.lobbyMessage.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null && newValue != oldValue)
                     Platform.runLater(() -> {
+                        if(quit)
+                            return;
                         textArea.appendText(vm.lobbyMessage.get());
                 });
             });
@@ -120,6 +140,8 @@ public class GameWindowController implements Observer , Initializable {
             vm.wasLastWordValid.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
                     Platform.runLater(() -> {
+                        if(quit)
+                            return;
                         if(!vm.wasLastWordValid.get())
                         {
                             alert.setContentText("The word you entered is not valid! You can challenge it if you want!");
@@ -133,6 +155,8 @@ public class GameWindowController implements Observer , Initializable {
             myPlayersAndScores.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
                     Platform.runLater(() -> {
+                        if(quit)
+                            return;
                         table.setItems(initialData());
                 });
             });
@@ -140,6 +164,8 @@ public class GameWindowController implements Observer , Initializable {
             vm.currentPlayerName.addListener((observable,oldValue,newValue) ->{
                 if(newValue != null)
                     Platform.runLater(() -> {
+                        if(quit)
+                            return;
                         if(newValue.equals(vm.myName.get()))
                         {
                             skipTurn.setDisable(false);
@@ -158,15 +184,17 @@ public class GameWindowController implements Observer , Initializable {
 
             if(vm.currentPlayerName.get().equals(vm.myName.get()))
                 vm.lobbyMessage.set("It's your turn to play!\n");
+
+            nameColumn.setCellValueFactory(new PropertyValueFactory<PlayerAndScore, String>("nameColumn"));
+            scoreColumn.setCellValueFactory(new PropertyValueFactory<PlayerAndScore, Integer>("scoreColumn"));
+            table.setItems(initialData());
         }
 
-        if (path.endsWith("EndGame.fxml")) {
-            winnerText.setText(vm.lobbyMessage.getValue());
+        if(path.endsWith("EndGame.fxml"))
+        {
+            quit = true;
+            winnerText.textProperty().set("The winner is: " + vm.getWinner());
         }
-
-        nameColumn.setCellValueFactory(new PropertyValueFactory<PlayerAndScore, String>("nameColumn"));
-        scoreColumn.setCellValueFactory(new PropertyValueFactory<PlayerAndScore, Integer>("scoreColumn"));
-        table.setItems(initialData());
     }
 
     private ObservableList<PlayerAndScore> initialData() {
@@ -439,11 +467,16 @@ public class GameWindowController implements Observer , Initializable {
 
     @FXML
     public void quitButtonClicked(ActionEvent event) { // Quits the game and showing final scores
-        if (vm.isHost.get())
-            vm.sendEndgameRequest();
-        else
-            vm.sendLeaveRequest();
-        switchRoot("EndGame");
+        if(!quit)
+        {
+            quit = true;
+            if (vm.isHost.get())
+                vm.sendEndgameRequest();
+            else
+                vm.sendLeaveRequest();
+ 
+            switchRoot("EndGame");    
+        }
     }
 
     @FXML
@@ -486,10 +519,14 @@ public class GameWindowController implements Observer , Initializable {
 
     @FXML
     public void mainMenuButtonClicked(ActionEvent event) { // Returns the user to the main menu
-        if (vm.isHost.get())
-               vm.sendEndgameRequest();
-           else
-               vm.sendLeaveRequest();
+        if(!quit)
+        {
+            if (vm.isHost.get())
+                   vm.sendEndgameRequest();
+               else
+                   vm.sendLeaveRequest();
+            quit = true;
+        }
         switchRoot("Main");
         mwc = MainApplication.getFxmlLoader().getController();
     }
