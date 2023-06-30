@@ -74,6 +74,7 @@ public class ClientModel extends Observable{
         {
             setChanged();
             notifyObservers("endGame");
+            isGameRunning = false;
         }    
         isGameRunning = false;
         if(isConnectedToHost != true)

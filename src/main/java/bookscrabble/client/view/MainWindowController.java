@@ -40,11 +40,13 @@ public class MainWindowController implements Observer, Initializable {
 
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
     public static volatile StringBuilder externalIP = new StringBuilder();
+    private boolean isDisabled = false;
+
     //private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
     @Override
     public void update(Observable o, Object arg) 
     {
-        if(arg != null && arg.equals("endGame"))
+        if(arg != null && arg.equals("endGame") && isDisabled == false)
         {
             try {
                 Thread.sleep(1500); // Allow user to read message
@@ -245,6 +247,7 @@ public class MainWindowController implements Observer, Initializable {
         gwc = MainApplication.getFxmlLoader().getController();
         //gwc.setViewModel(vm); //Happens when loading the fxml
         vm.addObserver(gwc);
+        isDisabled = true;
         vm.isGameRunning.set(true);
         gwc.insertImage(); //Inserts tiles to the rack for the first time
     }
