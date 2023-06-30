@@ -38,7 +38,7 @@ public class MainWindowController implements Observer, Initializable {
 
     public BooleanProperty isConnectedToGame = new SimpleBooleanProperty(false);
     public static volatile StringBuilder externalIP = new StringBuilder();
-    private boolean isDisabled = false;
+    private static volatile boolean isDisabled = false;
 
     //private static volatile AtomicBoolean isGameStarted = new AtomicBoolean(false);
     @Override
