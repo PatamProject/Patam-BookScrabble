@@ -252,6 +252,18 @@ public class ClientSideHandler implements RequestHandler{
     { //args[0] = player, args[1] = score
         game.playersAndScores.put(args[0], game.playersAndScores.getOrDefault(args[0], 0) + Integer.parseInt(args[1]));
         MyLogger.playerPlacedWord(args[0], Integer.parseInt(args[1]), commandName);
+
+        if(ClientModel.getMyName().equals(args[0]))
+        {
+            game.setPlayerUpdateMessage("You got " + Integer.parseInt(args[1]) + " points!");
+        }
+        else
+        {
+            if(commandName.equals("C"))
+                game.setPlayerUpdateMessage("Player " + args[0] + " challenged a word placement and got " + Integer.parseInt(args[1]) + " points!");
+            else
+                game.setPlayerUpdateMessage("Player " + args[0] + " placed a word and got " + Integer.parseInt(args[1]) + " points!");
+        }
         game.nextTurn(); //Next turn
     }
 

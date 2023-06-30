@@ -22,7 +22,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -110,7 +109,7 @@ public class GameWindowController implements Observer , Initializable {
             vm.lobbyMessage.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
                     Platform.runLater(() -> {
-                        textArea.appendText(vm.lobbyMessage.getValue());
+                        textArea.appendText(vm.lobbyMessage.get());
                 });
             });
 
@@ -120,7 +119,7 @@ public class GameWindowController implements Observer , Initializable {
             vm.wasLastWordValid.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
                     Platform.runLater(() -> {
-                        if(!vm.wasLastWordValid.getValue())
+                        if(!vm.wasLastWordValid.get())
                         {
                             alert.setContentText("The word you entered is not valid! You can challenge it if you want!");
                             alert.showAndWait();
@@ -437,6 +436,7 @@ public class GameWindowController implements Observer , Initializable {
             alert.setContentText("The tiles you placed are invalid, please try again");
             alert.showAndWait();
         }
+        tilesBuffer.clear();
     }
 
     @FXML
