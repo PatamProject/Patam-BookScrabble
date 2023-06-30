@@ -125,6 +125,15 @@ public class GameWindowController implements Observer , Initializable {
                             alert.setContentText("The word you entered is not valid! You can challenge it if you want!");
                             alert.showAndWait();
                         }
+                        else
+                            tilesBuffer.clear();
+                });
+            });
+
+            myPlayersAndScores.addListener((observable, oldValue, newValue) -> {
+                if(newValue != null)
+                    Platform.runLater(() -> {
+                        table.setItems(initialData());
                 });
             });
         }
