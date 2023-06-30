@@ -158,29 +158,26 @@ public class GameWindowController implements Observer , Initializable {
                 String imagePath = "/bookscrabble/pictures/tiles/"+ imageTile;
                 Image image = new Image(getClass().getResourceAsStream(imagePath));
                 StackPane stackPane = (StackPane) myRack.getChildren().get(i);
+                //Tile components
+                Group group;
+                Rectangle rectangle;
+                ImageView imageView;
                 if(stackPane.getChildren().size() == 0) //if the stackPane is empty
                 {
-                    Rectangle rectangle = new Rectangle(SQUARE_SIZE_1, SQUARE_SIZE_2);
-                    ImageView imageView = new ImageView(image);
-                    Group group = new Group(rectangle,imageView);
+                    rectangle = new Rectangle(SQUARE_SIZE_1, SQUARE_SIZE_2);
+                    imageView = new ImageView(image);
+                    group = new Group(rectangle,imageView);
                     stackPane.getChildren().add(group);
-                    imageView.setId(tileArr[i]);
-                    group.setId(tileArr[i] +" "+Integer.toString(i)); //ID = "letter index on rack" (L 4)
-                    continue;
                 }
-                //Stackpane is not empty
-                Group group = (Group) stackPane.getChildren().get(0);
-                Rectangle rectangle = (Rectangle) group.getChildren().get(0);
-                ImageView imageView = (ImageView) group.getChildren().get(1);
+                else //Stackpane is not empty
+                {
+                    group = (Group) stackPane.getChildren().get(0);
+                    rectangle = (Rectangle) group.getChildren().get(0);
+                    imageView = (ImageView) group.getChildren().get(1);
+                }
 
                 imageView.setImage(image);
-                imageView.setPreserveRatio(true);
-
-                double rectWidth = rectangle.getBoundsInLocal().getWidth();
-                double rectHeight = rectangle.getBoundsInLocal().getHeight();
-
-                imageView.setFitWidth(rectWidth);
-                imageView.setFitHeight(rectHeight);
+                resizeImage(imageView, rectangle);
 
                 imageView.setId(tileArr[i]);
                 group.setId(tileArr[i] +" "+Integer.toString(i)); //ID = "letter index on rack" (L 4)
@@ -190,14 +187,25 @@ public class GameWindowController implements Observer , Initializable {
         }
     }
 
+    private void resizeImage(ImageView imageView, Rectangle rectangle)
+    {
+        imageView.setPreserveRatio(true);
+
+        double rectWidth = rectangle.getBoundsInLocal().getWidth();
+        double rectHeight = rectangle.getBoundsInLocal().getHeight();
+
+        imageView.setFitWidth(rectWidth);
+        imageView.setFitHeight(rectHeight);
+    }
+
     public void displayUpdateBoard()
     {
         for(int row=0;row<MAX_BOARD_SIZE;row++)
         {
-            char line[] = getBoard()[row].toCharArray();
+            char[] line = getBoard()[row].toCharArray();
             for(int col=0;col<MAX_BOARD_SIZE;col++)
             {
-                if(!Character.toString(line[col]).equals("-"))
+                if((line[col]) != '-') //A new tile is placed
                 {
                     putTileOnBoard(Character.toString(line[col]),row,col);
                 }
@@ -207,9 +215,15 @@ public class GameWindowController implements Observer , Initializable {
 
     public void onMouseClicked(MouseEvent event) // Runs when the mouse is pressed, saves which group the mouse clicked on, and saves the X Y position of the click
     {
+        if(!isMyTurn()) //If it's not my turn
+            return;
+
         if(event.getSource() instanceof Group) //If a tile is clicked
         {
             Group clickedNode = (Group) event.getSource();
+            if(clickedNode.getId().equals("OnBoard")) //A tile that was already placed before my turn
+                return;
+
             if(clickedNode.getParent() instanceof StackPane) //If the tile is on the rack
             {
                chosenGroup = clickedNode;
@@ -292,12 +306,11 @@ public class GameWindowController implements Observer , Initializable {
             Rectangle rectangle = (Rectangle) getNode(row,col);
             String imageTile = letter.concat("tile.png");
             String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
-            Image image = new Image(imagePath);
-            ImagePattern imagePattern = new ImagePattern(image);
-            if (rectangle != null) {
-                rectangle.setFill(imagePattern);
-                rectangle.setId("UnRemovable");
-            }
+            ImageView imageView = new ImageView(new Image(imagePath));
+            Group group = new Group(rectangle,imageView);
+            group.setId("OnBoard"); 
+            gridPane.add(group,row,col);
+            resizeImage(imageView, rectangle);
         } catch (Exception e) {
             MyLogger.logError("Error with putTileOnBoard(): " + e.getMessage());
         }
