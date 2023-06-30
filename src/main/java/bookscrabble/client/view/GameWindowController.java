@@ -294,14 +294,24 @@ public class GameWindowController implements Observer , Initializable {
                 if (nodeColumnIndex != null && nodeRowIndex != null && nodeColumnIndex == columnIndex && nodeRowIndex == rowIndex)
                     return node;
             }
+            else if(node instanceof Group) {
+                Integer nodeColumnIndex = GridPane.getColumnIndex(node);
+                Integer nodeRowIndex = GridPane.getRowIndex(node);
+                if (nodeColumnIndex != null && nodeRowIndex != null && nodeColumnIndex == columnIndex && nodeRowIndex == rowIndex)
+                    return node;
+            }
         }
-        return null;
+        return null; //ERROR
     }
 
     private void putTileOnBoard(String letter, int row, int col)
     {
         try {
-            Rectangle rectangle = (Rectangle) getNode(row,col);
+            Node node = getNode(row,col);
+            if(node instanceof Group) //If there is a tile on the board (not empty
+                return;
+
+            Rectangle rectangle = (Rectangle) node;
             gridPane.getChildren().remove(rectangle);
             rectangle.setVisible(false);
             rectangle.toBack();
