@@ -135,6 +135,25 @@ public class GameWindowController implements Observer , Initializable {
                         table.setItems(initialData());
                 });
             });
+
+            vm.currentPlayerName.addListener((observable,oldValue,newValue) ->{
+                if(newValue != null)
+                    Platform.runLater(() -> {
+                        if(newValue.equals(vm.myName.get()))
+                        {
+                            skipTurn.setDisable(false);
+                            done.setDisable(false);
+                            challenge.setDisable(false);
+                            vm.lobbyMessage.set("It's your turn to play!\n");
+                        }
+                        else
+                        {
+                            skipTurn.setDisable(true);
+                            done.setDisable(true);
+                            challenge.setDisable(true);
+                        }
+                });
+            });
         }
 
         if (path.endsWith("EndGame.fxml")) {

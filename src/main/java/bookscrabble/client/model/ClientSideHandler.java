@@ -255,14 +255,14 @@ public class ClientSideHandler implements RequestHandler{
 
         if(ClientModel.getMyName().equals(args[0]))
         {
-            game.setPlayerUpdateMessage("You got " + Integer.parseInt(args[1]) + " points!");
+            game.setPlayerUpdateMessage("You got " + Integer.parseInt(args[1]) + " points!\n");
         }
         else
         {
             if(commandName.equals("C"))
-                game.setPlayerUpdateMessage("Player " + args[0] + " challenged a word placement and got " + Integer.parseInt(args[1]) + " points!");
+                game.setPlayerUpdateMessage("Player " + args[0] + " challenged a word placement and got " + Integer.parseInt(args[1]) + " points!\n");
             else
-                game.setPlayerUpdateMessage("Player " + args[0] + " placed a word and got " + Integer.parseInt(args[1]) + " points!");
+                game.setPlayerUpdateMessage("Player " + args[0] + " placed a word and got " + Integer.parseInt(args[1]) + " points!\n");
         }
         game.nextTurn(); //Next turn
     }

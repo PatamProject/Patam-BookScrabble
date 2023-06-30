@@ -71,13 +71,13 @@ public class ViewModel extends Observable implements Observer {
                 if(wordPlacement[1].equals("true"))
                 {
                     wasLastWordValid.set(true);
-                    lobbyMessage.set("Word placement is legal! Score updated!");
+                    lobbyMessage.set("Word placement is legal!\n");
                     wasLastWordValid.set(true);
                 }
                 else if(wordPlacement[1].equals("false"))
                 {
                     wasLastWordValid.set(false);
-                    lobbyMessage.set("Word is illegal or placement is not legal!");
+                    lobbyMessage.set("Word is illegal or placement is not legal!\n");
                     wasLastWordValid.set(false);
                 }
                 else
