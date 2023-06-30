@@ -108,14 +108,14 @@ public class GameWindowController implements Observer , Initializable {
 
             textArea.textProperty().set("The game has started!\n");
             vm.lobbyMessage.addListener((observable, oldValue, newValue) -> {
-                if(newValue != null)
+                if(newValue != null && newValue != oldValue)
                     Platform.runLater(() -> {
                         textArea.appendText(vm.lobbyMessage.get());
                 });
             });
 
             for (String player : vm.playersAndScoresMap.keySet())
-                vm.lobbyMessage.set(player + " has joined the game!\n");
+                textArea.appendText(player + " has joined the game!\n");
 
             vm.wasLastWordValid.addListener((observable, oldValue, newValue) -> {
                 if(newValue != null)
