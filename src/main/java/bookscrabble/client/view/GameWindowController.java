@@ -32,7 +32,7 @@ import java.util.*;
 import static bookscrabble.client.view.MainWindowController.switchRoot;
 
 public class GameWindowController implements Observer , Initializable {
-    public static final int MAX_BOARD_SIZE = 15, MAX_TILE_SIZE = 7, GRID_SIZE = 15, SQUARE_SIZE = 55;
+    public static final int MAX_BOARD_SIZE = 15, MAX_TILE_SIZE = 7, GRID_SIZE = 15, SQUARE_SIZE_1 = 37, SQUARE_SIZE_2 = 30;
     static ViewModel vm;
     MainWindowController mwc;
     @FXML
@@ -158,6 +158,17 @@ public class GameWindowController implements Observer , Initializable {
                 String imagePath = "/bookscrabble/pictures/tiles/"+ imageTile;
                 Image image = new Image(getClass().getResourceAsStream(imagePath));
                 StackPane stackPane = (StackPane) myRack.getChildren().get(i);
+                if(stackPane.getChildren().size() == 0) //if the stackPane is empty
+                {
+                    Rectangle rectangle = new Rectangle(SQUARE_SIZE_1, SQUARE_SIZE_2);
+                    ImageView imageView = new ImageView(image);
+                    Group group = new Group(rectangle,imageView);
+                    stackPane.getChildren().add(group);
+                    imageView.setId(tileArr[i]);
+                    group.setId(tileArr[i] +" "+Integer.toString(i)); //ID = "letter index on rack" (L 4)
+                    continue;
+                }
+                //Stackpane is not empty
                 Group group = (Group) stackPane.getChildren().get(0);
                 Rectangle rectangle = (Rectangle) group.getChildren().get(0);
                 ImageView imageView = (ImageView) group.getChildren().get(1);
@@ -172,7 +183,7 @@ public class GameWindowController implements Observer , Initializable {
                 imageView.setFitHeight(rectHeight);
 
                 imageView.setId(tileArr[i]);
-                group.setId(tileArr[i] +" "+Integer.toString(i));
+                group.setId(tileArr[i] +" "+Integer.toString(i)); //ID = "letter index on rack" (L 4)
             } catch (Exception e) {
                 MyLogger.logError("Error with insertImage(): " + e.getMessage());
             }
@@ -199,10 +210,17 @@ public class GameWindowController implements Observer , Initializable {
         if(event.getSource() instanceof Group) //If a tile is clicked
         {
             Group clickedNode = (Group) event.getSource();
-            if(!dropOnBoard.contains(clickedNode)) //Checks if the tile is on the board or not
-                chosenGroup = clickedNode;
-            else //Return tile from board to myRack 
-                clearMyTilesFromBoard(clickedNode,false);
+            if(clickedNode.getParent() instanceof StackPane) //If the tile is on the rack
+            {
+               chosenGroup = clickedNode;
+            }
+            else //Tile is on the board (now we check that the tile is mine)
+            {
+                if(dropOnBoard.contains(clickedNode)) //The tile is mine
+                    clearMyTilesFromBoard(clickedNode,false);
+                else //The tile is not mine   
+                    return;
+            }
         }
         else if(event.getSource() instanceof Rectangle) //If a rectangle on the board is clicked
         {
@@ -215,7 +233,7 @@ public class GameWindowController implements Observer , Initializable {
 
             chosenGroup.setManaged(false);
             copyCords(chosenGroup,rectangle);
-            replaceGroup(chosenGroup);
+            removeGroup(chosenGroup);
             gridPane.add(chosenGroup,row,col);
             dropOnBoard.add(chosenGroup);
             String id[] = chosenGroup.getId().split(" ");
@@ -224,14 +242,13 @@ public class GameWindowController implements Observer , Initializable {
         }
     }
 
-    private void replaceGroup(final Group group)
+    private void removeGroup(final Group group)
     {
         for (int i = 0; i < 7; i++) {
             StackPane stackPane = (StackPane) myRack.getChildren().get(i);
             if (!stackPane.getChildren().isEmpty()) {
                 if (stackPane.getChildren().get(0).equals(group)) { 
                     stackPane.getChildren().remove(group);
-                    stackPane.getChildren().add(new Group(new Rectangle(37, 30), new ImageView()));
                     break;
                 }
             }
@@ -306,6 +323,7 @@ public class GameWindowController implements Observer , Initializable {
             stackPane.getChildren().add(tile);
             tile.setManaged(true);
             tilesBuffer.remove(tile);
+            dropOnBoard.remove(tile);
         }
         else //Used to clear all the tiles from the board
         {
