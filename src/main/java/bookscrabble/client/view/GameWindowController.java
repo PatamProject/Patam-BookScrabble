@@ -21,6 +21,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -166,6 +167,7 @@ public class GameWindowController implements Observer , Initializable {
                 if(stackPane.getChildren().size() == 0) //if the stackPane is empty
                 {
                     rectangle = new Rectangle(SQUARE_SIZE_1, SQUARE_SIZE_2);
+                    rectangle.setFill(Color.DODGERBLUE);
                     imageView = new ImageView(image);
                     group = new Group(rectangle,imageView);
                     stackPane.getChildren().add(group);
@@ -305,13 +307,17 @@ public class GameWindowController implements Observer , Initializable {
     {
         try {
             Rectangle rectangle = (Rectangle) getNode(row,col);
+            rectangle.setFill(Color.DODGERBLUE);
             String imageTile = letter.concat(TILE_PNG);
             String imagePath = PICTURE_PATH + imageTile;
             Image image = new Image(getClass().getResourceAsStream(imagePath));
             ImageView imageView = new ImageView(image);
             Group group = new Group(rectangle,imageView);
             group.setId("OnBoard"); 
+            copyCords(group, rectangle);
+            gridPane.getChildren().remove(rectangle);
             gridPane.add(group,row,col);
+            group.setManaged(false);
             resizeImage(imageView, rectangle);
         } catch (Exception e) {
             MyLogger.logError("Error with putTileOnBoard(): " + e.getMessage());
