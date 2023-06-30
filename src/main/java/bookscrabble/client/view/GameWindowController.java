@@ -245,6 +245,9 @@ public class GameWindowController implements Observer , Initializable {
                 return;
 
             Rectangle rectangle = (Rectangle) event.getSource();
+            if(rectangle.getId().equals("OnBoard")) //Used rectangle and should not be pressed
+                return;
+
             int row = GridPane.getRowIndex(rectangle);
             int col = GridPane.getColumnIndex(rectangle);
 
@@ -307,17 +310,21 @@ public class GameWindowController implements Observer , Initializable {
     {
         try {
             Rectangle rectangle = (Rectangle) getNode(row,col);
-            rectangle.setFill(Color.DODGERBLUE);
+            gridPane.getChildren().remove(rectangle);
+            rectangle.setVisible(false);
+            rectangle.toBack();
+            rectangle.setId("OnBoard");
             String imageTile = letter.concat(TILE_PNG);
             String imagePath = PICTURE_PATH + imageTile;
             Image image = new Image(getClass().getResourceAsStream(imagePath));
             ImageView imageView = new ImageView(image);
-            Group group = new Group(rectangle,imageView);
+            Rectangle newRectangle = new Rectangle(SQUARE_SIZE_1,SQUARE_SIZE_2);
+            newRectangle.setFill(Color.DODGERBLUE);
+            Group group = new Group(newRectangle,imageView);
+            group.setManaged(false);
             group.setId("OnBoard"); 
             copyCords(group, rectangle);
-            gridPane.getChildren().remove(rectangle);
             gridPane.add(group,row,col);
-            group.setManaged(false);
             resizeImage(imageView, rectangle);
         } catch (Exception e) {
             MyLogger.logError("Error with putTileOnBoard(): " + e.getMessage());

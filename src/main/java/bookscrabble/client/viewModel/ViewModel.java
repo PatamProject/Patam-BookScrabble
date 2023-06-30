@@ -86,7 +86,7 @@ public class ViewModel extends Observable implements Observer {
             }
             else 
             {
-                
+
                 board.set(gameModel.getBoard());
                 currentPlayerName.set(gameModel.getCurrentPlayersName());
                 myTiles.set(gameModel.getMyTiles());
@@ -94,7 +94,10 @@ public class ViewModel extends Observable implements Observer {
                 myScore.set(gameModel.getMyScore().toString());
                 gameErrorMessage.set(gameModel.getErrorMessage());
                 if(arg != null && arg.equals("playerUpdateMessage"))
+                {
                     lobbyMessage.set(gameModel.getPlayerUpdateMessage());
+                    playersAndScoresMap.set(FXCollections.observableMap(gameModel.getPlayersAndScores()));
+                }
                   
             }
         }
