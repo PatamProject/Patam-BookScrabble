@@ -215,22 +215,23 @@ public class GameWindowController implements Observer , Initializable {
 
             chosenGroup.setManaged(false);
             copyCords(chosenGroup,rectangle);
-            getImageFromRack(chosenGroup);
+            replaceGroup(chosenGroup);
             gridPane.add(chosenGroup,row,col);
             dropOnBoard.add(chosenGroup);
             String id[] = chosenGroup.getId().split(" ");
             tilePlaced(id[0],row,col);
+            chosenGroup = null;
         }
     }
 
-    private void getImageFromRack(final Group draggedGroup)
+    private void replaceGroup(final Group group)
     {
         for (int i = 0; i < 7; i++) {
             StackPane stackPane = (StackPane) myRack.getChildren().get(i);
             if (!stackPane.getChildren().isEmpty()) {
-                if (stackPane.getChildren().get(0).equals(draggedGroup)) {
-                    Group tmp = (Group) stackPane.getChildren().get(0); 
-                    tmp.getChildren().remove(1);
+                if (stackPane.getChildren().get(0).equals(group)) { 
+                    stackPane.getChildren().remove(group);
+                    stackPane.getChildren().add(new Group(new Rectangle(37, 30), new ImageView()));
                     break;
                 }
             }
