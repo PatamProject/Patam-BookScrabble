@@ -36,6 +36,8 @@ public class MainApplication extends Application { //Used to run the game in a G
         stage.setTitle("SCRABBLE GAME");
         stage.setScene(scene);
         stage.setResizable(true);
+        stage.setMinWidth(1200);
+        stage.setMinHeight(800);
         stage.setOnCloseRequest(event -> {
             Platform.exit();
             System.exit(0);

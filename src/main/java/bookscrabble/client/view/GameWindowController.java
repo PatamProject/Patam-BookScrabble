@@ -59,6 +59,7 @@ public class GameWindowController implements Observer , Initializable {
     private Group chosenGroup = null;
     private MapProperty<String, Integer> myPlayersAndScores = new SimpleMapProperty<>();
     private Map<Group,Tuple<String,Integer,Integer>> tilesBuffer = new HashMap<>();
+    public final String PICTURE_PATH = "/bookscrabble/pictures/tiles/", TILE_PNG = "tile.png";
 
     @Override
     public void update(Observable o, Object arg) {} // Empty update method
@@ -154,8 +155,8 @@ public class GameWindowController implements Observer , Initializable {
         for(int i=0;i<MAX_TILE_SIZE;i++)
         {
             try {
-                String imageTile = tileArr[i].concat("tile.png");
-                String imagePath = "/bookscrabble/pictures/tiles/"+ imageTile;
+                String imageTile = tileArr[i].concat(TILE_PNG);
+                String imagePath = PICTURE_PATH + imageTile;
                 Image image = new Image(getClass().getResourceAsStream(imagePath));
                 StackPane stackPane = (StackPane) myRack.getChildren().get(i);
                 //Tile components
@@ -304,8 +305,8 @@ public class GameWindowController implements Observer , Initializable {
     {
         try {
             Rectangle rectangle = (Rectangle) getNode(row,col);
-            String imageTile = letter.concat("tile.png");
-            String imagePath = "bookscrabble/resources/ImageTile/"+ imageTile;
+            String imageTile = letter.concat(TILE_PNG);
+            String imagePath = PICTURE_PATH + imageTile;
             ImageView imageView = new ImageView(new Image(imagePath));
             Group group = new Group(rectangle,imageView);
             group.setId("OnBoard"); 

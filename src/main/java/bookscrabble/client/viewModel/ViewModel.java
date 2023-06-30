@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 
+import bookscrabble.client.misc.MyLogger;
 import bookscrabble.client.model.ClientCommunications;
 import bookscrabble.client.model.ClientModel;
 import bookscrabble.client.model.GameModel;
@@ -64,21 +65,28 @@ public class ViewModel extends Observable implements Observer {
     @Override
     public void update(Observable o, Object arg) { //Receiving updates from the class observables
         if (o.equals(gameModel)) {
-            if(arg != null && arg.equals("isLegal")) //failedWordPlacement
+            if(arg != null && arg instanceof String[]) //WordPlacement
             {
-                wasLastWordValid.set(false);
-                lobbyMessage.set("Word placement is not legal!");
-                wasLastWordValid.set(false);
-            }
-            else // True / null
-            {
-                if(arg != null && arg.equals("isLegal")) //successfulWordPlacement
+                String[] wordPlacement = (String[]) arg;
+                if(wordPlacement[1].equals("true"))
                 {
                     wasLastWordValid.set(true);
                     lobbyMessage.set("Word placement is legal! Score updated!");
                     wasLastWordValid.set(true);
                 }
-
+                else if(wordPlacement[1].equals("false"))
+                {
+                    wasLastWordValid.set(false);
+                    lobbyMessage.set("Word is illegal or placement is not legal!");
+                    wasLastWordValid.set(false);
+                }
+                else
+                    MyLogger.logError("Error with wordPlacement in viewModel");
+                
+            }
+            else 
+            {
+                
                 board.set(gameModel.getBoard());
                 currentPlayerName.set(gameModel.getCurrentPlayersName());
                 myTiles.set(gameModel.getMyTiles());

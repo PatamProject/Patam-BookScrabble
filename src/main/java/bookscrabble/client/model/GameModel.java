@@ -54,8 +54,6 @@ public class GameModel extends Observable {
         int oldScore = playersAndScores.get(player);
         playersAndScores.remove(player);
         playersAndScores.put(player, oldScore + score);
-        setChanged();
-        notifyObservers();
     }
 
     public boolean isStringLegal(char[] word) //We check for allowed chars only
@@ -73,6 +71,8 @@ public class GameModel extends Observable {
             return false;
         playersOrder.add(prevPlayer);
         MyLogger.nextPlayer(playersOrder.peek());
+        setChanged();
+        notifyObservers();
         return isItMyTurn();
     }
 
@@ -97,8 +97,9 @@ public class GameModel extends Observable {
 
     public void wordPlacement(boolean isLegal) //Notifies observers if a placement of a word is successful
     {
+        String res = isLegal ? "true" : "false";
         setChanged();
-        notifyObservers("isLegal");
+        notifyObservers(new String[]{"isLegal",res});
     }
 
     public void setErrorMessage(String error)
