@@ -369,8 +369,12 @@ public class GameWindowController implements Observer , Initializable {
                 tilesBuffer.remove(group);
             }
         }
+
         if(deleteAll)
+        {
             dropOnBoard.clear();
+            tilesBuffer.clear();
+        }
     }
 
     private boolean AreTileInTheSameRowCol()
