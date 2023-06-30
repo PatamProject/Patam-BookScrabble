@@ -307,7 +307,8 @@ public class GameWindowController implements Observer , Initializable {
             Rectangle rectangle = (Rectangle) getNode(row,col);
             String imageTile = letter.concat(TILE_PNG);
             String imagePath = PICTURE_PATH + imageTile;
-            ImageView imageView = new ImageView(new Image(imagePath));
+            Image image = new Image(getClass().getResourceAsStream(imagePath));
+            ImageView imageView = new ImageView(image);
             Group group = new Group(rectangle,imageView);
             group.setId("OnBoard"); 
             gridPane.add(group,row,col);
