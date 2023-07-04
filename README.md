@@ -4,6 +4,13 @@ Please do not touch the master branch!
 
 ![image](https://github.com/PatamProject/Patam-BookScrabble/assets/106737885/b0bd65fe-8ea8-45a3-bcee-91ebd95b6a2c)
 
+GANTT: 
+![image](https://github.com/PatamProject/Patam-BookScrabble/assets/130273989/c75968b8-209e-47a8-b314-e1bfdac6ff32)
+![image](https://github.com/PatamProject/Patam-BookScrabble/assets/130273989/24033bd9-9cd1-4558-87ed-da5c1fdec6a2)
+![image](https://github.com/PatamProject/Patam-BookScrabble/assets/130273989/6094ef2c-ccad-466f-8397-873279b5ccdd)
+
+
+
 
 Video URL : https://youtu.be/pEO7jt0Quzs
 
